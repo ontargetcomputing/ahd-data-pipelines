@@ -4,7 +4,9 @@ bundle:
   name: ahd_data_pipelines
 
 include:
-  - config/jobs/*.yml
+- conf/workflows/foo.yml
+- conf/workflows/shelter/shelter.yml
+
 
 variables:
   ahd_cluster_id:

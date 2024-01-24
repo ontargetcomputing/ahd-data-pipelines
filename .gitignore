@@ -1,8 +1,10 @@
 .databricks/
 build/
+conf/
 dist/
 __pycache__/
 *.egg-info
 .venv/
 scratch/**
 !scratch/README.md
+databricks.yml

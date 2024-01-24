@@ -1,0 +1,8 @@
+env: dev
+
+workflows:
+  foo:
+    template: conf/workflows/foo.yml
+
+  shelter:
+    template: conf/workflows/shelter/shelter.yml
