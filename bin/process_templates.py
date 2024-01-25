@@ -19,7 +19,7 @@ def render_databricks_config(template_path, data, output_dir):
     rendered = render_template(template_path, data)
     # Save the output to a new file
     output_filename = os.path.basename(template_path)
-    output_path = os.path.join('.', output_filename)
+    output_path = os.path.join(output_dir, output_filename)
     with open(output_path, 'w+') as output_file:
         output_file.write(rendered)    
 

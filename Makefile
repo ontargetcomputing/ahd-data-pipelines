@@ -1,15 +1,13 @@
 clean-deploy:
 	rm -rf conf
-	rm databricks.yml
+	rm -f databricks.yml
 
-prepare-for-creating-deployment-files:
-	python bin/convert_tasks_templates.py --env $(ENV)
+create-deployment-files: clean-deploy
+	python bin/process_templates.py --env $(ENV)
+	cp -rf conf.j2/workflows conf/workflows
 	
-create-deployment-files: clean-deploy prepare-for-creating-deployment-files
-	jinja -d conf.j2/data.$(ENV).yml -f yaml -o databricks.yml databricks.j2.yml
-
-validate:
+validate: create-deployment-files
 	databricks bundle validate
 
-deploy:
+deploy: validate
 	databricks bundle deploy -t ${ENV} --profile prod

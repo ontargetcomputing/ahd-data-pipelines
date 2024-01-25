@@ -1,0 +1,29 @@
+source_datasources:
+  - type: databricks
+    table: {{ workflows['shelter_bootstrap'].catalog }}.silver.site_information_{{ env }}
+destination_datasources:
+  - type: databricks
+    table: {{ workflows['shelter_bootstrap'].catalog }}.gold.site_information_{{ env }}
+    data_types:
+    - column: datahub_site_id
+      type: long
+    - column: name
+      type: string
+    - column: address
+      type: string
+    - column: county_fips
+      type: string
+    - column: county
+      type: string
+    - column: city
+      type: string
+    - column: state
+      type: string
+    - column: zipcode
+      type: string
+    - column: oes_region
+      type: string
+    - column: backup_generator
+      type: string
+    - column: ada_accessible_site
+      type: string

@@ -1,8 +1,38 @@
-env: dev
-
 workflows:
-  foo:
-    template: conf/workflows/foo.yml
+  shelter_bootstrap:
+    template: conf/workflows/shelter/bootstrap.yml
+    catalog: shelter
+    bronze:
+      shelter_sites_historical: 
+        source:
+          dataset_id: 8beb2c8b68054182b3972fb076aee25c 
+          layer: 0
 
-  shelter:
-    template: conf/workflows/shelter/shelter.yml
+      site_information:
+        source:
+          driver: postgresql
+          host: atlastest1-instance-1.ccagqiw5cjwr.us-west-2.rds.amazonaws.com
+          port: 30001
+          database: org_chhs_datahub
+
+      single_shelter_datamodel_hfl:
+        source:
+          driver: postgresql
+          host: atlastest1-instance-1.ccagqiw5cjwr.us-west-2.rds.amazonaws.com
+          port: 30001
+          database: org_chhs_datahub
+          query: atlastest1-instance-1.ccagqiw5cjwr.us-west-2.rds.amazonaws.com
+          table_suffix: _dev
+
+      single_shelter_datamodel_hfl_historical:
+        source:
+          driver: postgresql
+          host: atlastest1-instance-1.ccagqiw5cjwr.us-west-2.rds.amazonaws.com
+          port: 30001
+          database: org_chhs_datahub
+          query: atlastest1-instance-1.ccagqiw5cjwr.us-west-2.rds.amazonaws.com
+          table_suffix: _dev
+    gold:
+      site_information:
+        source:
+          identity_start_with: 241

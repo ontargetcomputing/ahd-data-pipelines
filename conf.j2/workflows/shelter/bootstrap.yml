@@ -1,0 +1,113 @@
+resources:
+  jobs:
+    shelter_bootstrap:
+      name: shelter_bootstrap
+
+      email_notifications:
+        on_failure:
+          - Richard.Bach3@chhs.ca.gov
+
+      tasks:
+        - task_key: "bronze_site_information"
+          existing_cluster_id: ${var.ahd_cluster_id}
+          python_wheel_task:
+            package_name: ${bundle.name}
+            entry_point: foo
+            parameters: [ "--conf-file", "${var.param_files_dir}/shelter/bootstrap/bronze_site_information.yml", "--stage", "${bundle.target}"]
+          libraries:
+            # By default we just include the .whl file generated for the ahd-data-pipelines package.
+            # See https://docs.databricks.com/dev-tools/bundles/library-dependencies.html
+            # for more information on how to add other libraries.
+            - whl: ../../dist/*.whl
+
+        # - task_key: "silver_site_information"
+        #   <<: *cluster
+        #   depends_on: 
+        #     - task_key:  bronze_site_information
+        #   spark_python_task:
+        #     python_file: "file://cdii_data_pipelines/tasks/medallion_etl_task.py"
+        #     parameters: [ "--conf-file", "file:fuse://conf/tasks/shelter/bootstrap/silver_site_information.yml", "--stage", "{{ env.upper() }}" ]          
+        # - task_key: "create_gold_site_information_table"
+        #   <<: *cluster
+        #   spark_python_task:
+        #     python_file: "file://cdii_data_pipelines/tasks/medallion_etl_task.py"
+        #     parameters: [ "--conf-file", "file:fuse://conf/tasks/shelter/bootstrap/create_gold_site_information_table.yml", "--stage", "{{ env.upper() }}" ]          
+        # - task_key: "gold_site_information"
+        #   <<: *cluster
+        #   depends_on: 
+        #     - task_key:  silver_site_information
+        #     - task_key:  create_gold_site_information_table
+        #   spark_python_task:
+        #     python_file: "file://cdii_data_pipelines/tasks/medallion_etl_task.py"
+        #     parameters: [ "--conf-file", "file:fuse://conf/tasks/shelter/bootstrap/gold_site_information.yml", "--stage", "{{ env.upper() }}" ]
+
+        # - task_key: "bronze_single_shelter_datamodel"
+        #   <<: *cluster
+        #   spark_python_task:
+        #     python_file: "file://cdii_data_pipelines/tasks/medallion_etl_task.py"
+        #     parameters: [ "--conf-file", "file:fuse://conf/tasks/shelter/bootstrap/bronze_single_shelter_datamodel.yml", "--stage", "{{ env.upper() }}" ]
+        # - task_key: "silver_single_shelter_datamodel"
+        #   <<: *cluster
+        #   depends_on: 
+        #     - task_key:  bronze_single_shelter_datamodel
+        #   spark_python_task:
+        #     python_file: "file://cdii_data_pipelines/tasks/medallion_etl_task.py"
+        #     parameters: [ "--conf-file", "file:fuse://conf/tasks/shelter/bootstrap/silver_single_shelter_datamodel.yml", "--stage", "{{ env.upper() }}" ]          
+        # - task_key: "gold_single_shelter_datamodel"
+        #   <<: *cluster
+        #   depends_on: 
+        #     - task_key:  silver_single_shelter_datamodel
+        #   spark_python_task:
+        #     python_file: "file://cdii_data_pipelines/tasks/medallion_etl_task.py"
+        #     parameters: [ "--conf-file", "file:fuse://conf/tasks/shelter/bootstrap/gold_single_shelter_datamodel.yml", "--stage", "{{ env.upper() }}" ]
+        # - task_key: "bronze_single_shelter_datamodel_historical"
+        #   <<: *cluster
+        #   spark_python_task:
+        #     python_file: "file://cdii_data_pipelines/tasks/medallion_etl_task.py"
+        #     parameters: [ "--conf-file", "file:fuse://conf/tasks/shelter/bootstrap/bronze_single_shelter_datamodel_historical.yml", "--stage", "{{ env.upper() }}" ]
+        # - task_key: "silver_single_shelter_datamodel_historical"
+        #   <<: *cluster
+        #   depends_on: 
+        #     - task_key:  bronze_single_shelter_datamodel_historical
+        #   spark_python_task:
+        #     python_file: "file://cdii_data_pipelines/tasks/medallion_etl_task.py"
+        #     parameters: [ "--conf-file", "file:fuse://conf/tasks/shelter/bootstrap/silver_single_shelter_datamodel_historical.yml", "--stage", "{{ env.upper() }}" ]          
+        # - task_key: "gold_single_shelter_datamodel_historical"
+        #   <<: *cluster
+        #   depends_on: 
+        #     - task_key:  silver_single_shelter_datamodel_historical
+        #   spark_python_task:
+        #     python_file: "file://cdii_data_pipelines/tasks/medallion_etl_task.py"
+        #     parameters: [ "--conf-file", "file:fuse://conf/tasks/shelter/bootstrap/gold_single_shelter_datamodel_historical.yml", "--stage", "{{ env.upper() }}" ]          
+
+        # - task_key: "bronze_shelter_sites_historical"
+        #   <<: *cluster
+        #   spark_python_task:
+        #     python_file: "file://cdii_data_pipelines/tasks/medallion_etl_task.py"
+        #     parameters: [ "--conf-file", "file:fuse://conf/tasks/shelter/bootstrap/bronze_shelter_sites_historical.yml", "--stage", "{{ env.upper() }}" ]
+        # - task_key: "silver_shelter_sites_historical"
+        #   <<: *cluster
+        #   depends_on: 
+        #     - task_key:  bronze_shelter_sites_historical
+        #   spark_python_task:
+        #     python_file: "file://cdii_data_pipelines/tasks/medallion_etl_task.py"
+        #     parameters: [ "--conf-file", "file:fuse://conf/tasks/shelter/bootstrap/silver_shelter_sites_historical.yml", "--stage", "{{ env.upper() }}" ]          
+        # - task_key: "gold_shelter_sites_historical"
+        #   <<: *cluster
+        #   depends_on: 
+        #     - task_key:  silver_shelter_sites_historical
+        #   spark_python_task:
+        #     python_file: "file://cdii_data_pipelines/tasks/medallion_etl_task.py"
+        #     parameters: [ "--conf-file", "file:fuse://conf/tasks/shelter/bootstrap/gold_shelter_sites_historical.yml", "--stage", "{{ env.upper() }}" ]          
+
+
+
+
+      # job_clusters:
+      #   - job_cluster_key: job_cluster
+      #     new_cluster:
+      #       spark_version: 13.3.x-scala2.12
+      #       node_type_id: i3.xlarge
+      #       autoscale:
+      #           min_workers: 1
+      #           max_workers: 4
