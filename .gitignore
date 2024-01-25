@@ -1,4 +1,3 @@
-# HACK - not sure how to override gitignore on deployment
 .databricks/
 build/
 dist/
