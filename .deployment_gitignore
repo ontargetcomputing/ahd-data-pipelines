@@ -15,6 +15,6 @@ tests/
 .gitignore.orig
 pytest.ini
 Makefile
-.gitignore_deployment
+.deployment_gitignore
 .gitignore
 .envrc
