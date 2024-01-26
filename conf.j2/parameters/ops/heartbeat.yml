@@ -1,0 +1,5 @@
+bronze: true
+source_datasources:
+  - type: noop
+destination_datasources:
+  - type: noop

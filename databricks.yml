@@ -4,6 +4,7 @@ bundle:
   name: ahd_data_pipelines
 
 include:
+- conf/workflows/ops/heartbeat.yml
 - conf/workflows/shelter/bootstrap.yml
 
 
