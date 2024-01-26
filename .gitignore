@@ -1,11 +1,20 @@
+# HACK - not sure how to override gitignore on deployment
 .databricks/
 build/
 dist/
 __pycache__/
 *.egg-info
 .venv/
-scratch/
+scratch/**
 !scratch/README.md
 .vscode
-conf/
+bin/
+conf.j2/
+fixtures/
+tests/
+.gitignore.orig
+pytest.ini
+Makefile
+.deployment_gitignore
+.gitignore
 .envrc
