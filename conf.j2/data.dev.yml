@@ -1,5 +1,8 @@
 env: dev
 workflows:
+  ops:
+    template: conf/workflows/ops/heartbeat.yml
+
   shelter_bootstrap:
     template: conf/workflows/shelter/bootstrap.yml
     catalog: shelter
