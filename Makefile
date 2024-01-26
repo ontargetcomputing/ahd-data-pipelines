@@ -11,6 +11,6 @@ validate: create-deployment-files
 
 deploy: validate
 	cp .gitignore .gitignore.orig
-	cp .gitignore_deployment .gitignore
+	cp .deployment_gitignore .gitignore
 	databricks bundle deploy -t ${ENV} --profile prod 
 	mv .gitignore.orig .gitignore
