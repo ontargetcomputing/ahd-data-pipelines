@@ -10,3 +10,4 @@ scratch/
 .gitignore.orig
 conf/
 .envrc
+databricks.yml
