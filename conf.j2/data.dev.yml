@@ -40,3 +40,6 @@ workflows:
       site_information:
         source:
           identity_start_with: 241
+
+  esri_greendataupdate:
+    template: conf/workflows/esri/greendataupdate.yml
