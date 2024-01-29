@@ -1369,6 +1369,27 @@ class GreenDataUpdate(Pipeline):
                 if result_df.size > 0: 
                     sr = result_df.spatial.sr
                     result_df["SHAPE"] = result_df["SHAPE"].apply(lambda geometry: Point({"x" :  geometry.centroid[0], "y" :  geometry.centroid[1], "spatialReference": sr}))
+                    result_df["geometry"] = result_df["SHAPE"].apply(lambda x: x.as_shapely if x is not None else None)
+                sdf_dic = result_df.to_dict('list')
+                result_gdf = gpd.GeoDataFrame(sdf_dic)
+                cwd = os.getcwd()
+
+                view_item = gis.content.get(target_update_view)
+                target = OverwriteFS.getFeatureServiceTarget(view_item, verbose=True)
+
+                if "success" in target and (not target["success"] or not target["items"]):
+                    # -AddRelated A/B services
+                    print("No target found. Adding A/B related items.")
+                    OverwriteFS.updateRelationships(
+                        view=view_item, 
+                        relateIds=[target_update_layer_A, target_update_layer_B], 
+                        verbose=True)
+                    target = OverwriteFS.getFeatureServiceTarget(view_item, verbose=True)
+
+                target_filename = target['filename']
+                target_filepath = os.path.join(cwd, target_filename)
+
+                result_gdf.to_file(filename=target_filepath, driver='GPKG')
 
                 calculated[layer_psps_points]["data"] = result_df
 
@@ -1377,29 +1398,6 @@ class GreenDataUpdate(Pipeline):
                 print(e)
                 Log_Errors.append({"message": "Error processing {0} data.".format(layer_psps_points)})
                 Layer_Errors[layer_psps_points] = {"message": "Error processing {0} data.".format(layer_psps_points)}
-
-        if result_df.size > 0: 
-            result_df["geometry"] = result_df["SHAPE"].apply(lambda x: x.as_shapely if x is not None else None)
-        sdf_dic = result_df.to_dict('list')
-        result_gdf = gpd.GeoDataFrame(sdf_dic)
-        cwd = os.getcwd()
-
-        view_item = gis.content.get(target_update_view)
-        target = OverwriteFS.getFeatureServiceTarget(view_item, verbose=True)
-
-        if "success" in target and (not target["success"] or not target["items"]):
-            # -AddRelated A/B services
-            print("No target found. Adding A/B related items.")
-            OverwriteFS.updateRelationships(
-                view=view_item, 
-                relateIds=[target_update_layer_A, target_update_layer_B], 
-                verbose=True)
-            target = OverwriteFS.getFeatureServiceTarget(view_item, verbose=True)
-
-        target_filename = target['filename']
-        target_filepath = os.path.join(cwd, target_filename)
-
-        result_gdf.to_file(filename=target_filepath, driver='GPKG')
 
 
         # Swap view
@@ -1576,3 +1574,5 @@ class GreenDataUpdate(Pipeline):
 
         toc = time.perf_counter()
         print(f"Processed data in {toc - tic:0.4f} seconds")
+
+
