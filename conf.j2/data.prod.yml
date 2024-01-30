@@ -1,10 +1,7 @@
-env: dev
+env: prod
 workflows:
   ops:
     template: conf/workflows/ops/heartbeat.yml
-
-  esri_greendataupdate:
-    template: conf/workflows/esri/greendataupdate.yml
 
   shelter_bootstrap:
     template: conf/workflows/shelter/bootstrap.yml
@@ -58,15 +55,15 @@ workflows:
       shelter_sites_historical:
         destination:
           # PROD
-          dataset_id: 24f1f876e51a44cfab413049da2b1314 
+          #dataset_id: 24f1f876e51a44cfab413049da2b1314 
           # DEV
-          # dataset_id: 8beb2c8b68054182b3972fb076aee25c
+          dataset_id: 8beb2c8b68054182b3972fb076aee25c
           layer: 0
 
       shelter_sites:
         destination:
           # PROD
-          dataset_id: 2160847d94cc4a16b562461865f3eedd
+          #dataset_id: 2160847d94cc4a16b562461865f3eedd
           # DEV
-          # dataset_id: a01b16d709794683beb4d813b6b0304d
+          dataset_id: a01b16d709794683beb4d813b6b0304d
           layer: 0
