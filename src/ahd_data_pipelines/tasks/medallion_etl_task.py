@@ -196,7 +196,7 @@ def entrypoint():
     if "true" != os.environ.get('LOCAL'):
         init_conf = None
     else:
-        yaml_file_path = './conf/tasks/shelter/fix/green.yml'
+        yaml_file_path = './conf/parameters/shelter/bootstrap/bronze_shelter_sites_historical.yml'
         init_conf = ETLTask.load_yaml(yaml_file_path=yaml_file_path)
         print("******************************")
         print("LOADED CONFIG FROM YAML FILE LOCALLY")
