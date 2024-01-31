@@ -6,7 +6,7 @@ source_datasources:
     port: {{ workflows['shelter_bootstrap'].bronze.site_information.source.port }}
     database: {{ workflows['shelter_bootstrap'].bronze.site_information.source.database }}
     query: >
-      select * from chhs_site_information;
+      select * from chhs_site_information{{ workflows['shelter_bootstrap'].bronze.site_information.source.table_suffix|default("", true) }};
 
 destination_datasources:
   - type: databricks
