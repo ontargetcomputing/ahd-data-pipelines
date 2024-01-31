@@ -7,10 +7,10 @@ create-deployment-files: clean-deploy
 	cp -rf conf.j2/workflows conf/workflows
 	
 validate: create-deployment-files
-	databricks bundle validate
+	databricks bundle validate --profile ${ENV}
 
 deploy: validate
 	cp .gitignore .gitignore.orig
 	cp .deployment_gitignore .gitignore
-	databricks bundle deploy -t ${ENV} --profile prod 
+	databricks bundle deploy -t ${ENV} --profile ${ENV}
 	mv .gitignore.orig .gitignore
