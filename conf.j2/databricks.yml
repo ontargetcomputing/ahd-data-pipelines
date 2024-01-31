@@ -34,9 +34,9 @@ targets:
     mode: development
     default: true
     variables:
-      ahd_cluster_id: 0122-214140-932cnpz8
+      ahd_cluster_id: 0131-170506-cm2znzat
     workspace:
-      host: https://calhhs-ahd-live.cloud.databricks.com/
+      host: https://dbc-a6893d54-2596.cloud.databricks.com
       root_path: /Users/${workspace.current_user.userName}/.bundle/${bundle.name}/${bundle.target}
 
   prod:
