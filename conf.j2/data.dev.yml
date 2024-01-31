@@ -21,7 +21,8 @@ workflows:
           host: atlastest1-instance-1.ccagqiw5cjwr.us-west-2.rds.amazonaws.com
           port: 30001
           database: org_chhs_datahub
-
+          table_suffix: _dev
+          
       single_shelter_datamodel_hfl:
         source:
           driver: postgresql
