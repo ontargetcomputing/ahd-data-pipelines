@@ -7,7 +7,7 @@ create-deployment-files: clean-deploy
 	cp -rf conf.j2/workflows conf/workflows
 	
 validate: create-deployment-files
-	databricks bundle validate --profile ${ENV}
+	databricks bundle validate -t ${ENV} --profile ${ENV}
 
 deploy: validate
 	cp .gitignore .gitignore.orig
