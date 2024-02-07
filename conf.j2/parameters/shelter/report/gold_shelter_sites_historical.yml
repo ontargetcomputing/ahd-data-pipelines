@@ -1,0 +1,189 @@
+source_datasources:
+  - type: databricks
+    query: >
+      select 
+          datahub_site_id,
+          name,
+          address,
+          county_fips,
+          county,
+          city,
+          state,
+          zipcode,
+          oes_region,
+          backup_generator,
+          ada_accessible_site,
+          datasource,
+          dr_name,
+          disaster_type,
+          disaster_start_date,
+          overall_capacity,
+          overall_capacity_delta,
+          agency_type,
+          site_status,
+          site_type,
+          shift_a_poc_name,
+          shift_a_poc_number,
+          shift_b_poc_name,
+          shift_b_poc_number,
+          open_date,
+          close_date,
+          closure_reason,
+          estimated_census_outside,
+          est_census_outside_delta,
+          rooms_occupied,
+          rooms_occupied_delta,
+          census,
+          census_delta,
+          completed_by,
+          previous_day_status,
+          report_date, 
+          submission_date,
+          geometry
+      from {{ workflows['shelter_report'].catalog }}.gold.shelter_sites_{{ env }}
+      where site_status != 'Closed'
+              or ( site_status = 'Closed' and DATEDIFF(current_timestamp(), close_date) < 1);
+  - type: databricks
+    query: >
+      select yesterday.site_type, 
+              total_yesterday, 
+              total_today,
+              total_today - total_yesterday as difference 
+      from 
+      (select 
+        site_type,
+        site_status,
+        report_date,
+        count(1) as total_yesterday
+      from {{ workflows['shelter_report'].catalog }}.gold.shelter_sites_{{ env }}
+      group by site_type, site_status, report_date
+      having site_status = 'Open' and DATE(report_date) = CURRENT_DATE() - 1 and site_type like '%Congregate'
+      UNION ALL
+      SELECT 'Congregate' AS site_type, 'Open' as site_status, null as report_date, 0 as total_yesterday 
+      WHERE NOT EXISTS (
+        SELECT 1
+        from {{ workflows['shelter_report'].catalog }}.gold.shelter_sites_{{ env }}
+        where site_status = 'Open' and DATE(report_date) = CURRENT_DATE() - 1 and site_type = 'Congregate'
+      )
+      UNION ALL
+      SELECT 'Non Congregate' AS site_type, 'Open' as site_status, null as report_date, 0 as total_yesterday 
+      WHERE NOT EXISTS (
+        SELECT 1
+        from {{ workflows['shelter_report'].catalog }}.gold.shelter_sites_{{ env }}
+        where site_status = 'Open' and DATE(report_date) = CURRENT_DATE() - 1 and site_type = 'Non Congregate'
+      )) as yesterday
+      JOIN
+      (select 
+        site_type,
+        site_status,
+        report_date,
+        count(1) as total_today
+      from {{ workflows['shelter_report'].catalog }}.gold.shelter_sites_{{ env }}
+      group by site_type, site_status, report_date
+      having site_status = 'Open' and DATE(report_date) = CURRENT_DATE() and site_type like '%Congregate'
+      UNION ALL
+      SELECT 'Congregate' AS site_type, 'Open' as site_status, null as report_date, 0 as total_today
+      WHERE NOT EXISTS (
+        SELECT 1
+        from {{ workflows['shelter_report'].catalog }}.gold.shelter_sites_{{ env }}
+        where site_status = 'Open' and DATE(report_date) = CURRENT_DATE() and site_type = 'Congregate'
+      )
+      UNION ALL
+      SELECT 'Non Congregate' AS site_type, 'Open' as site_status, null as report_date, 0 as total_today
+      WHERE NOT EXISTS (
+        SELECT 1
+        from {{ workflows['shelter_report'].catalog }}.gold.shelter_sites_{{ env }}
+        where site_status = 'Open' and DATE(report_date) = CURRENT_DATE() and site_type = 'Non Congregate'
+      )) as today on today.site_type = yesterday.site_type
+
+destination_datasources:
+  - type: databricks
+    table: {{ workflows['shelter_report'].catalog }}.gold.shelter_sites_historical_{{ env }}
+    method: append
+    data_types:
+    - column: OBJECTID
+      type: string
+    - column: GlobalID
+      type: int
+    - column: datasource
+      type: string
+    - column: agency_type
+      type: string
+    - column: address
+      type: string
+    - column: city
+      type: string
+    - column: state
+      type: string
+    - column: zipcode
+      type: int
+    - column: county
+      type: string
+    - column: county_fips
+      type: int
+    - column: ada_accessible_site
+      type: string
+    - column: backup_generator
+      type: string
+    - column: site_type
+      type: string
+    - column: site_status
+      type: string
+    - column: dr_name
+      type: string
+    - column: disaster_type
+      type: string
+    - column: disaster_start_date
+      type: date
+    - column: overall_capacity
+      type: int
+    - column: overall_capacity_delta
+      type: int
+    - column: shift_a_poc_name
+      type: string
+    - column: shift_a_poc_number
+      type: string
+    - column: shift_b_poc_name
+      type: string
+    - column: shift_b_poc_number
+      type: string
+    - column: open_date
+      type: date
+    - column: close_date
+      type: date
+    - column: closure_reason
+      type: string
+    - column: census
+      type: int
+    - column: census_delta
+      type: int
+    - column: estimated_census_outside
+      type: string
+    - column: est_census_outside_delta
+      type: string
+    - column: rooms_occupied
+      type: int
+    - column: rooms_occupied_delta
+      type: int
+    - column: count_date
+      type: date
+    - column: completed_by
+      type: string
+    - column: previous_day_status
+      type: string
+    - column: datahub_site_id
+      type: string
+    - column: name
+      type: string
+    - column: oes_region
+      type: string
+    - column: report_date
+      type: date
+    - column: submission_date
+      type: date
+    - column: outdated_report
+      type: string
+    - column: cs_delta
+      type: int
+    - column: ncs_delta
+      type: int

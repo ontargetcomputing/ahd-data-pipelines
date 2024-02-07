@@ -1,0 +1,149 @@
+bronze: true
+source_datasources:
+  - type: agol
+    dataset_id: {{ workflows['shelter_report'].bronze.join_layer.source.dataset_id }}
+    layer: {{ workflows['shelter_report'].bronze.join_layer.source.layer }}
+    url: https://chhsagency.maps.arcgis.com/home/
+
+destination_datasources:
+  - type: databricks
+    table: {{ workflows['shelter_report'].catalog }}.bronze.join_layer_{{ env }}
+    data_types:
+    - column: GlobalID
+      type: string
+    - column: ade_site_id
+      type: int
+    - column: name
+      type: string
+    - column: address
+      type: string
+    - column: zipcode
+      type: integer
+    - column: county
+      type: string
+    - column: oes_region
+      type: string
+    - column: ada_accessible_site
+      type: string
+    - column: backup_generator
+      type: string
+    - column: shelter_id
+      type: string
+    - column: site_type
+      type: string
+    - column: city
+      type: string
+    - column: submission_date
+      type: date
+    - column: state
+      type: string
+    - column: county_other
+      type: string
+    - column: coord_x
+      type: double
+    - column: coord_y
+      type: double
+    - column: ade_site_id{{ workflows['shelter_report'].element_suffix|default("", true) }}
+      type: int
+    - column: site_status
+      type: string
+    - column: dr_name
+      type: string
+    - column: dr_number
+      type: int
+    - column: disaster_type
+      type: string
+    - column: agency_id
+      type: int
+    - column: datasource
+      type: string
+    - column: site_type{{ workflows['shelter_report'].element_suffix|default("", true) }}
+      type: string
+    - column: shelter_type
+      type: string
+    - column: shelter_manager
+      type: string
+    - column: poc_name
+      type: string
+    - column: shift
+      type: string
+    - column: overall_capacity
+      type: int
+    - column: census
+      type: int
+    - column: estimated_census_outside
+      type: int
+    - column: unmet_needs
+      type: int
+    - column: unmet_blankets
+      type: int
+    - column: unmet_showers
+      type: int
+    - column: unmet_food
+      type: int
+    - column: unmet_toilets
+      type: int
+    - column: unmet_functional
+      type: int
+    - column: unmet_ppe
+      type: int
+    - column: unmet_none
+      type: int
+    - column: open_date
+      type: date
+    - column: close_date
+      type: date
+    - column: count_date
+      type: int
+    - column: parent_guid
+      type: string
+    - column: GlobalID{{ workflows['shelter_report'].element_suffix|default("", true) }}
+      type: string
+    - column: disaster_other
+      type: string
+    - column: closure_reason
+      type: string
+    - column: closure_other
+      type: string
+    - column: agency_type
+      type: string
+    - column: county{{ workflows['shelter_report'].element_suffix|default("", true) }}
+      type: string
+    - column: midnight_count
+      type: int
+    - column: completed_by
+      type: string
+    - column: rooms_occupied
+      type: int
+    - column: tep_status
+      type: string
+    - column: tep_poc
+      type: string
+    - column: submission_date{{ workflows['shelter_report'].element_suffix|default("", true) }}
+      type: date
+    - column: unmet_other
+      type: string
+    - column: unmet_ada_showers
+      type: int
+    - column: unmet_ada_toilets
+      type: int
+    - column: poc_name_b
+      type: int
+    - column: poc_number
+      type: string
+    - column: poc_number_b
+      type: string
+    - column: unmet_comfort_kits
+      type: int
+    - column: disaster_start_date_txt
+      type: string
+    - column: overall_status
+      type: string
+    - column: noncon_status
+      type: string
+    - column: unmet_ada_showers
+      type: int
+    - column: site_name
+      type: string
+    - column: ObjectId
+      type: string

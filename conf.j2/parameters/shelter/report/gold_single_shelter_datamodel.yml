@@ -1,0 +1,174 @@
+source_datasources:
+  - type: databricks
+    query: >
+      select 
+            si.datahub_site_id,
+            jl.name,
+            jl.address,
+            cafips.fips_long as county_fips,
+            jl.county,
+            jl.city,
+            jl.state,
+            jl.zipcode,
+            si.oes_region,
+            jl.backup_generator,
+            jl.ada_accessible_site,
+            jl.datasource,
+            jl.dr_name,
+            CASE
+                WHEN jl.disaster_type = "Other" THEN jl.disaster_other
+                ELSE jl.disaster_type
+            END as disaster_type,
+            jl.disaster_start_date_txt as disaster_start_date,
+            jl.overall_capacity,
+            CASE
+                WHEN ssdm.overall_capacity is null THEN jl.overall_capacity
+                WHEN ssdm.overall_capacity <= 0 THEN jl.overall_capacity  
+                WHEN jl.overall_capacity is null THEN 0.0 
+                ELSE jl.overall_capacity - ssdm.overall_capacity
+            END as overall_capacity_delta,
+            jl.agency_type,
+            jl.site_status,
+            jl.site_type,
+            jl.poc_name as shift_a_poc_name,
+            jl.poc_number as shift_a_poc_number,
+            jl.poc_name_b as shift_b_poc_name,
+            jl.poc_number_b as shift_b_poc_number,
+            jl.open_date,
+            jl.close_date,
+            CASE
+                WHEN jl.closure_reason = "Other" THEN jl.closure_other
+                ELSE jl.closure_reason
+            END as closure_reason,
+            jl.estimated_census_outside,
+            CASE
+                WHEN ssdm.estimated_census_outside is null THEN jl.estimated_census_outside
+                WHEN ssdm.estimated_census_outside <= 0 THEN jl.estimated_census_outside  
+                WHEN jl.estimated_census_outside is null THEN 0.0 
+                ELSE jl.estimated_census_outside - ssdm.estimated_census_outside
+            END as est_census_outside_delta,      
+            jl.rooms_occupied,
+            CASE
+                WHEN ssdm.rooms_occupied is null THEN jl.rooms_occupied
+                WHEN ssdm.rooms_occupied <= 0 THEN jl.rooms_occupied  
+                WHEN jl.rooms_occupied is null THEN 0.0 
+                ELSE jl.rooms_occupied - ssdm.rooms_occupied
+            END as rooms_occupied_delta,        
+            jl.census,
+            CASE
+                WHEN jl.site_type{{ workflows['shelter_report'].element_suffix|default("", true) }} = "Non Congregate" THEN
+                  CASE
+                    WHEN ssdm.census is null THEN jl.census
+                    WHEN ssdm.census <= 0 THEN jl.census  
+                    WHEN jl.census is null THEN 0.0 
+                    ELSE jl.census - ssdm.census
+                  END
+                ELSE
+                  CASE
+                    WHEN ssdm.census is null THEN jl.midnight_count
+                    WHEN ssdm.census <= 0 THEN jl.midnight_count  
+                    WHEN jl.midnight_count is null THEN 0.0 
+                    ELSE jl.midnight_count - ssdm.census
+                  END
+            END as census_delta,   
+            current_timestamp() AS report_date,
+            jl.completed_by,
+            CASE
+                WHEN ssdm.site_status is null THEN ''
+                ELSE ssdm.site_status
+            END as previous_day_status,
+            jl.submission_date,
+            CASE
+                WHEN ssdm.submission_date = jl.submission_date{{ workflows['shelter_report'].element_suffix|default("", true) }} THEN 'Yes'
+                ELSE 'No'
+            END as outdated_report, 
+            CONCAT('POINT (', jl.coord_x, ' ', jl.coord_y, ')') as geometry
+        from {{ workflows['shelter_report'].catalog }}.silver.join_layer_{{ env }} as jl
+          join {{ workflows['shelter_report'].catalog }}.gold.site_information_{{ env }} as si on si.name = jl.name  
+          left join {{ workflows['shelter_report'].catalog }}.gold.single_shelter_datamodel_hfl_{{ env }} ssdm on ssdm.name = jl.name
+          left join datahub_common.gold.ca_fips cafips on cafips.county_long = jl.county;
+
+destination_datasources:
+  - type: databricks
+    table: {{ workflows['shelter_report'].catalog }}.gold.single_shelter_datamodel_hfl_{{ env }}
+    overwrite: true
+    data_types:
+    - column: datahub_site_id
+      type: int
+    - column: name
+      type: string
+    - column: address
+      type: string
+    - column: county_fips
+      type: string
+    - column: county
+      type: string
+    - column: city
+      type: string
+    - column: state
+      type: string
+    - column: zipcode
+      type: string
+    - column: oes_region
+      type: string
+    - column: backup_generator
+      type: string
+    - column: ada_accessible_site
+      type: string
+    - column: datasource
+      type: string
+    - column: dr_name
+      type: string
+    - column: disaster_type
+      type: string
+    - column: disaster_start_date
+      type: string
+    - column: overall_capacity
+      type: double
+    - column: overall_capacity_delta
+      type: double
+    - column: agency_type
+      type: string
+    - column: site_status
+      type: string
+    - column: shift_a_poc_name
+      type: string
+    - column: shift_a_poc_number
+      type: string
+    - column: shift_b_poc_name
+      type: string
+    - column: shift_b_poc_number
+      type: string
+    - column: open_date
+      type: date
+    - column: close_date
+      type: date
+    - column: closure_reason
+      type: string
+    - column: estimated_census_outside
+      type: double
+    - column: est_census_outside_delta
+      type: double
+    - column: rooms_occupied
+      type: string
+    - column: rooms_occupied_delta
+      type: double
+    - column: census
+      type: double
+    - column: census_delta
+      type: double
+    - column: report_date
+      type: date
+    - column: completed_by
+      type: string
+    - column: previous_day_status
+      type: string
+    - column: submission_date
+      type: date
+    - column: outdated_report
+      type: string
+    - column: geometry
+      type: string
+
+
+
