@@ -1,0 +1,6 @@
+source_datasources:
+  - type: databricks
+    query: >
+      drop table {{ workflows['shelter_bootstrap'].catalog }}.silver.site_information_{{ env }}
+destination_datasources:
+  - type: noop

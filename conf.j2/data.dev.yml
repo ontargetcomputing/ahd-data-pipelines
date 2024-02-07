@@ -43,14 +43,14 @@ workflows:
     gold:
       site_information:
         source:
-          identity_start_with: 250
+          identity_start_with: 254
 
   shelter_report:
     template: conf/workflows/shelter/report.yml
     catalog: shelter
     element_suffix: _1639591244980
     bronze:
-      join_layer: 
+      shelter_status_layer: 
         source:
           dataset_id: fd06ecb9a65b4eab86c9863f21dbacef 
           layer: 0

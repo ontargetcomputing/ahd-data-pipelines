@@ -20,7 +20,7 @@ source_datasources:
                 END as oes_region,
               jl.backup_generator,
               jl.ada_accessible_site 
-        from {{ workflows['shelter_report'].catalog }}.silver.join_layer_{{ env }} jl 
+        from {{ workflows['shelter_report'].catalog }}.silver.shelter_status_layer_{{ env }} jl 
           left join datahub_common.gold.ca_county_oes_shape oes_shape on oes_shape.county = REPLACE(jl.county, ' County', '') 
           left join datahub_common.gold.ca_fips ca_fips on ca_fips.county_long = jl.county
           left join {{ workflows['shelter_report'].catalog }}.gold.site_information_{{ env }} si on lower(si.name) = lower(jl.name)

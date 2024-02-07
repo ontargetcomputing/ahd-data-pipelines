@@ -83,7 +83,7 @@ source_datasources:
                 ELSE 'No'
             END as outdated_report, 
             CONCAT('POINT (', jl.coord_x, ' ', jl.coord_y, ')') as geometry
-        from {{ workflows['shelter_report'].catalog }}.silver.join_layer_{{ env }} as jl
+        from {{ workflows['shelter_report'].catalog }}.silver.shelter_status_layer_{{ env }} as jl
           join {{ workflows['shelter_report'].catalog }}.gold.site_information_{{ env }} as si on si.name = jl.name  
           left join {{ workflows['shelter_report'].catalog }}.gold.single_shelter_datamodel_hfl_{{ env }} ssdm on ssdm.name = jl.name
           left join datahub_common.gold.ca_fips cafips on cafips.county_long = jl.county;

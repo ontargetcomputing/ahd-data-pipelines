@@ -12,88 +12,88 @@ resources:
         timezone_id: "America/Los_Angeles"
       
       tasks:
-        - task_key: "bronze_join_layer"
+        - task_key: "bronze_shelter_status_layer"
           existing_cluster_id: ${var.ahd_cluster_id}
           python_wheel_task:
             package_name: ${bundle.name}
             entry_point: medallion_task
-            parameters: [ "--conf-file", "${var.param_files_dir}/shelter/report/bronze_join_layer.yml", "--stage", "${bundle.target}"]
+            parameters: [ "--conf-file", "${var.param_files_dir}/shelter/report/bronze_shelter_status_layer.yml", "--stage", "${bundle.target}"]
           libraries:
             - whl: /dist/*.whl
 
-        - task_key: "silver_join_layer"
+        - task_key: "silver_shelter_status_layer"
           existing_cluster_id: ${var.ahd_cluster_id}
           depends_on: 
-            - task_key:  bronze_join_layer
+            - task_key:  bronze_shelter_status_layer
           python_wheel_task:
             package_name: ${bundle.name}
             entry_point: medallion_task
-            parameters: [ "--conf-file", "${var.param_files_dir}/shelter/report/silver_join_layer.yml", "--stage", "${bundle.target}"]
+            parameters: [ "--conf-file", "${var.param_files_dir}/shelter/report/silver_shelter_status_layer.yml", "--stage", "${bundle.target}"]
           libraries:
             - whl: /dist/*.whl
 
-        - task_key: "Append_to_Site_Information"
-          existing_cluster_id: ${var.ahd_cluster_id}
-          depends_on: 
-            - task_key:  silver_join_layer
-          python_wheel_task:
-            package_name: ${bundle.name}
-            entry_point: medallion_task
-            parameters: [ "--conf-file", "${var.param_files_dir}/shelter/report/append_to_site_information.yml", "--stage", "${bundle.target}"]
-          libraries:
-            - whl: /dist/*.whl
+        # - task_key: "Append_to_Site_Information"
+        #   existing_cluster_id: ${var.ahd_cluster_id}
+        #   depends_on: 
+        #     - task_key:  silver_shelter_status_layer
+        #   python_wheel_task:
+        #     package_name: ${bundle.name}
+        #     entry_point: medallion_task
+        #     parameters: [ "--conf-file", "${var.param_files_dir}/shelter/report/append_to_site_information.yml", "--stage", "${bundle.target}"]
+        #   libraries:
+        #     - whl: /dist/*.whl
 
-        - task_key: "gold_single_shelter_datamodel"
-          existing_cluster_id: ${var.ahd_cluster_id}
-          depends_on: 
-            - task_key:  Append_to_Site_Information
-          python_wheel_task:
-            package_name: ${bundle.name}
-            entry_point: medallion_task
-            parameters: [ "--conf-file", "${var.param_files_dir}/shelter/report/gold_single_shelter_datamodel.yml", "--stage", "${bundle.target}"]
-          libraries:
-            - whl: /dist/*.whl
+        # - task_key: "gold_single_shelter_datamodel"
+        #   existing_cluster_id: ${var.ahd_cluster_id}
+        #   depends_on: 
+        #     - task_key:  Append_to_Site_Information
+        #   python_wheel_task:
+        #     package_name: ${bundle.name}
+        #     entry_point: medallion_task
+        #     parameters: [ "--conf-file", "${var.param_files_dir}/shelter/report/gold_single_shelter_datamodel.yml", "--stage", "${bundle.target}"]
+        #   libraries:
+        #     - whl: /dist/*.whl
 
-        - task_key: "gold_shelter_sites"
-          existing_cluster_id: ${var.ahd_cluster_id}
-          depends_on: 
-            - task_key:  gold_single_shelter_datamodel
-          python_wheel_task:
-            package_name: ${bundle.name}
-            entry_point: medallion_task
-            parameters: [ "--conf-file", "${var.param_files_dir}/shelter/report/gold_shelter_sites.yml", "--stage", "${bundle.target}"]
-          libraries:
-            - whl: /dist/*.whl
+        # - task_key: "gold_shelter_sites"
+        #   existing_cluster_id: ${var.ahd_cluster_id}
+        #   depends_on: 
+        #     - task_key:  gold_single_shelter_datamodel
+        #   python_wheel_task:
+        #     package_name: ${bundle.name}
+        #     entry_point: medallion_task
+        #     parameters: [ "--conf-file", "${var.param_files_dir}/shelter/report/gold_shelter_sites.yml", "--stage", "${bundle.target}"]
+        #   libraries:
+        #     - whl: /dist/*.whl
 
-        - task_key: "green_shelter_sites"
-          existing_cluster_id: ${var.ahd_cluster_id}
-          depends_on: 
-            - task_key:  gold_shelter_sites
-          python_wheel_task:
-            package_name: ${bundle.name}
-            entry_point: medallion_task
-            parameters: [ "--conf-file", "${var.param_files_dir}/shelter/report/green_shelter_sites.yml", "--stage", "${bundle.target}"]
-          libraries:
-            - whl: /dist/*.whl
+        # - task_key: "green_shelter_sites"
+        #   existing_cluster_id: ${var.ahd_cluster_id}
+        #   depends_on: 
+        #     - task_key:  gold_shelter_sites
+        #   python_wheel_task:
+        #     package_name: ${bundle.name}
+        #     entry_point: medallion_task
+        #     parameters: [ "--conf-file", "${var.param_files_dir}/shelter/report/green_shelter_sites.yml", "--stage", "${bundle.target}"]
+        #   libraries:
+        #     - whl: /dist/*.whl
 
-        - task_key: "gold_shelter_sites_historical"
-          existing_cluster_id: ${var.ahd_cluster_id}
-          depends_on: 
-            - task_key:  gold_single_shelter_datamodel
-          python_wheel_task:
-            package_name: ${bundle.name}
-            entry_point: medallion_task
-            parameters: [ "--conf-file", "${var.param_files_dir}/shelter/report/gold_shelter_sites_historical.yml", "--stage", "${bundle.target}"]
-          libraries:
-            - whl: /dist/*.whl
+        # - task_key: "gold_shelter_sites_historical"
+        #   existing_cluster_id: ${var.ahd_cluster_id}
+        #   depends_on: 
+        #     - task_key:  gold_single_shelter_datamodel
+        #   python_wheel_task:
+        #     package_name: ${bundle.name}
+        #     entry_point: medallion_task
+        #     parameters: [ "--conf-file", "${var.param_files_dir}/shelter/report/gold_shelter_sites_historical.yml", "--stage", "${bundle.target}"]
+        #   libraries:
+        #     - whl: /dist/*.whl
 
-        - task_key: "green_shelter_sites_historical"
-          existing_cluster_id: ${var.ahd_cluster_id}
-          depends_on: 
-            - task_key:  gold_shelter_sites_historical
-          python_wheel_task:
-            package_name: ${bundle.name}
-            entry_point: medallion_task
-            parameters: [ "--conf-file", "${var.param_files_dir}/shelter/report/green_shelter_sites_historical.yml", "--stage", "${bundle.target}"]
-          libraries:
-            - whl: /dist/*.whl
+        # - task_key: "green_shelter_sites_historical"
+        #   existing_cluster_id: ${var.ahd_cluster_id}
+        #   depends_on: 
+        #     - task_key:  gold_shelter_sites_historical
+        #   python_wheel_task:
+        #     package_name: ${bundle.name}
+        #     entry_point: medallion_task
+        #     parameters: [ "--conf-file", "${var.param_files_dir}/shelter/report/green_shelter_sites_historical.yml", "--stage", "${bundle.target}"]
+        #   libraries:
+        #     - whl: /dist/*.whl

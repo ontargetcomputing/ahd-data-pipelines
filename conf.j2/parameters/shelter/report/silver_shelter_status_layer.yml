@@ -76,11 +76,11 @@ source_datasources:
             ObjectId,
             geometry,
             ade_date_submitted
-        from {{ workflows['shelter_report'].catalog }}.bronze.join_layer_{{ env }};
+        from {{ workflows['shelter_report'].catalog }}.bronze.shelter_status_layer_{{ env }};
 
 destination_datasources:
   - type: databricks
-    table: {{ workflows['shelter_report'].catalog }}.silver.join_layer_{{ env }}
+    table: {{ workflows['shelter_report'].catalog }}.silver.shelter_status_layer_{{ env }}
     data_types:
     - column: GlobalID
       type: string
