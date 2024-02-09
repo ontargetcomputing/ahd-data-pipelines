@@ -41,8 +41,8 @@ source_datasources:
           submission_date,
           geometry
       from {{ workflows['shelter_report'].catalog }}.gold.shelter_sites_{{ env }}
-      where site_status != 'Closed'
-              or ( site_status = 'Closed' and DATEDIFF(current_timestamp(), close_date) < 1);
+      where datahub_site_id is not null and (site_status != 'Closed'
+              or ( site_status = 'Closed' and DATEDIFF(current_timestamp(), close_date) = 1));
   - type: databricks
     query: >
       select yesterday.site_type, 

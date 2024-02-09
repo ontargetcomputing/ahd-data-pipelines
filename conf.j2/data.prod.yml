@@ -43,7 +43,7 @@ workflows:
   shelter_report:
     template: conf/workflows/shelter/report.yml
     catalog: shelter
-    element_suffix: _1639591244980
+    element_suffix: _1636068339150
     bronze:
       shelter_status_layer: 
         source:
