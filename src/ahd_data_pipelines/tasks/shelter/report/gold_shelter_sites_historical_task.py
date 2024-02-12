@@ -5,6 +5,7 @@ from array import array
 import os
 import json
 from pyspark.sql.functions import lit
+from pyspark.sql.functions import to_date, col
 
 
 class ShelterSitesHistoricalGoldTask(MedallionETLTask):
@@ -21,7 +22,7 @@ class ShelterSitesHistoricalGoldTask(MedallionETLTask):
         ncs_delta = dataFrames[1].filter(dataFrames[1]['site_type'] == 'Non Congregate').first()['difference']
         dataFrames[0] = dataFrames[0].withColumn('cs_delta', lit(cs_delta))
         dataFrames[0] = dataFrames[0].withColumn('ncs_delta', lit(ncs_delta))
-
+        dataFrames[0] = dataFrames[0].withColumn("disaster_start_date", to_date(col("disaster_start_date"), "MM/dd/yyyy"))
         final_dataFrames.append(dataFrames[0])
         return final_dataFrames
 
