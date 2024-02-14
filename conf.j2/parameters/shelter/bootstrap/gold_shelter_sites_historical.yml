@@ -4,7 +4,7 @@ source_datasources:
 destination_datasources:
   - type: databricks
     table: {{ workflows['shelter_bootstrap'].catalog }}.gold.shelter_sites_historical_{{ env }}
-    method: append
+    method: overwrite
     data_types:
     - column: OBJECTID
       type: string
