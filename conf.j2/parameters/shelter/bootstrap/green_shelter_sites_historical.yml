@@ -1,48 +1,49 @@
 source_datasources:
   - type: databricks
-    table: {{ workflows['shelter_bootstrap'].catalog }}.silver.single_shelter_datamodel_hfl_{{ env }}
+    table: {{ workflows['shelter_bootstrap'].catalog }}.gold.shelter_sites_historical_{{ env }}
 destination_datasources:
   - type: databricks
-    table: {{ workflows['shelter_bootstrap'].catalog }}.gold.single_shelter_datamodel_hfl_{{ env }}
+    table: {{ workflows['shelter_bootstrap'].catalog }}.green.shelter_sites_historical_{{ env }}
+    method: append
     data_types:
-    - column: datahub_site_id
+    - column: OBJECTID
+      type: string
+    - column: GlobalID
       type: int
-    - column: name
+    - column: datasource
+      type: string
+    - column: agency_type
       type: string
     - column: address
-      type: string
-    - column: county_fips
-      type: string
-    - column: county
       type: string
     - column: city
       type: string
     - column: state
       type: string
     - column: zipcode
+      type: int
+    - column: county
       type: string
-    - column: oes_region
+    - column: county_fips
+      type: int
+    - column: ada_accessible_site
       type: string
     - column: backup_generator
       type: string
-    - column: ada_accessible_site
+    - column: site_type
       type: string
-    - column: datasource
+    - column: site_status
       type: string
     - column: dr_name
       type: string
     - column: disaster_type
       type: string
     - column: disaster_start_date
-      type: string
+      type: date
     - column: overall_capacity
-      type: double
+      type: int
     - column: overall_capacity_delta
-      type: double
-    - column: agency_type
-      type: string
-    - column: site_status
-      type: string
+      type: int
     - column: shift_a_poc_name
       type: string
     - column: shift_a_poc_number
@@ -57,28 +58,37 @@ destination_datasources:
       type: date
     - column: closure_reason
       type: string
-    - column: estimated_census_outside
-      type: double
-    - column: est_census_outside_delta
-      type: double
-    - column: rooms_occupied
-      type: string
-    - column: rooms_occupied_delta
-      type: double
     - column: census
-      type: double
+      type: int
     - column: census_delta
-      type: double
-    - column: report_date
+      type: int
+    - column: estimated_census_outside
+      type: string
+    - column: est_census_outside_delta
+      type: string
+    - column: rooms_occupied
+      type: int
+    - column: rooms_occupied_delta
+      type: int
+    - column: count_date
       type: date
     - column: completed_by
       type: string
     - column: previous_day_status
       type: string
+    - column: datahub_site_id
+      type: string
+    - column: name
+      type: string
+    - column: oes_region
+      type: string
+    - column: report_date
+      type: date
     - column: submission_date
       type: date
     - column: outdated_report
       type: string
-    - column: geometry
-      type: string
-
+    - column: cs_delta
+      type: int
+    - column: ncs_delta
+      type: int

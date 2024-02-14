@@ -1,7 +1,0 @@
-source_datasources:
-  - type: databricks
-    query: >
-      ALTER TABLE {{ workflows['shelter_bootstrap'].catalog }}.gold.single_shelter_datamodel_hfl_historical_{{ env }} 
-      SET TBLPROPERTIES ('comment' = 'This table gets pushed no where.  It is just copied over from the original postgresql; but no longer used in our pipeline.  This is for reference only.');
-destination_datasources:
-  - type: noop

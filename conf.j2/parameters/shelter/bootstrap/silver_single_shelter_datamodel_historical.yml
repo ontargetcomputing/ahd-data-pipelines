@@ -45,11 +45,11 @@ source_datasources:
         submission_date,
         outdated_report,
         geometry
-      from {{ workflows['shelter_bootstrap'].catalog }}.bronze.single_shelter_datamodel_hfl_historical_{{ env }};
+      from {{ workflows['shelter_bootstrap'].catalog }}.bronze.shelter_status_aggregate_{{ env }};
 
 destination_datasources:
   - type: databricks
-    table: {{ workflows['shelter_bootstrap'].catalog }}.silver.single_shelter_datamodel_hfl_historical_{{ env }}
+    table: {{ workflows['shelter_bootstrap'].catalog }}.silver.shelter_status_aggregate_{{ env }}
     data_types:
     - column: datahub_site_id
       type: int

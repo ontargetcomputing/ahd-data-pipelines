@@ -13,7 +13,7 @@ source_datasources:
 
 destination_datasources:
   - type: databricks
-    table: {{ workflows['shelter_bootstrap'].catalog }}.bronze.single_shelter_datamodel_hfl_historical_{{ env }}
+    table: {{ workflows['shelter_bootstrap'].catalog }}.bronze.shelter_status_aggregate_{{ env }}
     data_types:
     - column: datahub_site_id
       type: int
