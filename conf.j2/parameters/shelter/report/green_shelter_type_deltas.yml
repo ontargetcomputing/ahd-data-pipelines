@@ -13,21 +13,21 @@ source_datasources:
         site_status,
         report_date,
         count(1) as total_yesterday
-      from {{ workflows['shelter_report'].catalog }}.gold.shelter_sites_{{ env }}
+      from {{ workflows['shelter_report'].catalog }}.gold.shelter_status_aggregate_{{ env }}
       group by site_type, site_status, report_date
       having site_status = 'Open' and DATE(report_date) = CURRENT_DATE() - 1 and site_type like '%Congregate'
       UNION ALL
       SELECT 'Congregate' AS site_type, 'Open' as site_status, null as report_date, 0 as total_yesterday 
       WHERE NOT EXISTS (
         SELECT 1
-        from {{ workflows['shelter_report'].catalog }}.gold.shelter_sites_{{ env }}
+        from {{ workflows['shelter_report'].catalog }}.gold.shelter_status_aggregate_{{ env }}
         where site_status = 'Open' and DATE(report_date) = CURRENT_DATE() - 1 and site_type = 'Congregate'
       )
       UNION ALL
       SELECT 'Non Congregate' AS site_type, 'Open' as site_status, null as report_date, 0 as total_yesterday 
       WHERE NOT EXISTS (
         SELECT 1
-        from {{ workflows['shelter_report'].catalog }}.gold.shelter_sites_{{ env }}
+        from {{ workflows['shelter_report'].catalog }}.gold.shelter_status_aggregate_{{ env }}
         where site_status = 'Open' and DATE(report_date) = CURRENT_DATE() - 1 and site_type = 'Non Congregate'
       )) as yesterday
       JOIN
@@ -36,31 +36,29 @@ source_datasources:
         site_status,
         report_date,
         count(1) as total_today
-      from {{ workflows['shelter_report'].catalog }}.gold.shelter_sites_{{ env }}
+      from {{ workflows['shelter_report'].catalog }}.gold.shelter_status_aggregate_{{ env }}
       group by site_type, site_status, report_date
       having site_status = 'Open' and DATE(report_date) = CURRENT_DATE() and site_type like '%Congregate'
       UNION ALL
       SELECT 'Congregate' AS site_type, 'Open' as site_status, null as report_date, 0 as total_today
       WHERE NOT EXISTS (
         SELECT 1
-        from {{ workflows['shelter_report'].catalog }}.gold.shelter_sites_{{ env }}
+        from {{ workflows['shelter_report'].catalog }}.gold.shelter_status_aggregate_{{ env }}
         where site_status = 'Open' and DATE(report_date) = CURRENT_DATE() and site_type = 'Congregate'
       )
       UNION ALL
       SELECT 'Non Congregate' AS site_type, 'Open' as site_status, null as report_date, 0 as total_today
       WHERE NOT EXISTS (
         SELECT 1
-        from {{ workflows['shelter_report'].catalog }}.gold.shelter_sites_{{ env }}
+        from {{ workflows['shelter_report'].catalog }}.gold.shelter_status_aggregate_{{ env }}
         where site_status = 'Open' and DATE(report_date) = CURRENT_DATE() and site_type = 'Non Congregate'
       )) as today on today.site_type = yesterday.site_type
 
 destination_datasources:
   - type: databricks
-    table: {{ workflows['shelter_report'].catalog }}.gold.shelter_type_deltas_{{ env }}
+    table: {{ workflows['shelter_report'].catalog }}.green.shelter_type_deltas_{{ env }}
     method: append
     data_types:
-    - column: date_run_as_string
-      type: string
     - column: site_type
       type: string
     - column: total_today

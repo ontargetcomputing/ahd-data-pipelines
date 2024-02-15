@@ -1,0 +1,17 @@
+source_datasources:
+  - type: databricks
+    table: {{ workflows['shelter_report'].catalog }}.green.shelter_sites_historical_additions_{{ env }}
+destination_datasources:
+  {% if env == 'prod' -%}
+  - type: noop
+  {% else -%}
+  - type: agol
+    dataset_id: {{ workflows['shelter_report'].green.shelter_sites_historical.destination.dataset_id }}
+    layer: {{ workflows['shelter_report'].green.shelter_sites_historical.destination.layer }}
+    url: https://chhsagency.maps.arcgis.com/home/
+    object_id: OBJECTID
+    geometry:
+      type: POINT
+      column: geometry
+
+  {% endif %}
