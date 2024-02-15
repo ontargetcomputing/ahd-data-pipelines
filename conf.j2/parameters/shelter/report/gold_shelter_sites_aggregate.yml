@@ -1,0 +1,128 @@
+source_datasources:
+  - type: databricks
+    query: >
+        select datahub_site_id,
+                name,
+                address,
+                county_fips,
+                county,
+                city,
+                state,
+                zipcode,
+                oes_region,
+                backup_generator,
+                ada_accessible_site,
+                datasource,
+                dr_name,
+                disaster_type,
+                disaster_start_date,
+                overall_capacity,
+                overall_capacity_delta,
+                agency_type,
+                site_status,
+                site_type,
+                shift_a_poc_name,
+                shift_a_poc_number,
+                shift_b_poc_name,
+                shift_b_poc_number,
+                open_date,
+                close_date,
+                closure_reason,
+                estimated_census_outside,
+                est_census_outside_delta,
+                rooms_occupied,
+                rooms_occupied_delta,
+                census,
+                census_delta,
+                report_date,
+                completed_by,
+                previous_day_status,
+                submission_date,
+                outdated_report,
+                geometry
+        from {{ workflows['shelter_report'].catalog }}.gold.shelter_status_with_deltas_{{ env }}
+        where report_date not in (select distinct report_date from {{ workflows['shelter_report'].catalog }}.gold.shelter_status_aggregate_{{ env }})
+destination_datasources:
+  - type: databricks
+    table: {{ workflows['shelter_report'].catalog }}.gold.shelter_status_aggregate_{{ env }}
+    method: append
+    data_types:
+    - column: datahub_site_id
+      type: long
+    - column: name
+      type: string
+    - column: address
+      type: string
+    - column: county_fips
+      type: string
+    - column: county
+      type: string
+    - column: city
+      type: string
+    - column: state
+      type: string
+    - column: zipcode
+      type: string
+    - column: oes_region
+      type: string
+    - column: backup_generator
+      type: string
+    - column: ada_accessible_site
+      type: string
+    - column: datasource
+      type: string
+    - column: dr_name
+      type: string
+    - column: disaster_type
+      type: string
+    - column: disaster_start_date
+      type: string
+    - column: overall_capacity
+      type: double
+    - column: overall_capacity_delta
+      type: double
+    - column: agency_type
+      type: string
+    - column: site_status
+      type: string
+    - column: site_type
+      type: string
+    - column: shift_a_poc_name
+      type: string
+    - column: shift_a_poc_number
+      type: string
+    - column: shift_b_poc_name
+      type: string
+    - column: shift_b_poc_number
+      type: string
+    - column: open_date
+      type: date
+    - column: close_date
+      type: date
+    - column: closure_reason
+      type: string
+    - column: estimated_census_outside
+      type: double
+    - column: est_census_outside_delta
+      type: double
+    - column: rooms_occupied
+      type: string
+    - column: rooms_occupied_delta
+      type: double
+    - column: census
+      type: double
+    - column: census_delta
+      type: double
+    - column: completed_by
+      type: string
+    - column: site_status
+      type: string
+    - column: previous_day_status
+      type: string
+    - column: submission_date
+      type: date
+    - column: outdated_report
+      type: string
+    - column: geometry
+      type: string
+
