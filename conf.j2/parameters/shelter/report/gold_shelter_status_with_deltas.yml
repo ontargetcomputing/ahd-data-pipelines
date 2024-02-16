@@ -47,14 +47,14 @@ source_datasources:
             CASE
                 WHEN ssdm.estimated_census_outside is null THEN jl.estimated_census_outside
                 WHEN ssdm.estimated_census_outside <= 0 THEN jl.estimated_census_outside  
-                WHEN jl.estimated_census_outside is null THEN 0.0 
+                WHEN jl.estimated_census_outside is null THEN 0
                 ELSE jl.estimated_census_outside - ssdm.estimated_census_outside
             END as est_census_outside_delta,
             jl.rooms_occupied,
             CASE
                 WHEN ssdm.rooms_occupied is null THEN jl.rooms_occupied
                 WHEN ssdm.rooms_occupied <= 0 THEN jl.rooms_occupied  
-                WHEN jl.rooms_occupied is null THEN 0.0 
+                WHEN jl.rooms_occupied is null THEN 0
                 ELSE jl.rooms_occupied - ssdm.rooms_occupied
             END as rooms_occupied_delta,
             jl.census,
@@ -63,14 +63,14 @@ source_datasources:
                   CASE
                     WHEN ssdm.census is null THEN jl.census
                     WHEN ssdm.census <= 0 THEN jl.census  
-                    WHEN jl.census is null THEN 0.0 
+                    WHEN jl.census is null THEN 0
                     ELSE jl.census - ssdm.census
                   END
                 ELSE
                   CASE
                     WHEN ssdm.census is null THEN jl.midnight_count
                     WHEN ssdm.census <= 0 THEN jl.midnight_count  
-                    WHEN jl.midnight_count is null THEN 0.0 
+                    WHEN jl.midnight_count is null THEN 0 
                     ELSE jl.midnight_count - ssdm.census
                   END
             END as census_delta,   
@@ -149,17 +149,17 @@ destination_datasources:
     - column: closure_reason
       type: string
     - column: estimated_census_outside
-      type: double
+      type: int
     - column: est_census_outside_delta
-      type: double
+      type: int
     - column: rooms_occupied
-      type: string
+      type: int
     - column: rooms_occupied_delta
-      type: double
+      type: int
     - column: census
-      type: double
+      type: int
     - column: census_delta
-      type: double
+      type: int
     - column: report_date
       type: date
     - column: completed_by

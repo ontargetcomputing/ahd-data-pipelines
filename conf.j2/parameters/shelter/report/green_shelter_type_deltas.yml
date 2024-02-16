@@ -57,7 +57,7 @@ source_datasources:
 destination_datasources:
   - type: databricks
     table: {{ workflows['shelter_report'].catalog }}.green.shelter_type_deltas_{{ env }}
-    method: append
+    method: overwrite
     data_types:
     - column: site_type
       type: string

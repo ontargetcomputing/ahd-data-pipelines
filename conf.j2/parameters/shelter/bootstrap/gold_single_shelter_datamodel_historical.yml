@@ -62,7 +62,7 @@ destination_datasources:
     - column: est_census_outside_delta
       type: int
     - column: rooms_occupied
-      type: string
+      type: int
     - column: rooms_occupied_delta
       type: int
     - column: census

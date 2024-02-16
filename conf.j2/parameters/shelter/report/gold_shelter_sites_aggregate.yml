@@ -78,9 +78,9 @@ destination_datasources:
     - column: disaster_start_date
       type: string
     - column: overall_capacity
-      type: double
+      type: int
     - column: overall_capacity_delta
-      type: double
+      type: int
     - column: agency_type
       type: string
     - column: site_status
@@ -102,17 +102,17 @@ destination_datasources:
     - column: closure_reason
       type: string
     - column: estimated_census_outside
-      type: double
+      type: int
     - column: est_census_outside_delta
-      type: double
+      type: int
     - column: rooms_occupied
-      type: string
+      type: int
     - column: rooms_occupied_delta
-      type: double
+      type: int
     - column: census
-      type: double
+      type: int
     - column: census_delta
-      type: double
+      type: int
     - column: completed_by
       type: string
     - column: site_status
