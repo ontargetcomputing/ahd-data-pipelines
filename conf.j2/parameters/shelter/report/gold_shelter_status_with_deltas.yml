@@ -24,7 +24,7 @@ source_datasources:
             CASE
                 WHEN ssdm.overall_capacity is null THEN jl.overall_capacity
                 WHEN ssdm.overall_capacity <= 0 THEN jl.overall_capacity  
-                WHEN jl.overall_capacity is null THEN 0.0 
+                WHEN jl.overall_capacity is null THEN 0 
                 ELSE jl.overall_capacity - ssdm.overall_capacity
             END as overall_capacity_delta,
             jl.agency_type,
@@ -127,9 +127,9 @@ destination_datasources:
     - column: disaster_start_date
       type: string
     - column: overall_capacity
-      type: double
+      type: int
     - column: overall_capacity_delta
-      type: double
+      type: int
     - column: agency_type
       type: string
     - column: site_status

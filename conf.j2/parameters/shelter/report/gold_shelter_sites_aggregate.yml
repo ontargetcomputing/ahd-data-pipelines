@@ -48,7 +48,7 @@ destination_datasources:
     method: append
     data_types:
     - column: datahub_site_id
-      type: long
+      type: int
     - column: name
       type: string
     - column: address
