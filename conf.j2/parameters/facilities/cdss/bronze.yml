@@ -1,0 +1,52 @@
+bronze: true
+source_datasources:
+  - type: agol
+    dataset_id: {{ workflows['facilities_cdss'].bronze.source.dataset_id }}
+    layer: {{ workflows['facilities_cdss'].bronze.source.layer }}
+    url: https://chhsagency.maps.arcgis.com/home/
+destination_datasources:
+  - type: databricks
+    table: cdss_general.bronze.facilties_{{ env }}
+    data_types:
+    - column: FAC_LATITUDE
+      type: double
+    - column: FAC_LONGITUDE
+      type: double
+    - column: FAC_NBR
+      type: string
+    - column: TYPE
+      type: string
+    - column: PROGRAM_TYPE
+      type: string
+    - column: STATUS
+      type: string
+    - column: CLIENT_SERVED
+      type: string
+    - column: CAPACITY
+      type: string
+    - column: NAME
+      type: string
+    - column: RES_STREET_ADDR
+      type: string
+    - column: RES_CITY
+      type: string
+    - column: RES_STATE
+      type: string
+    - column: RES_ZIP_CODE
+      type: string
+    - column: FAC_PHONE_NBR
+      type: double
+    - column: FAC_EMAIL
+      type: string
+    - column: FAC_CO_NBR
+      type: int
+    - column: COUNTY
+      type: string
+    - column: FAC_DO
+      type: int
+    - column: FAC_DO_DESC
+      type: string
+    - column: FAC_TYPE_DESC
+      type: string
+    - column: ObjectId
+      type: string
