@@ -1,4 +1,5 @@
 env: prod
+notification_email: agencydatahub@chhs.ca.gov
 workflows:
   ops:
     template: conf/workflows/ops/heartbeat.yml
