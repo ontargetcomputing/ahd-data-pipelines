@@ -1,7 +1,7 @@
 bronze: true
 source_datasources:
   - type: http
-    http_processor: cdii_data_pipelines.integrations.http_processors.geopandas_read_file_http_processor.GeoPandasReadFileHTTPProcessor
+    http_processor: ahd_data_pipelines.integrations.http_processors.geopandas_read_file_http_processor.GeoPandasReadFileHTTPProcessor
     endpoint: http://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&producttype=shakemap
 destination_datasources:
   - type: databricks
