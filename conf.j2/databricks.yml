@@ -15,6 +15,10 @@ variables:
     description: The user to run jobs as
     default:
       Richard.Bach3@chhs.ca.gov
+  notification_email:
+    description: Email address to send notification of job runs to
+    default: 
+      Richard.Bach3@chhs.ca.gov
   param_files_dir:
     description: The location of parameters files
     default: /Workspace/${workspace.file_path}/conf/parameters
@@ -43,6 +47,7 @@ targets:
     mode: production
     variables:
       ahd_cluster_id: 0122-214140-932cnpz8
+      notification_email: agencydatahub@chhs.ca.gov
     workspace:
       host: https://calhhs-ahd-live.cloud.databricks.com/
       # We always use /Users/Richard.Bach3@chhs.ca.gov for all resources to make sure we only have a single copy.
