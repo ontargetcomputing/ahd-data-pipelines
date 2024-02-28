@@ -1,0 +1,80 @@
+spatial_joins: 
+  - left_index: 0
+    right_index: 1
+    how: inner
+    predicate: intersects 
+    drop_columns:
+      - index
+      - index_right
+      - NAME
+  - left_index: 0
+    right_index: 2
+    how: left
+    predicate: intersects 
+    drop_columns:
+      - index_right
+source_datasources:
+  - type: databricks
+    table: ahd_earthquake.silver.epicenter_{{ env }}
+  - type: databricks
+    table: datahub_common.gold.california_shape
+  - type: databricks
+    table: datahub_common.gold.ca_county_oes_shape
+destination_datasources:
+  - type: databricks
+    table: ahd_earthquake.gold.epicenter_{{ env }}
+    method: overwrite
+    convert_zpoint: geometry
+    data_types:
+    - column: mag
+      type: double
+    - column: place
+      type: string
+    - column: time
+      type: timestamp 
+    - column: updated
+      type: timestamp
+    - column: tz
+      type: double
+    - column: url
+      type: string
+    - column: detail
+      type: string
+    - column: felt
+      type: double
+    - column: cdi
+      type: double
+    - column: mmi
+      type: double
+    - column: alert
+      type: string
+    - column: status
+      type: string 
+    - column: tsunami
+      type: long
+    - column: sig
+      type: long
+    - column: net
+      type: string
+    - column: code
+      type: string
+    - column: ids
+      type: string
+    - column: sources
+      type: string
+    - column: types
+      type: string
+    - column: nst
+      type: double
+    - column: dmin
+      type: double
+    - column: rms
+      type: double
+    - column: gap
+      type: double
+    - column: magType
+      type: string
+    - column: type
+      type: string
+    - column: title
+      type: string
