@@ -1,0 +1,61 @@
+      - name: "Wildfire ( {{ env }} )"
+        <<: *email_notifications_props
+        schedule:
+          quartz_cron_expression: "18 0/15 * * * ?"
+          timezone_id: "America/Los_Angeles"
+          pause_status: "{{ paused_status | default('PAUSED', true)}}"
+        tasks:
+          - task_key: "bronze_points"
+            <<: *cluster
+            spark_python_task:
+              python_file: "file://cdii_data_pipelines/tasks/medallion_etl_task.py"
+              parameters: [ "--conf-file", "file:fuse://conf/tasks/hazard/wildfire/bronze_points_task.yml", "--stage", "{{ env.upper() }}"  ]
+          - task_key: "bronze_perims"
+            <<: *cluster
+            spark_python_task:
+              python_file: "file://cdii_data_pipelines/tasks/medallion_etl_task.py"
+              parameters: [ "--conf-file", "file:fuse://conf/tasks/hazard/wildfire/bronze_perims_task.yml", "--stage", "{{ env.upper() }}"  ]
+          - task_key: "silver_points"
+            <<: *cluster
+            depends_on: 
+              - task_key:  bronze_points
+            spark_python_task:
+              python_file: "file://cdii_data_pipelines/tasks/hazard/wildfire/silver_task.py"
+              parameters: [ "--conf-file", "file:fuse://conf/tasks/hazard/wildfire/silver_points_task.yml", "--stage", "{{ env.upper() }}"  ]
+          - task_key: "silver_perims"
+            <<: *cluster
+            depends_on: 
+              - task_key:  bronze_perims
+            spark_python_task:
+              python_file: "file://cdii_data_pipelines/tasks/hazard/wildfire/silver_task.py"
+              parameters: [ "--conf-file", "file:fuse://conf/tasks/hazard/wildfire/silver_perims_task.yml", "--stage", "{{ env.upper() }}"  ]
+          - task_key: "gold_points"
+            <<: *cluster
+            depends_on: 
+              - task_key:  silver_points
+              - task_key:  gold_perims
+            spark_python_task:
+              python_file: "file://cdii_data_pipelines/tasks/medallion_etl_task.py"
+              parameters: [ "--conf-file", "file:fuse://conf/tasks/hazard/wildfire/gold_points_task.yml", "--stage", "{{ env.upper() }}"  ]
+          - task_key: "gold_perims"
+            <<: *cluster
+            depends_on: 
+              - task_key:  silver_points
+              - task_key:  silver_perims
+            spark_python_task:
+              python_file: "file://cdii_data_pipelines/tasks/hazard/wildfire/gold_task.py"
+              parameters: [ "--conf-file", "file:fuse://conf/tasks/hazard/wildfire/gold_perims_task.yml", "--stage", "{{ env.upper() }}"  ]
+          - task_key: "green_points"
+            <<: *cluster
+            depends_on: 
+              - task_key:  gold_points
+            spark_python_task:
+              python_file: "file://cdii_data_pipelines/tasks/medallion_etl_task.py"
+              parameters: [ "--conf-file", "file:fuse://conf/tasks/hazard/wildfire/green_points_task.yml", "--stage", "{{ env.upper() }}" ]
+          - task_key: "green_perims"
+            <<: *cluster
+            depends_on: 
+              - task_key:  gold_perims
+            spark_python_task:
+              python_file: "file://cdii_data_pipelines/tasks/medallion_etl_task.py"
+              parameters: [ "--conf-file", "file:fuse://conf/tasks/hazard/wildfire/green_perims_task.yml", "--stage", "{{ env.upper() }}" ]

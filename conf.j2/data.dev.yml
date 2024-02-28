@@ -72,3 +72,23 @@ workflows:
         dataset_id: 1d23a053ed204d9c8e35f0683539a375
         layer: 0
 
+  hazard_wildfire:
+    template: conf/workflows/hazard/wildfire.yml
+    bronze: 
+      points:
+        source:
+          dataset_id: d957997ccee7408287a963600a77f61f
+          layer: 0
+      perimeters:
+        source:
+          dataset_id: d957997ccee7408287a963600a77f61f
+          layer: 1
+    green:
+      points:
+        destination:
+          dataset_id: 98cc4a7cc9dc41a4ab868c7e093b6671
+          layer: 0
+      perimeters:
+        destination:
+          dataset_id: 952d9e8977b54cdc993e6332ef0f061f
+          layer: 0
