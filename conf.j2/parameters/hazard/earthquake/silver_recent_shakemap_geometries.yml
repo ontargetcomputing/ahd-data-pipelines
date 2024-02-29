@@ -1,0 +1,28 @@
+source_datasources:
+  - type: databricks
+    table: ahd_earthquake.bronze.earthquake_shakemap_geometries_{{ env }}
+destination_datasources:
+  - type: databricks
+    table: ahd_earthquake.silver.earthquake_shakemap_geometries_{{ env }}
+    method: overwrite
+    data_types:
+    - column: OBJECTID
+      type: long
+    - column: id
+      type: string
+    - column: grid_code
+      type: int
+    - column: grid_value
+      type: double
+    - column: mag
+      type: double
+    - column: eventTime
+      type: date
+    - column: updated
+      type: date
+    - column: url
+      type: string
+    - column: Shape__Area
+      type: double
+    - column: Shape__Length
+      type: double

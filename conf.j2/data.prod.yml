@@ -1,7 +1,26 @@
 env: prod
+notification_email: agencydatahub@chhs.ca.gov
 workflows:
   ops:
     template: conf/workflows/ops/heartbeat.yml
+
+  hazard_earthquake:
+    template: conf/workflows/hazard/earthquake.yml
+    bronze: 
+      source:
+        dataset_id: df64c38688f9420690105553629c5247
+        layer: 0
+    green: 
+      days_offset: 0
+      epicenter:
+        destination:
+          dataset_id: 10d19029438640e48f794c5c64153932
+          layer: 0
+      shakemap:
+        destination:
+          dataset_id: 5f54af00cf3c41acae6e0d67306d3fb4
+          layer: 0
+
 
   shelter_bootstrap:
     template: conf/workflows/shelter/bootstrap.yml
