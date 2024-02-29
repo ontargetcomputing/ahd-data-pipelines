@@ -1,0 +1,55 @@
+resources:
+  jobs:
+    cdss_facilities:
+      name: cdss_facilities
+
+      email_notifications:
+        on_failure:
+          - ${var.notification_email}
+
+      schedule:
+        quartz_cron_expression: "33 0 0 ? * Mon"
+        timezone_id: "America/Los_Angeles"
+
+      tasks:
+        - task_key: "bronze_facilities"
+          existing_cluster_id: ${var.ahd_cluster_id}
+          python_wheel_task:
+            package_name: ${bundle.name}
+            entry_point: medallion_task
+            parameters: [ "--conf-file", "${var.param_files_dir}/facilities/cdss/bronze.yml", "--stage", "${bundle.target}"]
+          libraries:
+            - whl: /dist/*.whl
+
+        # - task_key: "silver_facilities"
+        #   depends_on: 
+        #     - task_key:  bronze_facilities
+        #   existing_cluster_id: ${var.ahd_cluster_id}
+        #   python_wheel_task:
+        #     package_name: ${bundle.name}
+        #     entry_point: medallion_task
+        #     parameters: [ "--conf-file", "${var.param_files_dir}/facilities/cdss/silver.yml", "--stage", "${bundle.target}"]
+        #   libraries:
+        #     - whl: /dist/*.whl
+
+        # - task_key: "gold_facilities"
+        #   depends_on: 
+        #     - task_key:  silver_facilities
+        #   existing_cluster_id: ${var.ahd_cluster_id}
+        #   python_wheel_task:
+        #     package_name: ${bundle.name}
+        #     entry_point: medallion_task
+        #     parameters: [ "--conf-file", "${var.param_files_dir}/facilities/cdss/gold.yml", "--stage", "${bundle.target}"]
+        #   libraries:
+        #     - whl: /dist/*.whl
+
+        # - task_key: "green_facilities"
+        #   depends_on: 
+        #     - task_key:  gold_facilities
+        #   existing_cluster_id: ${var.ahd_cluster_id}
+        #   python_wheel_task:
+        #     package_name: ${bundle.name}
+        #     entry_point: medallion_task
+        #     parameters: [ "--conf-file", "${var.param_files_dir}/facilities/cdss/green.yml", "--stage", "${bundle.target}"]
+        #   libraries:
+        #     - whl: /dist/*.whl

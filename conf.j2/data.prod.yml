@@ -69,7 +69,7 @@ workflows:
           dataset_id: 91074516e20743b2a1d5bd3159e1efe7 
           layer: 0
 
-      shelter_sites_historical_layer:
+      shelter_sites_historical:
         source:
           dataset_id: 24f1f876e51a44cfab413049da2b1314 
           layer: 0
@@ -84,3 +84,10 @@ workflows:
         destination:
           dataset_id: 2160847d94cc4a16b562461865f3eedd
           layer: 0
+
+  facilities_cdss:
+    template: conf/workflows/facilities/cdss.yml
+    bronze:
+      source:
+        dataset_id: 1d23a053ed204d9c8e35f0683539a375
+        layer: 0

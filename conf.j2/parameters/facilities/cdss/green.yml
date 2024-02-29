@@ -1,0 +1,7 @@
+source_datasources:
+  - type: databricks
+    table: cdss_general.gold.facilties_{{ env }}
+
+destination_datasources:
+  - type: databricks
+    table: cdss_general.green.facilties_{{ env }}
