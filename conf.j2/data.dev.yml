@@ -92,3 +92,12 @@ workflows:
         destination:
           dataset_id: 952d9e8977b54cdc993e6332ef0f061f
           layer: 0
+
+  hazard_emsa:
+    template: conf/workflows/hazard/emsa.yml
+    bronze:
+      source:
+        bucket_name: chhs-datahub-emsa
+        agency: EMSA
+        aws_region: us-west-1
+        file_name: upload/EMSA_Deployments_Mock_Data.xlsx
