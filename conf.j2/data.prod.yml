@@ -112,3 +112,10 @@ workflows:
         destination:
           dataset_id : 0cb0e757a6734a6d82bd940c6df89daf
           table_index: 0
+
+  facilities_cdph:
+    template: conf/workflows/facilities/cdph.yml
+    bronze:
+      source:
+        dataset_id: 1a707547eebb47358112a473c1048677
+        layer: 0

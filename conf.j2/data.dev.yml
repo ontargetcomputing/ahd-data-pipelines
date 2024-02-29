@@ -101,3 +101,10 @@ workflows:
         agency: EMSA
         aws_region: us-west-1
         file_name: upload/EMSA_Deployments_Mock_Data.xlsx
+
+  facilities_cdph:
+    template: conf/workflows/facilities/cdph.yml
+    bronze:
+      source:
+        dataset_id: 1a707547eebb47358112a473c1048677
+        layer: 0
