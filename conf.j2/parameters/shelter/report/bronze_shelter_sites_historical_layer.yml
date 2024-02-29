@@ -1,8 +1,8 @@
 bronze: true
 source_datasources:
   - type: agol
-    dataset_id: {{ workflows['shelter_report'].bronze.shelter_sites_historical_layer.source.dataset_id }}
-    layer: {{ workflows['shelter_report'].bronze.shelter_sites_historical_layer.source.layer }}
+    dataset_id: {{ workflows['shelter_report'].bronze.shelter_sites_historical.source.dataset_id }}
+    layer: {{ workflows['shelter_report'].bronze.shelter_sites_historical.source.layer }}
     url: https://chhsagency.maps.arcgis.com/home/
 
 destination_datasources:
