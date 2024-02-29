@@ -54,13 +54,19 @@ workflows:
         source:
           dataset_id: fd06ecb9a65b4eab86c9863f21dbacef 
           layer: 0
+
+      shelter_sites_historical: 
+        source:
+          dataset_id: 8beb2c8b68054182b3972fb076aee25c 
+          layer: 0
+
     green:
       shelter_sites_historical:
         destination:
           dataset_id: 8beb2c8b68054182b3972fb076aee25c
           layer: 0
 
-      shelter_sites:
+      shelter_sites_layer:
         destination:
           dataset_id: a01b16d709794683beb4d813b6b0304d
           layer: 0
