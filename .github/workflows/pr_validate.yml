@@ -12,22 +12,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python
+      - name: 1. Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
-      - name: Create Databricks Config File
+      - name: 2. Create Databricks Config File
         env:
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_URL_DEV }}
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN_DEV }}
-          DATABRICKS_USERNAME: ${{ secrets.DATABRICKS_USERNAME }}
         run: |
           echo "[dev]" > /home/runner/.databrickscfg
           echo "host = $DATABRICKS_HOST" >> /home/runner/.databrickscfg
           echo "token = $DATABRICKS_TOKEN" >> /home/runner/.databrickscfg
 
-      - name: Display Databricks Config File
+      - name: 3. Display Databricks Config File
         run: cat /home/runner/.databrickscfg
 
       # - name: Install python dependencies
@@ -49,17 +48,17 @@ jobs:
       #   run: |
       #     echo "Install dependencies"
       #     poetry install
-      - name: Install databricks
+      - name: 4. Install databricks
         run: |
           echo "Install databricks"
           curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
 
-      - name: Install modules
+      - name: 5. Install modules
         run: |
           pip install Jinja2
           pip install pyyaml
 
-      - name: Running Validate on dev
+      - name: 6. Running Validate on dev
         run: |
           echo "Validate the dev configuration"
           make validate ENV=dev
