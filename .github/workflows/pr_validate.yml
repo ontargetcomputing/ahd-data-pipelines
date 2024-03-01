@@ -64,12 +64,12 @@ jobs:
           echo "Validate the dev configuration"
           make validate ENV=dev
 
-      - name: Running Validate on dev
-        run: |
-          pwd
+      # - name: Running Validate on dev
+      #   run: |
+      #     pwd
 
-      - name: Running Validate on dev
-        run: |
-          ls -al /home/runner 
+      # - name: Running Validate on dev
+      #   run: |
+      #     ls -al /home/runner 
 
 
