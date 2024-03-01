@@ -54,6 +54,9 @@ jobs:
           echo "Install databricks"
           curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
 
+      - name: Install Jinja2
+        run: pip install Jinja2
+
       - name: Running Validate on dev
         run: |
           echo "Validate the dev configuration"
@@ -62,7 +65,7 @@ jobs:
       - name: Running Validate on dev
         run: |
           pwd
-          
+
       - name: Running Validate on dev
         run: |
           ls -al /home/runner 
