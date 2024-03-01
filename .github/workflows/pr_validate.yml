@@ -34,13 +34,13 @@ jobs:
       #   run: |
       #     echo "Install dependencies"
       #     poetry install
-      # - name: Install databricks
-      #   run: |
-      #     echo "Install databricks"
-      #     curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
+      - name: Install databricks
+        run: |
+          echo "Install databricks"
+          curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
       - name: Running Validate on dev
         run: |
           echo "Validate the dev configuration"
-          echo make validate ENV=dev
-          python bin/process_templates.py --env dev
+          make validate ENV=dev
+
 
