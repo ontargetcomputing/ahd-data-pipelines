@@ -23,7 +23,7 @@ jobs:
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN_DEV }}
           DATABRICKS_USERNAME: ${{ secrets.DATABRICKS_USERNAME }}
         run: |
-          echo "[databricks]" > /home/runner/.databrickscfg
+          echo "[dev]" > /home/runner/.databrickscfg
           echo "host = $DATABRICKS_HOST" >> /home/runner/.databrickscfg
           echo "token = $DATABRICKS_TOKEN" >> /home/runner/.databrickscfg
 
