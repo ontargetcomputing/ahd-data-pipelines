@@ -23,12 +23,15 @@ jobs:
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN_DEV }}
           DATABRICKS_USERNAME: ${{ secrets.DATABRICKS_USERNAME }}
         run: |
-          echo "[databricks]" > Databricks.cfg
+          echo "[databricks]" > .databricks.cfg
           echo "host = $DATABRICKS_HOST" >> Databricks.cfg
           echo "token = $DATABRICKS_TOKEN" >> Databricks.cfg
 
       - name: Display Databricks Config File
-        run: cat Databricks.cfg
+        run: |
+          pwd
+          cat .databricks.cfg
+
       # - name: Install python dependencies
       #   run: |
       #     # python -m pip install --upgrade pip
