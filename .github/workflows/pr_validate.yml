@@ -57,7 +57,7 @@ jobs:
       - name: Install modules
         run: |
           pip install Jinja2
-          pip install yaml
+          pip install pyyaml
 
       - name: Running Validate on dev
         run: |
