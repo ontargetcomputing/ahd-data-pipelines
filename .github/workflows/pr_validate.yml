@@ -55,7 +55,9 @@ jobs:
           curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
 
       - name: Install modules
-        run: pip install Jinja2, yaml
+        run: |
+          pip install Jinja2
+          pip install yaml
 
       - name: Running Validate on dev
         run: |
