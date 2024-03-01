@@ -48,6 +48,6 @@ jobs:
       - name: Running Validate on dev
         run: |
           touch /home/runner/.databrickscfg
-          ls -al /home/ruuner 
+          ls -al /home/runner 
 
 
