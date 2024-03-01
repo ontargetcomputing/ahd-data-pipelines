@@ -28,9 +28,7 @@ jobs:
           echo "token = $DATABRICKS_TOKEN" >> /home/runner/.databrickscfg
 
       - name: Display Databricks Config File
-        run: |
-          pwd
-          cat /home/runner/.databrickscfg
+        run: cat /home/runner/.databrickscfg
 
       # - name: Install python dependencies
       #   run: |
@@ -51,17 +49,20 @@ jobs:
       #   run: |
       #     echo "Install dependencies"
       #     poetry install
-      # - name: Install databricks
-      #   run: |
-      #     echo "Install databricks"
-      #     curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
-      # - name: Running Validate on dev
-      #   run: |
-      #     echo "Validate the dev configuration"
-      #     make validate ENV=dev
+      - name: Install databricks
+        run: |
+          echo "Install databricks"
+          curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
+
+      - name: Running Validate on dev
+        run: |
+          echo "Validate the dev configuration"
+          make validate ENV=dev
+
       - name: Running Validate on dev
         run: |
           pwd
+          
       - name: Running Validate on dev
         run: |
           ls -al /home/runner 
