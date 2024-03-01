@@ -14,5 +14,5 @@ jobs:
       - name: Running Validate on dev
         run: |
           echo "Validate the dev configuration"
-          echo "Hello world"
+          dfhjdfhdj
 
