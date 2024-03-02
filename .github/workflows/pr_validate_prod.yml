@@ -1,4 +1,4 @@
-name: Validate DEV deployment config
+name: Validate PROD deployment config
 
 on:
   pull_request:
@@ -19,10 +19,10 @@ jobs:
 
       - name: 2. Create Databricks Config File
         env:
-          DATABRICKS_HOST: ${{ secrets.DATABRICKS_URL_DEV }}
-          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN_DEV }}
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_URL_PROD }}
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN_PROD }}
         run: |
-          echo "[dev]" > /home/runner/.databrickscfg
+          echo "[prod]" > /home/runner/.databrickscfg
           echo "host = $DATABRICKS_HOST" >> /home/runner/.databrickscfg
           echo "token = $DATABRICKS_TOKEN" >> /home/runner/.databrickscfg
 
@@ -36,10 +36,7 @@ jobs:
           pip install Jinja2
           pip install pyyaml
 
-      - name: 5. Running Validate on dev
+      - name: 5. Running Validate on PROD
         run: |
-          echo "Validate the dev configuration"
-          make validate ENV=dev
-
-
-
+          echo "Validate the prod configuration"
+          make validate ENV=prod
