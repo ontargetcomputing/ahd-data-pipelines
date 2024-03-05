@@ -1,8 +1,7 @@
 import geopandas as gpd
 
 
-class GeoPandasWrapper():
-
+class GeoPandasWrapper:
     @staticmethod
     def sjoin(left, right, how, predicate) -> gpd.GeoDataFrame:
         return gpd.sjoin(left, right, how=how, predicate=predicate)

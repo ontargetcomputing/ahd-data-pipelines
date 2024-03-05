@@ -1,4 +1,4 @@
-name: Flake8 Lint
+name: Yaml Lint
 
 on:
   pull_request:
@@ -18,10 +18,10 @@ jobs:
           python-version: '3.10'
 
       - name: Install modules
-        run: pip install flake8
+        run: pip install yamllint
 
-      - name: Run Flake8
-        run: flake8 --ignore=E501
+      - name: Run yamllint
+        run: yamllint .
 
 
 
