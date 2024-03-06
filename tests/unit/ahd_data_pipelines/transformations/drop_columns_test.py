@@ -38,7 +38,7 @@ def test_execute_works_with_single():
     # setup
     params = {
       "drop_columns": [
-        "id"
+        "name"
       ]
     }
 
@@ -50,11 +50,14 @@ def test_execute_works_with_single():
     # Create a DataFrame from the data and schema
     df = spark.createDataFrame(data, schema)
 
+
     # execute
-    # transformed_df = DropColumns.execute(df, params, spark)
+    transformed_df = DropColumns.execute(df, params, spark)
 
     # #validate
-    # assert 3 == len(transformed_df.columns)
+    assert 1 == len(transformed_df.columns)
+    assert "name" not in transformed_df.columns
+    assert "age" in transformed_df.columns
 
 
 # def test_execute_with_multiple():
