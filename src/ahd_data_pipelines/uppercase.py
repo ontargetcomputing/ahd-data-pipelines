@@ -1,2 +1,5 @@
 def uppercase(str):
-  return str.upper()
+  if( str == 'jeff' ):
+    return str.upper()
+  else:
+    return str.upper()
