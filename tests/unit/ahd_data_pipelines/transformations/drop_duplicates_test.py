@@ -96,3 +96,24 @@ def test_three_rows_with_set_of_dupes():
     assert 2 == transformed_df.count()
 
 
+# test four rows, two set of duplicates
+def test_three_rows_with_set_of_dupes():
+    # setup
+    params = {
+      "drop_duplicates": []
+    }
+
+    data = [("John", 25), ("John", 25), ("Alice", 30), ("Alice", 30)]
+
+    # Define the schema for the DataFrame
+    schema = ["name", "age"]
+
+    # Create a DataFrame from the data and schema
+    df = spark.createDataFrame(data, schema)
+
+    # execute
+    transformed_df = DropDuplicates.execute(df, params, spark)
+
+    # #validate
+    assert 2 == len(transformed_df.columns)
+    assert 2 == transformed_df.count()
