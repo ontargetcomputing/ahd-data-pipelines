@@ -60,8 +60,50 @@ def test_execute_works_with_single():
     assert "age" in transformed_df.columns
 
 
-# def test_execute_with_multiple():
-#     assert True == False
+def test_execute_with_multiple():
+    # setup
+    params = {
+      "drop_columns": [
+        "name","age"
+      ]
+    }
 
-# def test_execute_works_with_nothing():
-#     assert True == False
+    data = [("John", 25, "M"), ("Alice", 30,"F"), ("Bob", 35,"M")]
+
+    # Define the schema for the DataFrame
+    schema = ["name", "age", "gender"]
+
+    # Create a DataFrame from the data and schema
+    df = spark.createDataFrame(data, schema)
+
+    # execute
+    transformed_df = DropColumns.execute(df, params, spark)
+
+    # #validate
+    assert 1 == len(transformed_df.columns)
+    assert "name" not in transformed_df.columns
+    assert "age" not in transformed_df.columns
+    assert "gender" in transformed_df.columns
+
+def test_execute_works_with_nothing():
+   # setup
+    params = {
+      "drop_columns": []
+    }
+
+    data = [("John", 25, "M"), ("Alice", 30,"F"), ("Bob", 35,"M")]
+
+    # Define the schema for the DataFrame
+    schema = ["name", "age", "gender"]
+
+    # Create a DataFrame from the data and schema
+    df = spark.createDataFrame(data, schema)
+
+    # execute
+    transformed_df = DropColumns.execute(df, params, spark)
+
+    # #validate
+    assert 3 == len(transformed_df.columns)
+    assert "name" in transformed_df.columns
+    assert "age" in transformed_df.columns
+    assert "gender" in transformed_df.columns
