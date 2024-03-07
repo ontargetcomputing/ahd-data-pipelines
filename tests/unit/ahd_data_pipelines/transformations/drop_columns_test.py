@@ -3,8 +3,7 @@ from pyspark.sql import SparkSession
 
 spark = SparkSession.builder.getOrCreate()
 
-
-# comment on this test so people understand what you are doing.
+# tests if 'drop_columns' is in params, should return true
 def test_to_perform_returns_true_appropriately():
     #setup
     params = {
@@ -19,7 +18,7 @@ def test_to_perform_returns_true_appropriately():
     #execute
     assert test_value == True
 
-
+# tests if 'drop_columns' is in params, should return false
 def test_to_perform_returns_false_appropriately():
     #setup
     params = {
@@ -34,6 +33,7 @@ def test_to_perform_returns_false_appropriately():
     # validate
     assert test_value == False
 
+# tests dropping a single column
 def test_execute_works_with_single():
     # setup
     params = {
@@ -59,7 +59,7 @@ def test_execute_works_with_single():
     assert "name" not in transformed_df.columns
     assert "age" in transformed_df.columns
 
-
+# tests dropping multiple columns
 def test_execute_with_multiple():
     # setup
     params = {
@@ -85,6 +85,7 @@ def test_execute_with_multiple():
     assert "age" not in transformed_df.columns
     assert "gender" in transformed_df.columns
 
+# tests if drop columns is in params but no columns specified
 def test_execute_works_with_nothing():
    # setup
     params = {
