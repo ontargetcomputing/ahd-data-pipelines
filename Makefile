@@ -17,3 +17,9 @@ deploy: validate
 
 venv:
 	poetry shell
+
+unit-test:
+	pytest
+
+unit-test-cov:
+	pytest --cov=src --cov-fail-under=14.60
