@@ -26,6 +26,7 @@ jobs:
 
       - name: Install modules
         run: pip install pytest
+        run: pip install pytest-cov
 
       - name: Run pytest coverage check
         run: pytest --cov=src --cov-fail-under=14.60
