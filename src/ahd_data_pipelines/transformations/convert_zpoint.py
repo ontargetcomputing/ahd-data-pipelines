@@ -14,9 +14,9 @@ class ConvertZPoint(Transformation):
         print(f'Converting ZPoint on {column}')
         geo_df['latitude'] = geo_df[column].y
         geo_df['longitude'] = geo_df[column].x
-        geo_df.drop(['geometry'], 1, inplace=True)
+        geo_df.drop(['geometry'], axis=1, inplace=True)
         geo_df['geometry'] = gpd.points_from_xy(geo_df.longitude, geo_df.latitude)
-        geo_df.drop(['longitude'], 1, inplace=True)
-        geo_df.drop(['latitude'], 1, inplace=True)
+        geo_df.drop(['longitude'], axis=1, inplace=True)
+        geo_df.drop(['latitude'], axis=1, inplace=True)
 
         return PandasHelper.geopandas_to_pysparksql(geo_df, spark=spark)
