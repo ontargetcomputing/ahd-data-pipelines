@@ -25,8 +25,9 @@ jobs:
           echo "       src/ahd_data_pipelines/tasks/esri/green_data_update_job.py" >> /home/runner/.coveragerc
 
       - name: Install modules
-        run: pip install pytest
-        run: pip install pytest-cov
+        run: |
+          pip install pytest
+          pip install pytest-cov
 
       - name: Run pytest coverage check
         run: pytest --cov=src --cov-fail-under=14.60
