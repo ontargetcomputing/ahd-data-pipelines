@@ -1,0 +1,34 @@
+name: pytest coverage test
+
+on:
+  pull_request:
+    branches:
+      - main
+    types: [opened, synchronize]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      
+      - name: 2. Create Coverage Config File
+        run: |
+          echo "[run]" > /home/runner/.coveragerc
+          echo "omit = src/ahd_data_pipelines/common/ArcGIS/OverwriteFS/OverwriteFS.py " >> /home/runner/.coveragerc
+          echo "       src/ahd_data_pipelines/tasks/esri/green_data_update.py" >> /home/runner/.coveragerc
+          echo "       src/ahd_data_pipelines/tasks/esri/green_data_update_job.py" >> /home/runner/.coveragerc
+
+      - name: Install modules
+        run: pip install pytest
+
+      - name: Run pytest coverage check
+        run: pytest --cov=src --cov-fail-under=14.60
+
+
+
