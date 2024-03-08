@@ -3,117 +3,72 @@ from pyspark.sql import SparkSession
 
 spark = SparkSession.builder.getOrCreate()
 
-# tests if 'drop_duplicates' is in params, should return true
 def test_to_perform_returns_true_appropriately():
-    #setup
     params = {
-      "drop_duplicates":[]
-    }
+        "type": "noop",
+        "drop_duplicates": True
+    }    
 
-    #execute
-    test_value = DropDuplicates.to_perform(params)
+    assert DropDuplicates.to_perform(params) == True
 
-    #execute
-    assert test_value == True
-
-# tests if 'drop_duplicates' is in params, should return false
-def test_to_perform_returns_false_appropriately():
-    #setup
+def test_to_perform_returns_false_appropriately_when_not_specified():
     params = {
-      "drop_columns":[]
-    }
+        "type": "noop"
+    }    
 
-    #execute
-    test_value = DropDuplicates.to_perform(params)
+    assert DropDuplicates.to_perform(params) == False
 
-    #execute
-    assert test_value == False
+def test_drops_dupes_when_needed():
+    data = [(1,"a","b","c"),
+            (1,"d","e", "f"),
+            (3,"g","h", "i")]
 
-# test one row, no duplicates
-def test_one_row_no_dupes():
-    # setup
+    df = spark.createDataFrame(data,["id","a","b", "IrwinId"])
+
     params = {
-      "drop_duplicates": []
-    }
+        "type": "noop",
+        "drop_duplicates": [
+          "id"
+        ]
+    }  
 
-    data = [("John", 25)]
+    transformed_df = DropDuplicates.execute(df, params)
 
-    # Define the schema for the DataFrame
-    schema = ["name", "age"]
+    assert transformed_df.count() is 2
 
-    # Create a DataFrame from the data and schema
-    df = spark.createDataFrame(data, schema)
+def test_drops_dupes_when_using_all():
+    data = [(1,"a","b","c"),
+            (1,"a","b", "c"),
+            (3,"g","h", "i")]
 
-    # execute
-    transformed_df = DropDuplicates.execute(df, params, spark)
+    df = spark.createDataFrame(data,["id","a","b", "IrwinId"])
 
-    # #validate
-    assert 2 == len(transformed_df.columns)
-    assert 1 == transformed_df.count()
-
-# test two rows, no duplicates
-def test_two_rows_no_dupes():
-    # setup
     params = {
-      "drop_duplicates": []
-    }
+        "type": "noop",
+        "drop_duplicates": []
+    }  
 
-    data = [("John", 25), ("Alice", 30)]
+    transformed_df = DropDuplicates.execute(df, params)
 
-    # Define the schema for the DataFrame
-    schema = ["name", "age"]
+    assert transformed_df.count() is 2
 
-    # Create a DataFrame from the data and schema
-    df = spark.createDataFrame(data, schema)
+def test_drops_dupes_when_using_three():
+    data = [(1,"a","b","b"),
+            (1,"a","b", "c"),
+            (3,"g","h", "i")]
 
-    # execute
-    transformed_df = DropDuplicates.execute(df, params, spark)
+    df = spark.createDataFrame(data,["id","a","b", "IrwinId"])
 
-    # #validate
-    assert 2 == len(transformed_df.columns)
-    assert 2 == transformed_df.count()
-
-# test three rows, a set of duplicates
-def test_three_rows_with_set_of_dupes():
-    # setup
     params = {
-      "drop_duplicates": []
-    }
+        "type": "noop",
+        "drop_duplicates": [
+          "id",
+          "a",
+          "b"
+        ]
+    }  
 
-    data = [("John", 25), ("Alice", 30), ("Alice", 30)]
+    transformed_df = DropDuplicates.execute(df, params)
 
-    # Define the schema for the DataFrame
-    schema = ["name", "age"]
+    assert transformed_df.count() is 2
 
-    # Create a DataFrame from the data and schema
-    df = spark.createDataFrame(data, schema)
-
-    # execute
-    transformed_df = DropDuplicates.execute(df, params, spark)
-
-    # #validate
-    assert 2 == len(transformed_df.columns)
-    assert 2 == transformed_df.count()
-
-
-# test four rows, two set of duplicates
-def test_three_rows_with_set_of_dupes():
-    # setup
-    params = {
-      "drop_duplicates": []
-    }
-
-    data = [("John", 25), ("John", 25), ("Alice", 30), ("Alice", 30)]
-
-    # Define the schema for the DataFrame
-    schema = ["name", "age"]
-
-    # Create a DataFrame from the data and schema
-    df = spark.createDataFrame(data, schema)
-
-    # execute
-    transformed_df = DropDuplicates.execute(df, params, spark)
-
-    # #validate
-    assert 2 == len(transformed_df.columns)
-    assert 2 == transformed_df.count()
