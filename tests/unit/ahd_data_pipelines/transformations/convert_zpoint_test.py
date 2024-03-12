@@ -1,4 +1,4 @@
-import unittest
+#import unittest
 import pandas as pd
 import geopandas as gpd
 from shapely.geometry import Point, Polygon
@@ -6,45 +6,58 @@ from pyspark.sql import SparkSession
 from pyspark.sql.types import StructType, StructField, IntegerType, StringType
 from ahd_data_pipelines.transformations.convert_zpoint import ConvertZPoint
 
-class TestConvertZPoint(unittest.TestCase):
+#class TestConvertZPoint(unittest.TestCase):
 
-    def test_convert_zpoint(self):
-        # Create a SparkSession
-        spark = SparkSession.builder \
-            .appName("ConvertZPointTest") \
-            .getOrCreate()
+# tests if 'convert_zpoint' is in params, should return True
+def test_to_perform_returns_false_appropriately():
+    #setup
+    params = {
+    "convert_zpoint": [
+        "geometry"
+    ]
+    }
 
-        # Create a sample GeoDataFrame
-        data = {'ID': [1, 2, 3],
-                'geometry': [Point(1, 2), Point(3, 4), Point(5, 6)]}
-        gdf = gpd.GeoDataFrame(data, crs='EPSG:4326')
+    #execute
+    test_value = ConvertZPoint.to_perform(params)
+    
+    # validate
+    assert test_value == True
 
-        # Convert geometry to WKT
-        gdf['geometry'] = gdf['geometry'].apply(lambda geom: geom.wkt)
+def test_convert_zpoint():
+    # Create a SparkSession
+    spark = SparkSession.builder \
+        .appName("ConvertZPointTest") \
+        .getOrCreate()
 
-        # Define schema for Spark DataFrame
-        schema = StructType([
-            StructField("ID", IntegerType(), True),
-            StructField("geometry", StringType(), True)
-        ])
+    # Create a sample GeoDataFrame
+    data = {'ID': [1, 2, 3],
+            'geometry': [Point(1, 2), Point(3, 4), Point(5, 6)]}
+    gdf = gpd.GeoDataFrame(data, crs='EPSG:4326')
 
-        # Create Spark DataFrame with schema
-        spark_df = spark.createDataFrame(gdf, schema=schema)
+    # Convert geometry to WKT
+    gdf['geometry'] = gdf['geometry'].apply(lambda geom: geom.wkt)
 
-        # Set up parameters
-        params = {'convert_zpoint': 'geometry'}
+    # Define schema for Spark DataFrame
+    schema = StructType([
+        StructField("ID", IntegerType(), True),
+        StructField("geometry", StringType(), True)
+    ])
 
-        # Perform conversion
-        converted_df = ConvertZPoint.execute(spark_df, params=params, spark=spark)
+    # Create Spark DataFrame with schema
+    spark_df = spark.createDataFrame(gdf, schema=schema)
 
-        # Check if the conversion was successful
-        self.assertTrue('latitude' not in converted_df.columns)
-        self.assertTrue('longitude' not in converted_df.columns)
-        self.assertTrue('geometry' in converted_df.columns)
-        self.assertEqual(converted_df.count(), 3)  # Make sure number of rows is preserved
+    # Set up parameters
+    params = {'convert_zpoint': 'geometry'}
 
-        # Stop SparkSession
-        spark.stop()
+    # Perform conversion
+    converted_df = ConvertZPoint.execute(spark_df, params=params, spark=spark)
 
-if __name__ == '__main__':
-    unittest.main()
+    # Check if the conversion was successful
+    assert ('latitude' not in converted_df.columns)
+    assert ('longitude' not in converted_df.columns)
+    assert ('geometry' in converted_df.columns)
+    assert converted_df.count() == 3  # Make sure number of rows is preserved
+
+    # Stop SparkSession
+    spark.stop()
+
