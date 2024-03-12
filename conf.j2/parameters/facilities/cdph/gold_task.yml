@@ -1,0 +1,76 @@
+source_datasources:
+  - type: databricks
+    table: cdph_facilities.silver.facilities_{{ env }}
+
+destination_datasources:
+  - type: databricks
+    table: cdph_facilities.gold.facilities_{{ env }}
+    data_types:
+    - column: FACID
+      type: string
+    - column: FACILITY_TYPE_DESCRIPTION
+      type: string
+    - column: COUNTY_NAME
+      type: string
+    - column: FACILITY_STATUS
+      type: string
+    - column: FAC_ADDRESS1
+      type: string
+    - column: FAC_ADDRESS2
+      type: string
+    - column: FAC_CITY
+      type: string
+    - column: FAC_ST
+      type: string
+    - column: FAC_ZIP5
+      type: string
+    - column: LICENSE_STATUS
+      type: string
+    - column: LICENSEE_TYPE
+      type: string
+    - column: FACNAME
+      type: string
+    - column: LICENSEE_FIRST_NAME
+      type: string
+    - column: LICENSEE_LAST_NAME
+      type: string
+    - column: LICENSEE_BUSINESS_NAME
+      type: string
+    - column: FAC_ST
+      type: string
+    - column: BED_COUNT
+      type: string
+    - column: FACILITY_TYPE
+      type: string
+    - column: PROVIDER_NUMBER
+      type: string
+    - column: CONTACT_PHONE_NUMBER
+      type: string
+    - column: FACILITY_LICENSE
+      type: string
+    - column: DISTRICT_NAME
+      type: string
+    - column: XCOORD
+      type: string
+    - column: YCOORD
+      type: string
+    - column: BED_TABLE_STYLED
+      type: string  
+    - column: SERVICES_LIST
+      type: string
+    - column: TRAUMA_CENTER
+      type: string
+    - column: PEDIATRIC_TRAUMA_CENTER
+      type: string
+    - column: HFCIS_LINK
+      type: string
+    - column: NHSN_ID
+      type: string
+    - column: DEPARTMENT
+      type: string
+    - column: LICENSING_ORG
+      type: string
+    - column: CERTIFICATION_STATUS
+      type: string
+    - column: OBJECTID
+      type: string

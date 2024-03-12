@@ -1,0 +1,117 @@
+spatial_joins: 
+  - left_index: 0
+    right_index: 1
+    how: inner
+    predicate: intersects 
+    drop_columns:
+      - index
+      - index_right
+      - NAME
+  - left_index: 0
+    right_index: 2
+    how: left
+    predicate: intersects 
+    drop_columns:
+      - index_right
+source_datasources:
+  - type: databricks
+    table: ahd_wildfires.bronze.california_fires_points_{{ env }}
+  - type: databricks
+    table: datahub_common.gold.california_shape
+  - type: databricks
+    table: datahub_common.gold.ca_county_oes_shape 
+destination_datasources:
+  - type: databricks
+    table: ahd_wildfires.silver.california_fires_points_{{ env }}
+    truncate_on_empty: true
+    drop_duplicates: []
+    drop_columns:
+      - OBJECTID
+    mutations:
+      - column: IrwinID
+        mutation: uppercase
+    rename_columns:
+      - IrwinID:IRWINID
+      - NAME:county
+      - caloes_region:oes_region
+    epoch_to_timestamp:
+      - ICS209ReportDateTime
+      - FireDiscoveryDateTime
+      - ControlDateTime
+      - ContainmentDateTime
+      - FireOutDateTime
+      - ModifiedOnDateTime
+    data_types:
+    - column: OBJECTID
+      type: string
+    - column: IncidentName
+      type: string
+    - column: IncidentTypeCategory
+      type: string
+    - column: UniqueFireIdentifier
+      type: string            
+    - column: DailyAcres
+      type: double    
+    - column: CalculatedAcres
+      type: double    
+    - column: PercentContained
+      type: double        
+    - column: ICS209ReportDateTime
+      type: long  
+    - column: FireDiscoveryDateTime
+      type: long  
+    - column: DiscoveryAcres
+      type: double  
+    - column: POOCounty
+      type: string  
+    - column: POOState
+      type: string  
+    - column: FireCause
+      type: string  
+    - column: FireCauseGeneral
+      type: string  
+    - column: GACC
+      type: string  
+    - column: TotalIncidentPersonnel
+      type: int  
+    - column: IncidentManagementOrganization
+      type: string  
+    - column: FireMgmtComplexity
+      type: string  
+    - column: ResidencesDestroyed
+      type: int  
+    - column: OtherStructuresDestroyed
+      type: int  
+    - column: Injuries
+      type: int  
+    - column: Fatalities
+      type: int  
+    - column: PredominantFuelGroup
+      type: string  
+    - column: PredominantFuelModel
+      type: string  
+    - column: PrimaryFuelModel
+      type: string  
+    - column: ContainmentDateTime
+      type: long  
+    - column: ControlDateTime
+      type: long  
+    - column: FinalAcres
+      type: double  
+    - column: IsValid
+      type: int  
+    - column: FireOutDateTime
+      type: long  
+    - column: ModifiedOnDateTime
+      type: long  
+    - column: IncidentTypeKind
+      type: string  
+    - column: IrwinID
+      type: string  
+    - column: GlobalID
+      type: string  
+    - column: ModifiedOnAge
+      type: int  
+    - column: FireDiscoveryAge
+      type: int  
+
