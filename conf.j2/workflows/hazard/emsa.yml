@@ -7,6 +7,10 @@ resources:
         on_failure:
           - ${var.notification_email}
 
+      schedule:
+        quartz_cron_expression: "37 0 0 * * ?"
+        timezone_id: "America/Los_Angeles"
+      
       tasks:
         - task_key: "bronze"
           existing_cluster_id: ${var.ahd_cluster_id}
