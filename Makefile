@@ -14,3 +14,6 @@ deploy: validate
 	cp .deployment_gitignore .gitignore
 	databricks bundle deploy -t ${ENV} --profile ${ENV}
 	mv .gitignore.orig .gitignore
+
+activate-rdb: 
+	source ~/.local/share/virtualenvs/ahd-data-pipelines/bin/activate 

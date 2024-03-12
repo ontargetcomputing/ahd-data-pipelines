@@ -3,5 +3,5 @@ source_datasources:
     table: cdss_general.gold.facilties_{{ env }}
 
 destination_datasources:
-  # this is purposeful, we do not push to agol or anywhere at this point
-  - type: noop
+  - type: databricks
+    table: cdss_general.green.facilties_{{ env }}
