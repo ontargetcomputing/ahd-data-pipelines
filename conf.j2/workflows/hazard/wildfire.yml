@@ -7,7 +7,8 @@ resources:
         on_failure:
           - Richard.Bach3@chhs.ca.gov
 
-          - task_key: "bronze_points"
+      tasks:
+        - task_key: "bronze_points"
           existing_cluster_id: ${var.ahd_cluster_id}
           python_wheel_task:
             package_name: ${bundle.name}
@@ -16,7 +17,7 @@ resources:
           libraries:
             - whl: /dist/*.whl
 
-          - task_key: "bronze_perims"
+        - task_key: "bronze_perims"
           existing_cluster_id: ${var.ahd_cluster_id}
           python_wheel_task:
             package_name: ${bundle.name}
@@ -25,7 +26,7 @@ resources:
           libraries:
             - whl: /dist/*.whl
 
-          - task_key: "silver_points"
+        - task_key: "silver_points"
           depends_on: 
             - task_key: bronze_points
           existing_cluster_id: ${var.ahd_cluster_id}
@@ -36,7 +37,7 @@ resources:
           libraries:
             - whl: /dist/*.whl
 
-          - task_key: "silver_perims"
+        - task_key: "silver_perims"
           depends_on: 
             - task_key:  bronze_perims
           existing_cluster_id: ${var.ahd_cluster_id}
@@ -47,7 +48,7 @@ resources:
           libraries:
             - whl: /dist/*.whl
 
-          - task_key: "gold_points"
+        - task_key: "gold_points"
           depends_on: 
             - task_key:  silver_points
             - task_key:  gold_perims
@@ -59,7 +60,7 @@ resources:
           libraries:
             - whl: /dist/*.whl
 
-          - task_key: "gold_perims"
+        - task_key: "gold_perims"
           depends_on: 
             - task_key:  silver_points
             - task_key:  silver_perims
@@ -71,7 +72,7 @@ resources:
           libraries:
             - whl: /dist/*.whl
 
-          - task_key: "green_points"
+        - task_key: "green_points"
           depends_on: 
             - task_key:  gold_points
           existing_cluster_id: ${var.ahd_cluster_id}
@@ -82,7 +83,7 @@ resources:
           libraries:
             - whl: /dist/*.whl
 
-          - task_key: "green_perims"
+        - task_key: "green_perims"
           depends_on: 
             - task_key:  gold_perims
           existing_cluster_id: ${var.ahd_cluster_id}

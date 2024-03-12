@@ -1,10 +1,28 @@
 env: dev
+notification_email: Richard.Bach3@chhs.ca.gov
 workflows:
   ops:
     template: conf/workflows/ops/heartbeat.yml
 
   esri_greendataupdate:
     template: conf/workflows/esri/greendataupdate.yml
+
+  hazard_earthquake:
+    template: conf/workflows/hazard/earthquake.yml
+    bronze: 
+      source:
+        dataset_id: df64c38688f9420690105553629c5247
+        layer: 0
+    green: 
+      days_offset: 0
+      epicenter:
+        destination:
+          dataset_id: c26db02fd8084a60a2744092128dcfbf
+          layer: 0
+      shakemap:
+        destination:
+          dataset_id: b84cc28255274e40a1f1c2013ee1beef
+          layer: 0
 
   shelter_bootstrap:
     template: conf/workflows/shelter/bootstrap.yml
@@ -54,13 +72,19 @@ workflows:
         source:
           dataset_id: fd06ecb9a65b4eab86c9863f21dbacef 
           layer: 0
+
+      shelter_sites_historical: 
+        source:
+          dataset_id: 8beb2c8b68054182b3972fb076aee25c 
+          layer: 0
+
     green:
       shelter_sites_historical:
         destination:
           dataset_id: 8beb2c8b68054182b3972fb076aee25c
           layer: 0
 
-      shelter_sites:
+      shelter_sites_layer:
         destination:
           dataset_id: a01b16d709794683beb4d813b6b0304d
           layer: 0
