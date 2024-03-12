@@ -24,7 +24,9 @@ class WildfireGoldTask(MedallionETLTask):
         print("Custom Transforming")
         new_dataFrames = []
         dataFrame = dataFrames[0]
-        dataFrame = WildfireGoldTask._create_polygons(dataFrame=dataFrame, spark=self.spark)
+        dataFrame = WildfireGoldTask._create_polygons(
+            dataFrame=dataFrame, spark=self.spark
+        )
 
         new_dataFrames.append(dataFrame)
         return new_dataFrames
@@ -36,8 +38,12 @@ class WildfireGoldTask(MedallionETLTask):
 
         origin = geopy.Point(point.y, point.x)
         north_point = geopy.distance.distance(kilometers=0.1).destination(origin, 0)
-        southeast_point = geopy.distance.distance(kilometers=0.1).destination(origin, 135)
-        southwest_point = geopy.distance.distance(kilometers=0.1).destination(origin, 225)
+        southeast_point = geopy.distance.distance(kilometers=0.1).destination(
+            origin, 135
+        )
+        southwest_point = geopy.distance.distance(kilometers=0.1).destination(
+            origin, 225
+        )
         poly = Polygon(
             [
                 [north_point.longitude, north_point.latitude],
@@ -50,13 +56,15 @@ class WildfireGoldTask(MedallionETLTask):
         return poly_str
 
     @staticmethod
-    def _create_polygons(dataFrame: DataFrame = None, spark: SparkSession = None) -> DataFrame:
-        print('Creating Polygons')
+    def _create_polygons(
+        dataFrame: DataFrame = None, spark: SparkSession = None
+    ) -> DataFrame:
+        print("Creating Polygons")
         my_udf = udf(WildfireGoldTask._create_poly_agol, StringType())
-        full = dataFrame.filter(col('geometry').isNotNull() & (col('geometry') != ''))
-        empty = dataFrame.filter(col('geometry').isNull() | (col('geometry') == ''))
+        full = dataFrame.filter(col("geometry").isNotNull() & (col("geometry") != ""))
+        empty = dataFrame.filter(col("geometry").isNull() | (col("geometry") == ""))
 
-        empty_fixed = empty.withColumn("geometry", my_udf(empty['geometry_x']))
+        empty_fixed = empty.withColumn("geometry", my_udf(empty["geometry_x"]))
 
         return full.union(empty_fixed)
         # return dataFrame
@@ -64,10 +72,10 @@ class WildfireGoldTask(MedallionETLTask):
 
 def entrypoint():  # pragma: no cover
 
-    if "true" != os.environ.get('LOCAL'):
+    if "true" != os.environ.get("LOCAL"):
         init_conf = None
     else:
-        yaml_file_path = './conf/tasks/hazard/wildfire/gold_perims_task.yml'
+        yaml_file_path = "./conf/tasks/hazard/wildfire/gold_perims_task.yml"
         init_conf = ETLTask.load_yaml(yaml_file_path=yaml_file_path)
         print("******************************")
         print("LOADED CONFIG FROM YAML FILE LOCALLY")
@@ -78,5 +86,5 @@ def entrypoint():  # pragma: no cover
     task.launch()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     entrypoint()

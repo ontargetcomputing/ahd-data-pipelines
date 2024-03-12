@@ -3,8 +3,8 @@ import requests
 
 
 class HTTPProcessor(ABC):
-    """
-    """
+    """ """
+
     @abstractmethod
     def process(self, params, spark=None):
         pass

@@ -19,6 +19,7 @@ openpyxl = "3.1.2"
 dlt = "0.4.2"
 sqlalchemy = "2.0.25"
 psycopg2-binary = "2.9.9"
+yamllint = "^1.35.1"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -28,7 +29,11 @@ pandas = "^2.2.0"
 databricks-connect = "^14.2.1"
 pyspark = "3.4.1"
 delta-spark = "2.4.0"
+flake8 = "^7.0.0"
+black = "^24.2.0"
 
+[tool.black]
+line-length = 120
 
 [build-system]
 requires = ["poetry-core"]

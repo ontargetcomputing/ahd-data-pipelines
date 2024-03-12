@@ -8,6 +8,7 @@ from delta import *  # noqa
 from delta.tables import *  # noqa
 import sys
 import os
+
 # import json
 
 
@@ -15,7 +16,7 @@ def get_dbutils(
     spark: SparkSession,
 ):  # please note that this function is used in mocking by its name
     try:
-        if os.environ.get('LOCAL') == 'true':
+        if os.environ.get("LOCAL") == "true":
             return None
         else:
             from pyspark.dbutils import DBUtils  # noqa
@@ -42,7 +43,7 @@ class Task(ABC):
 
     def __init__(self, spark=None, init_conf=None):
         self.spark = self._prepare_spark(spark)
-        if "true" != os.environ.get('LOCAL'):
+        if "true" != os.environ.get("LOCAL"):
             self.spark.conf.set("spark.sql.execution.arrow.pyspark.enabled", "true")
         # self.logger = self._prepare_logger()
         self.dbutils = self.get_dbutils()
@@ -55,29 +56,38 @@ class Task(ABC):
         self._log_conf()
 
     def to_string(self):
-        return f'Job:{self.jobName}, Task:{self.taskKey}, Run:{self.runNum}'
+        return f"Job:{self.jobName}, Task:{self.taskKey}, Run:{self.runNum}"
 
     @staticmethod
     def _prepare_spark(spark) -> SparkSession:
         if not spark:
-            if "true" != os.environ.get('LOCAL'):
+            if "true" != os.environ.get("LOCAL"):
                 return SparkSession.builder.getOrCreate()
             else:
-                if "true" == os.environ.get('CI'):
+                if "true" == os.environ.get("CI"):
                     from delta import configure_spark_with_delta_pip
-                    builder = SparkSession.builder.appName("MyApp") \
-                        .config("spark.jars.packages", "io.delta:delta-core_2.12:2.4.0") \
-                        .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension") \
-                        .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog")
+
+                    builder = (
+                        SparkSession.builder.appName("MyApp")
+                        .config("spark.jars.packages", "io.delta:delta-core_2.12:2.4.0")
+                        .config(
+                            "spark.sql.extensions",
+                            "io.delta.sql.DeltaSparkSessionExtension",
+                        )
+                        .config(
+                            "spark.sql.catalog.spark_catalog",
+                            "org.apache.spark.sql.delta.catalog.DeltaCatalog",
+                        )
+                    )
                     return configure_spark_with_delta_pip(builder).getOrCreate()
                 else:
                     from databricks.connect import DatabricksSession
                     from databricks.sdk.core import Config
 
                     config = Config(
-                        host=os.environ.get('DB_HOST'),
-                        token=os.environ.get('DB_TOKEN'),
-                        cluster_id=os.environ.get('DB_CLUSTER_ID')
+                        host=os.environ.get("DB_HOST"),
+                        token=os.environ.get("DB_TOKEN"),
+                        cluster_id=os.environ.get("DB_CLUSTER_ID"),
                     )
                     return DatabricksSession.builder.sdkConfig(config).getOrCreate()
         else:

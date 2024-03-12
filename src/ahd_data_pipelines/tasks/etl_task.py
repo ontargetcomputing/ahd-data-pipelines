@@ -21,35 +21,44 @@ class ETLTask(Task):
     def __prepare_source_datasources(self, params: dict = None) -> array:
         sources = []
 
-        params = [] if (params is None or 'source_datasources' not in params) else params['source_datasources']
+        params = (
+            []
+            if (params is None or "source_datasources" not in params)
+            else params["source_datasources"]
+        )
         for integration in params:
-            print(f'Configuring source:${integration}')
+            print(f"Configuring source:${integration}")
             sources.append(
                 DatasourceFactory.getDatasource(
-                    DatasourceType(
-                        integration['type']),
+                    DatasourceType(integration["type"]),
                     params=integration,
                     dbutils=self.dbutils,
                     spark=self.spark,
-                    stage=self.stage))
+                    stage=self.stage,
+                )
+            )
 
         return sources
 
     def __prepare_destination_datasources(self, params: dict = None) -> array:
         destinations = []
         print(params)
-        params = [] if (params is None or 'destination_datasources' not in params) \
-            else params['destination_datasources']
+        params = (
+            []
+            if (params is None or "destination_datasources" not in params)
+            else params["destination_datasources"]
+        )
         for integration in params:
-            print(f'Configuring destination:${integration}')
+            print(f"Configuring destination:${integration}")
             destinations.append(
                 DatasourceFactory.getDatasource(
-                    DatasourceType(
-                        integration['type']),
+                    DatasourceType(integration["type"]),
                     params=integration,
                     dbutils=self.dbutils,
                     spark=self.spark,
-                    stage=self.stage))
+                    stage=self.stage,
+                )
+            )
 
         return destinations
 
@@ -64,7 +73,7 @@ class ETLTask(Task):
         for index, source in enumerate(self.sources):
             print(f'Reading from : {params["source_datasources"][index]}')
             df = source.read()
-            print(f'Found {df.count()} records from source, please see a sample below')
+            print(f"Found {df.count()} records from source, please see a sample below")
             # print(df.head())
             dataFrames.append(df)
 
@@ -75,27 +84,27 @@ class ETLTask(Task):
         Load method - used to load the transformed source data into the final data store
         :return:
         """
-        print(f'Loading: ${self.destinations}')
+        print(f"Loading: ${self.destinations}")
         for index, destination in enumerate(self.destinations):
             print(f'Writing to : ${params["destination_datasources"][index]}')
             df = dataFrames[index]
             print(df.show())
-            destination_params = params['destination_datasources'][index]
+            destination_params = params["destination_datasources"][index]
 
             if df.count() > 0:
                 destination.write(dataFrames[index])
             else:
-                method = destination_params.get("method", 'overwrite')
+                method = destination_params.get("method", "overwrite")
                 truncate_on_emtpy = destination_params.get("truncate_on_emtpy", True)
-                if method == 'overwrite' and truncate_on_emtpy is True:
-                    print('Truncating on empty')
+                if method == "overwrite" and truncate_on_emtpy is True:
+                    print("Truncating on empty")
                     destination.truncate()
                 else:
-                    print('Dataframe empty - nothing to write')
+                    print("Dataframe empty - nothing to write")
 
     @staticmethod
     def load_yaml(yaml_file_path):
-        with open(yaml_file_path, 'r') as file:
+        with open(yaml_file_path, "r") as file:
             return yaml.safe_load(file)
 
     @abstractmethod
@@ -104,7 +113,7 @@ class ETLTask(Task):
         Transform method - used to transform data received from source in preparation of loading
         :return:
         """
-        print('WARNING: called abstract transform')
+        print("WARNING: called abstract transform")
         pass
 
     def launch(self):
@@ -112,17 +121,17 @@ class ETLTask(Task):
         Main method of the task.
         :return:
         """
-        print('********************************************')
-        print('*************   Extracting     *************')
-        print('********************************************')
+        print("********************************************")
+        print("*************   Extracting     *************")
+        print("********************************************")
         dataFrames = self.extract(params=self.conf)
 
-        print('********************************************')
-        print('**********   Transforming     **************')
-        print('********************************************')
+        print("********************************************")
+        print("**********   Transforming     **************")
+        print("********************************************")
         dataFrames = self.transform(dataFrames=dataFrames, params=self.conf)
 
-        print('********************************************')
-        print('*************   Loading ********************')
-        print('********************************************')
+        print("********************************************")
+        print("*************   Loading ********************")
+        print("********************************************")
         self.load(dataFrames=dataFrames, params=self.conf)

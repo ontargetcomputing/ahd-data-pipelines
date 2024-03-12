@@ -5,8 +5,7 @@ from pyspark.sql.types import StructType
 
 
 class NoopDatasource(Datasource):
-    """
-    """
+    """ """
 
     def __init__(self, spark: SparkSession = None):
         self.spark = spark
