@@ -5,7 +5,7 @@ resources:
 
       email_notifications:
         on_failure:
-          - Richard.Bach3@chhs.ca.gov
+          - ${var.notification_email}
 
         - task_key: "bronze"
           existing_cluster_id: ${var.ahd_cluster_id}

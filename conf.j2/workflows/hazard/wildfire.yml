@@ -5,7 +5,7 @@ resources:
 
       email_notifications:
         on_failure:
-          - Richard.Bach3@chhs.ca.gov
+          - ${var.notification_email}
 
       tasks:
         - task_key: "bronze_points"
