@@ -1,0 +1,90 @@
+bronze: true
+{% if env == 'ci' -%}
+source_datasources:
+  - type: noop
+destination_datasources:
+  - type: noop
+{% else -%}
+source_datasources:
+  - type: agol
+    dataset_id: {{ workflows['hazard_wildfire'].bronze.points.source.dataset_id }}
+    original_crs: 4326
+    layer: {{ workflows['hazard_wildfire'].bronze.points.source.layer }}
+    url: https://chhsagency.maps.arcgis.com/home/
+destination_datasources:
+  - type: databricks
+    table: ahd_wildfires.bronze.california_fires_points_{{ env }}
+    data_types:
+    - column: OBJECTID
+      type: string
+    - column: IncidentName
+      type: string
+    - column: IncidentTypeCategory
+      type: string
+    - column: UniqueFireIdentifier
+      type: string            
+    - column: DailyAcres
+      type: double    
+    - column: CalculatedAcres
+      type: double    
+    - column: PercentContained
+      type: double        
+    - column: ICS209ReportDateTime
+      type: long  
+    - column: FireDiscoveryDateTime
+      type: long  
+    - column: DiscoveryAcres
+      type: double  
+    - column: POOCounty
+      type: string  
+    - column: POOState
+      type: string  
+    - column: FireCause
+      type: string  
+    - column: FireCauseGeneral
+      type: string  
+    - column: GACC
+      type: string  
+    - column: TotalIncidentPersonnel
+      type: int  
+    - column: IncidentManagementOrganization
+      type: string  
+    - column: FireMgmtComplexity
+      type: string  
+    - column: ResidencesDestroyed
+      type: int  
+    - column: OtherStructuresDestroyed
+      type: int  
+    - column: Injuries
+      type: int  
+    - column: Fatalities
+      type: int  
+    - column: PredominantFuelGroup
+      type: string  
+    - column: PredominantFuelModel
+      type: string  
+    - column: PrimaryFuelModel
+      type: string  
+    - column: ContainmentDateTime
+      type: long  
+    - column: ControlDateTime
+      type: long  
+    - column: FinalAcres
+      type: double  
+    - column: IsValid
+      type: int  
+    - column: FireOutDateTime
+      type: long  
+    - column: ModifiedOnDateTime
+      type: long  
+    - column: IncidentTypeKind
+      type: string  
+    - column: IrwinID
+      type: string  
+    - column: GlobalID
+      type: string  
+    - column: ModifiedOnAge
+      type: int  
+    - column: FireDiscoveryAge
+      type: int  
+{% endif %}

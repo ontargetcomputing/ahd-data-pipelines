@@ -1,0 +1,154 @@
+
+source_datasources:
+  - type: databricks
+    query: >
+        select
+              points.CalculatedAcres,
+              perims.Comments,
+              perims.ComplexName,
+              perims.ComplexID,
+              perims.CreateDate,
+              perims.CreateDateAge,
+              perims.CurrentDateAge,
+              points.DailyAcres,
+              perims.DateCurrent,
+              points.FireDiscoveryDateTime,
+              perims.FeatureCategory,
+              perims.GACC,      
+              perims.GISAcres,
+              perims.GeometryID,
+              perims.GlobalID,
+              perims.IMTName,
+              points.IRWINID,
+              points.IncidentName,
+              perims.IncidentTypeCategory,
+              perims.Label,
+              perims.LocalIncidentID, 
+              perims.MapMethod,
+              points.PercentContained,      
+              perims.PolygonDateTime,
+              points.PooCounty,
+              perims.UnitID,
+              perims.ade_date_submitted,
+              points.county, 
+              perims.geometry,
+              points.geometry as geometry_x,
+              points.oes_region
+        from ahd_wildfires.silver.california_fires_points_{{ env }} points 
+        left join ( select count(1) as thecount, IncidentName,
+              FeatureCategory,
+              MapMethod,
+              Comments,
+              GISAcres,
+              Label,
+              CreateDate,
+              DateCurrent,
+              PolygonDateTime,
+              ComplexName,
+              ComplexID,
+              GACC,
+              IMTName,
+              UnitID,
+              LocalIncidentID, 
+              IRWINID,
+              GeometryID,
+              GlobalID,
+              CurrentDateAge,
+              CreateDateAge,
+              IncidentTypeCategory,
+              geometry,
+              ade_date_submitted
+          from ahd_wildfires.silver.california_fires_perims_{{ env }}
+          group by IncidentName,
+                FeatureCategory,
+                MapMethod,
+                Comments,
+                GISAcres,
+                Label,
+                CreateDate,
+                DateCurrent,
+                PolygonDateTime,
+                ComplexName,
+                ComplexID,
+                GACC,
+                IMTName,
+                UnitID,
+                LocalIncidentID, 
+                IRWINID,
+                GeometryID,
+                GlobalID,
+                CurrentDateAge,
+                CreateDateAge,
+                IncidentTypeCategory,
+                geometry,
+                ade_date_submitted ) as perims on points.IRWINID = perims.IRWINID;
+destination_datasources:
+  - type: databricks
+    table: ahd_wildfires.gold.california_fires_perims_{{ env }}
+    truncate_on_empty: true
+    epoch_to_timestamp:
+      - CreateDate
+      - DateCurrent
+      - FireDiscoveryDateTime
+      - PolygonDateTime
+    drop_columns:
+      - geometry_x
+    data_types:
+    - column: CalculatedAcres
+      type: double
+    - column: Comments
+      type: string
+    - column: ComplexName
+      type: string
+    - column: ComplexID
+      type: string
+    - column: CreateDate
+      type: timestamp
+    - column: CreateDateAge
+      type: int
+    - column: CurrentDateAge
+      type: int
+    - column: DailyAcres
+      type: double
+    - column: DateCurrent
+      type: timestamp
+    - column: FireDiscoveryDateTime
+      type: timestamp
+    - column: FeatureCategory
+      type: string
+    - column: GACC
+      type: string
+    - column: GISAcres
+      type: double
+    - column: GeometryID
+      type: string
+    - column: GlobalID
+      type: string
+    - column: IMTName
+      type: string
+    - column: IRWINID
+      type: string
+    - column: Label
+      type: string
+    - column: LocalIncidentID
+      type: string
+    - column: MapMethod
+      type: string
+    - column: PercentContained
+      type: double
+    - column: PolygonDateTime
+      type: timestamp
+    - column: PooCounty
+      type: string
+    - column: UnitID
+      type: string
+    - column: IncidentTypeCategory
+      type: string
+    - column: ade_date_submitted
+      type: date
+    - column: county
+      type: string
+    - column: geometry
+      type: string
+    - column: oes_region
+      type: string

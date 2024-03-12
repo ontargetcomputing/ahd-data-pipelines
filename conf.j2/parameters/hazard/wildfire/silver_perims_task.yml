@@ -1,0 +1,87 @@
+spatial_joins: 
+  - left_index: 0
+    right_index: 1
+    how: inner
+    predicate: intersects 
+    drop_columns:
+      - index
+      - index_right
+      - NAME
+  - left_index: 0
+    right_index: 2
+    how: left
+    predicate: intersects 
+    drop_columns:
+      - index_right
+source_datasources:
+  - type: databricks
+    table: ahd_wildfires.bronze.california_fires_perims_{{ env }}
+  - type: databricks
+    table: datahub_common.gold.california_shape
+  - type: databricks
+    table: datahub_common.gold.ca_county_oes_shape 
+destination_datasources:
+  - type: databricks
+    table: ahd_wildfires.silver.california_fires_perims_{{ env }}
+    drop_duplicates: []
+    mutations:
+      - column: IRWINID
+        mutation: uppercase
+    epoch_to_timestamp:
+      - CreateDate
+      - DateCurrent
+      - PolygonDateTime
+    drop_columns:
+      - OBJECTID
+    rename_columns:
+      - NAME:county
+      - caloes_region:oes_region
+    data_types:
+    - column: OBJECTID
+      type: string
+    - column: IncidentName
+      type: string
+    - column: FeatureCategory
+      type: string
+    - column: MapMethod
+      type: string
+    - column: Comments
+      type: string
+    - column: GISAcres
+      type: double
+    - column: Label
+      type: string
+    - column: CreateDate
+      type: long
+    - column: DateCurrent
+      type: long
+    - column: PolygonDateTime
+      type: long
+    - column: ComplexName
+      type: string
+    - column: ComplexID
+      type: string
+    - column: GACC
+      type: string
+    - column: IMTName
+      type: string
+    - column: UnitID
+      type: string
+    - column: LocalIncidentID
+      type: string
+    - column: IRWINID
+      type: string
+    - column: GeometryID
+      type: string
+    - column: GlobalID
+      type: string
+    - column: CurrentDateAge
+      type: int
+    - column: CreateDateAge
+      type: int
+    - column: IncidentTypeCategory
+      type: string
+    - column: Shape__Area
+      type: double
+    - column: Shape__Length
+      type: double
