@@ -2,7 +2,7 @@ from ahd_data_pipelines.integrations.datasource import Datasource
 from pyspark.sql import SparkSession
 from pyspark.sql import DataFrame
 from pyspark.sql.utils import AnalysisException
-from delta.tables import DeltaTable
+#from delta.tables import DeltaTable
 from ahd_data_pipelines.pandas.pandas_helper import PandasHelper
 import os
 
@@ -83,18 +83,23 @@ class DatabricksDatasource(Datasource):
                 dataFrame.write.mode(method).format("delta").option("mergeSchema", "true").saveAsTable(table_name)
             elif method == 'merge':
                 if dataFrame.count() > 0:
-                    print(f'There are {dataFrame.count()} records to merge in')
-                    targetDF = DeltaTable.forName(self.spark.getActiveSession(), table_name)
+                    record_count = dataFrame.count()
+                    print(f'There are {record_count} records to merge in')
+                    
+                    target_df = self.spark.getActiveSession().table(table_name)
                     merge_on = self.params['merge_on']
 
-                    merge = (targetDF.alias('target')
-                             .merge(dataFrame.alias('source'), f"source.{merge_on} = target.{merge_on}")
-                             .whenMatchedUpdateAll()
-                             .whenNotMatchedInsertAll()
-                             )
-                    merge.execute()
+                    merge_expr = dataFrame[merge_on] == target_df[merge_on]
+                    
+                    merged_df = target_df.join(dataFrame, merge_expr, "inner") \
+                                        .drop(target_df[merge_on]) \
+                                        .withColumnRenamed(merge_on, f"source_{merge_on}") \
+                                        .dropDuplicates()
+                    
+                    merged_df.write.mode("overwrite").saveAsTable(table_name)
                 else:
                     print('No data in source, nothing to merge')
+
             else:
                 raise ValueError(f'Unknown method {method}')
 
