@@ -1,11 +1,10 @@
 import unittest
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch, MagicMock
 from ahd_data_pipelines.integrations.datasource import Datasource
-from ahd_data_pipelines.integrations.jdbc_datasource import JdbcDatasource  # Replace 'my_module' with your module name
-from pyspark.sql import SparkSession
+from ahd_data_pipelines.integrations.jdbc_datasource import JdbcDatasource
+from pyspark.sql import SparkSession, DataFrame as SparkDataFrame
 from pyspark.pandas import DataFrame
 import pandas as pd
-import sqlalchemy as sq
 
 class TestJdbcDatasource(unittest.TestCase):
 
@@ -24,7 +23,7 @@ class TestJdbcDatasource(unittest.TestCase):
     def tearDown(self):
         self.spark.stop()
 
-    @patch('ahd_data_pipelines.integrations.jdbc_datasource.sq.create_engine')
+    @patch('sqlalchemy.create_engine')
     def test_read_empty_dataframe(self, mock_create_engine):
         # Mocking out create_engine
         mock_engine = MagicMock()
@@ -35,8 +34,24 @@ class TestJdbcDatasource(unittest.TestCase):
         # Call read method
         result = jdbc_datasource.read()
         # Assertions
-        self.assertIsInstance(result, DataFrame)
-        self.assertEqual(len(result), 0)
+        self.assertIsInstance(result, SparkDataFrame)
+        self.assertEqual(result.count(), 0)
+
+    @patch('sqlalchemy.create_engine')
+    @patch('pyspark.sql.DataFrame')
+    def test_read_with_postgis_none(self, mock_dataframe, mock_create_engine):
+        # Mocking out create_engine
+        mock_engine = MagicMock()
+        mock_create_engine.return_value = mock_engine
+        # Set postgis to None
+        self.params['postgis'] = None
+        # Instantiate JdbcDatasource with postgis as None
+        jdbc_datasource = JdbcDatasource(params=self.params, spark=self.spark)
+        # Call read method
+        result = jdbc_datasource.read()
+        # Assertions
+        self.assertIsInstance(result, SparkDataFrame)
+        self.assertEqual(result.count(), 0)
 
 if __name__ == '__main__':
     unittest.main()
