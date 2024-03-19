@@ -91,3 +91,53 @@ workflows:
       source:
         dataset_id: 1d23a053ed204d9c8e35f0683539a375
         layer: 0
+
+  hazard_wildfire:
+    template: conf/workflows/hazard/wildfire.yml
+    bronze: 
+      points:
+        source:
+          dataset_id: d957997ccee7408287a963600a77f61f
+          layer: 0
+      perimeters:
+        source:
+          dataset_id: d957997ccee7408287a963600a77f61f
+          layer: 1
+    green:
+      points:
+        destination:
+          dataset_id: b6763ba149734b4786701ef30b72f23a
+          layer: 0
+      perimeters:
+        destination:
+          dataset_id: b3f88f6f781044dabdc02e84d0bc073e
+          layer: 0
+
+  hazard_calmat_emsa:
+    template: conf/workflows/hazard/emsa.yml
+    bronze:
+      source:
+        bucket_name: chhs-datahub-emsa
+        agency: EMSA
+        aws_region: us-west-1
+        file_name: upload/Shared with HHS ESRI.xlsx
+        unamed_iteration: 13
+    green:
+      available:
+        destination:
+          dataset_id: 0cb0e757a6734a6d82bd940c6df89daf
+          table_index: 1
+      deployed:
+        destination:
+          dataset_id : 0cb0e757a6734a6d82bd940c6df89daf
+          table_index: 0
+
+  facilities_cdph:
+    template: conf/workflows/facilities/cdph.yml
+    bronze:
+      source:
+        dataset_id: 1a707547eebb47358112a473c1048677
+        layer: 0
+
+  census_language:
+    template: conf/workflows/census/language.yml

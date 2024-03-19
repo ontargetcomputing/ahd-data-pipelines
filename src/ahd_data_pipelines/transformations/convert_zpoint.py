@@ -5,7 +5,7 @@ import geopandas as gpd
 
 class ConvertZPoint(Transformation):
     def to_perform(params):
-        return ('convert_zpoint' in params.keys())
+        return "convert_zpoint" in params.keys()
 
     def execute(dataFrame, params: dict = None, spark=None):
         geo_df = PandasHelper.pysparksql_to_geopandas(dataFrame)

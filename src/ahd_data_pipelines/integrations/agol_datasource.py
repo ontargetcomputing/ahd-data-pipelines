@@ -12,11 +12,10 @@ from shapely import wkt
 
 
 class AgolDatasource(Datasource):
-    """
-    """
+    """ """
 
     def __init__(self, params: dict = None, spark: SparkSession = None):
-        self.gis = GIS(params['url'], params['username'], params['password'])
+        self.gis = GIS(params["url"], params["username"], params["password"])
         self.params = params
         self.spark = spark
 
@@ -24,11 +23,11 @@ class AgolDatasource(Datasource):
         raise NotImplementedError("read_from_table has not been implemented yet.")
 
     def read_from_feature_layer(self):
-        datasetId = self.params['dataset_id']
+        datasetId = self.params["dataset_id"]
         dataLayer = self.gis.content.get(datasetId)
-        original_crs = self.params.get('original_crs', 3857)
-        new_crs = self.params.get('new_crs', 4326)
-        layer = self.params['layer']
+        original_crs = self.params.get("original_crs", 3857)
+        new_crs = self.params.get("new_crs", 4326)
+        layer = self.params["layer"]
 
         print(f'loadFeatureLayer { { "source": datasetId, "layer": layer}}')
 
@@ -42,11 +41,13 @@ class AgolDatasource(Datasource):
 
             geom = transformed["geometry"]
 
-            gdf: gpd.GeoDataFrame = gpd.GeoDataFrame(gdf, crs=f'EPSG:{original_crs}', geometry=geom)
-            gdf = gdf.set_crs(f'EPSG:{original_crs}')
+            gdf: gpd.GeoDataFrame = gpd.GeoDataFrame(
+                gdf, crs=f"EPSG:{original_crs}", geometry=geom
+            )
+            gdf = gdf.set_crs(f"EPSG:{original_crs}")
 
             if original_crs != new_crs:
-                gdf = gdf.to_crs(f'EPSG:{new_crs}')
+                gdf = gdf.to_crs(f"EPSG:{new_crs}")
             return PandasHelper.geopandas_to_pysparksql(gpd_df=gdf, spark=self.spark)
         else:
             return PandasHelper.empty_spark_sql_dataframe(spark=self.spark)
@@ -55,15 +56,15 @@ class AgolDatasource(Datasource):
         if self.params is None:
             raise TypeError("params:NoneType not allowed, params:dict exptected")
 
-        is_table = self.params.get('is_table', False)
+        is_table = self.params.get("is_table", False)
         if is_table:
             return self.read_from_table()
         else:
             return self.read_from_feature_layer()
 
     def write_to_feature_layer(self, dataFrame: DataFrame):
-        datasetId = self.params['dataset_id']
-        layer = self.params['layer']
+        datasetId = self.params["dataset_id"]
+        layer = self.params["layer"]
         print(f'writing { { "source": datasetId, "layer": layer}}')
 
         dataLayer = self.gis.content.get(datasetId)
@@ -73,27 +74,33 @@ class AgolDatasource(Datasource):
         features = []
         dataFrame = dataFrame.toPandas()
         dataFrame = dataFrame.astype(object).where(pd.notnull(dataFrame), None)
-        dataFrame['geometry'] = dataFrame['geometry'].apply(wkt.loads)
+        dataFrame["geometry"] = dataFrame["geometry"].apply(wkt.loads)
 
         for index, row in dataFrame.iterrows():
             the_dict = row.to_dict()
-            wrappedObj = {'attributes': the_dict}
-            if 'geometry' in self.params:
+            wrappedObj = {"attributes": the_dict}
+            if "geometry" in self.params:
                 column = self.params["geometry"]["column"]
                 geometry = the_dict[column]
                 del the_dict[column]
                 the_type = self.params["geometry"]["type"]
-                print(f'Converting geometry type:{type}')
-                if the_type == 'POINT':
-                    wrappedObj['geometry'] = {"x": geometry.x, "y": geometry.y, "spatialReference": {'wkid': 4326}}
-                elif the_type == 'POLYGON':
+                print(f"Converting geometry type:{type}")
+                if the_type == "POINT":
+                    wrappedObj["geometry"] = {
+                        "x": geometry.x,
+                        "y": geometry.y,
+                        "spatialReference": {"wkid": 4326},
+                    }
+                elif the_type == "POLYGON":
                     x, y = geometry.exterior.coords.xy
                     x = list(x)
                     y = list(y)
-                    wrappedObj['geometry'] = {"rings": [[list(z) for z in zip(x, y)]], "spatialReference": {
-                        "wkid": 4326}}
+                    wrappedObj["geometry"] = {
+                        "rings": [[list(z) for z in zip(x, y)]],
+                        "spatialReference": {"wkid": 4326},
+                    }
                 else:
-                    print(f'Unknown geometry type:{the_type}')
+                    print(f"Unknown geometry type:{the_type}")
 
             features.append(wrappedObj)
 
@@ -102,8 +109,8 @@ class AgolDatasource(Datasource):
         print(f"Wrote new features - {result}")
 
     def write_to_table(self, dataFrame: DataFrame):
-        datasetId = self.params['dataset_id']
-        table_index = self.params['table_index']
+        datasetId = self.params["dataset_id"]
+        table_index = self.params["table_index"]
         print(f'writing { { "source": datasetId, "table_index": table_index}}')
 
         dataLayer = self.gis.content.get(datasetId)
@@ -115,7 +122,7 @@ class AgolDatasource(Datasource):
 
         for index, row in dataFrame.iterrows():
             the_dict = row.to_dict()
-            wrappedObj = {'attributes': the_dict}
+            wrappedObj = {"attributes": the_dict}
             rows.append(wrappedObj)
 
         print("Writing new table")
@@ -123,17 +130,19 @@ class AgolDatasource(Datasource):
         print(f"Wrote new table - {result}")
 
     def write(self, dataFrame: DataFrame):
-        is_table = self.params.get('is_table', False)
+        is_table = self.params.get("is_table", False)
         if is_table:
             return self.write_to_table(dataFrame)
         else:
             return self.write_to_feature_layer(dataFrame)
 
     def truncate_feature_layer(self):
-        datasetId = self.params['dataset_id']
-        layer = self.params['layer']
-        objectid = self.params.get('object_id', "OBJECTID")
-        print(f'truncateFeatureLayer { { "source": datasetId, "layer": layer, "object_id": objectid}}')
+        datasetId = self.params["dataset_id"]
+        layer = self.params["layer"]
+        objectid = self.params.get("object_id", "OBJECTID")
+        print(
+            f'truncateFeatureLayer { { "source": datasetId, "layer": layer, "object_id": objectid}}'
+        )
         dataLayer = self.gis.content.get(datasetId)
         featureLayer = FeatureLayer(dataLayer.layers[layer].url)
         # featureLayer.delete_features()
@@ -141,10 +150,12 @@ class AgolDatasource(Datasource):
         print(result)
 
     def truncate_table(self):
-        datasetId = self.params['dataset_id']
-        table_index = self.params['table_index']
-        objectid = self.params.get('object_id', "OBJECTID")
-        print(f'truncateTable { { "source": datasetId, "table_index": table_index, "object_id": objectid}}')
+        datasetId = self.params["dataset_id"]
+        table_index = self.params["table_index"]
+        objectid = self.params.get("object_id", "OBJECTID")
+        print(
+            f'truncateTable { { "source": datasetId, "table_index": table_index, "object_id": objectid}}'
+        )
         dataLayer = self.gis.content.get(datasetId)
         table = Table(dataLayer.tables[table_index].url)
 
@@ -152,7 +163,7 @@ class AgolDatasource(Datasource):
         print(result)
 
     def truncate(self):
-        is_table = self.params.get('is_table', False)
+        is_table = self.params.get("is_table", False)
         if is_table:
             return self.truncate_table()
         else:

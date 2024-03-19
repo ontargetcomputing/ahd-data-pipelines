@@ -4,10 +4,9 @@ import geopandas as gpd
 
 
 class GeoPandasReadFileHTTPProcessor(HTTPProcessor):
-    """
-    """
+    """ """
 
     def process(self, params, spark=None):
-        endpoint = params['endpoint']
+        endpoint = params["endpoint"]
         gp_df = gpd.read_file(endpoint)
         return PandasHelper.geopandas_to_pysparksql(gpd_df=gp_df, spark=spark)

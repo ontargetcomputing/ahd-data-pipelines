@@ -6,11 +6,16 @@ class GreenDataUpdateJob(Job):
     def launch(self):
         self.logger.info("Launching Green Data Update job")
         self.pipeline = GreenDataUpdate(
-            conf=self.conf, dbutils=self.dbutils, development=self._is_development(), log4j_logger=self.log4j_logger, stage=self.stage
+            conf=self.conf,
+            dbutils=self.dbutils,
+            development=self._is_development(),
+            log4j_logger=self.log4j_logger,
+            stage=self.stage,
         )
 
         self.pipeline.run()
         self.logger.info("Green Data Update finished!")
+
 
 def entrypoint():
     # pragma: no cover
@@ -19,6 +24,6 @@ def entrypoint():
     job = GreenDataUpdateJob()
     job.launch()
 
+
 if __name__ == "__main__":
     entrypoint()
-

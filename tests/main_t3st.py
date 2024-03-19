@@ -9,6 +9,7 @@ from ahd_data_pipelines import main
 SparkSession.builder = DatabricksSession.builder
 SparkSession.builder.getOrCreate()
 
+
 def test_main():
     taxis = main.get_taxis()
     assert taxis.count() > 5

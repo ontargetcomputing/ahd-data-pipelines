@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ahd-data-pipelines"
-version = "0.4.0"
+version = "0.5.2"
 description = "wheel file based on ahd-data-pipelines"
 authors = ["balutbomber <balutbomber@gmail.com>"]
 readme = "README.md"
@@ -19,6 +19,7 @@ openpyxl = "3.1.2"
 dlt = "0.4.2"
 sqlalchemy = "2.0.25"
 psycopg2-binary = "2.9.9"
+yamllint = "^1.35.1"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -29,7 +30,12 @@ pytest = "8.0.2"
 pytest-cov = "^4.1.0"
 pyspark = "3.4.1"
 pytest-mock = "3.10.0"
+delta-spark = "2.4.0"
+flake8 = "^7.0.0"
+black = "^24.2.0"
 
+[tool.black]
+line-length = 120
 
 [build-system]
 requires = ["poetry-core"]

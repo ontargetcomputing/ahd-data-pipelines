@@ -1,0 +1,45 @@
+name: Validate DEV deployment config
+
+on:
+  pull_request:
+    branches:
+      - main
+    types: [opened, synchronize]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 1. Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: 2. Create Databricks Config File
+        env:
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_URL_DEV }}
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN_DEV }}
+        run: |
+          echo "[dev]" > /home/runner/.databrickscfg
+          echo "host = $DATABRICKS_HOST" >> /home/runner/.databrickscfg
+          echo "token = $DATABRICKS_TOKEN" >> /home/runner/.databrickscfg
+
+      - name: 3. Install databricks
+        run: |
+          echo "Install databricks"
+          curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
+
+      - name: 4. Install modules
+        run: |
+          pip install Jinja2
+          pip install pyyaml
+
+      - name: 5. Running Validate on dev
+        run: |
+          echo "Validate the dev configuration"
+          make validate ENV=dev
+
+
+
