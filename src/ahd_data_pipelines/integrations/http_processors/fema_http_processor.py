@@ -30,9 +30,7 @@ class FEMAHTTPProcessor(HTTPProcessor):
                 if len(page) > 0:
                     all_data.extend(page)
                 if len(page) < page_size:
-                    print(
-                        f"There are {len(all_data)} records and there are NO more pages"
-                    )
+                    print(f"There are {len(all_data)} records and there are NO more pages")
                     more_pages = False
                 else:
                     print(f"There are {len(all_data)} records and there are more pages")
@@ -55,17 +53,13 @@ class FEMAHTTPProcessor(HTTPProcessor):
             terms = (match[1: len(match) - 1]).split(":", 1)
             if terms[0] == "today":
                 today_formatted = datetime.today().strftime(terms[1])
-                constructed_query_params = constructed_query_params.replace(
-                    match, today_formatted
-                )
+                constructed_query_params = constructed_query_params.replace(match, today_formatted)
                 print(f"Replaced {match} with {today_formatted}")
             elif terms[0] == "yesterday":
                 yesterday = datetime.today() - timedelta(days=1)
                 yesterday_formatted = yesterday.strftime(terms[1])
                 # yesterday_formatted = '2022-05-09T00:00:00.000z'
-                constructed_query_params = constructed_query_params.replace(
-                    match, yesterday_formatted
-                )
+                constructed_query_params = constructed_query_params.replace(match, yesterday_formatted)
                 print(f"Replaced {match} with {yesterday_formatted}")
             else:
                 raise Exception(f"Unknown term in query parameters : {terms[0]}")
@@ -74,9 +68,7 @@ class FEMAHTTPProcessor(HTTPProcessor):
 
         return constructed_query_params
 
-    def get_page(
-        self, endpoint, query_parameters, paginate_query_parameter, page_num, page_size
-    ):
+    def get_page(self, endpoint, query_parameters, paginate_query_parameter, page_num, page_size):
         url = f"{endpoint}?{query_parameters}&{paginate_query_parameter}={(page_num-1)*page_size}"
         print(f"Url = {url}")
 

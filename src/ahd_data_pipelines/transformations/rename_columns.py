@@ -7,9 +7,7 @@ import os
 
 class RenameColumns(Transformation):
     def to_perform(params):
-        return ("rename_columns" in params.keys()) and (
-            len(params["rename_columns"]) > 0
-        )
+        return ("rename_columns" in params.keys()) and (len(params["rename_columns"]) > 0)
 
     def execute(dataFrame, params: dict = None, spark=None):
         rename_columns = params["rename_columns"]
@@ -25,9 +23,7 @@ class RenameColumns(Transformation):
             for rename_column in rename_columns:
                 nvp = rename_column.rsplit(":", 1)
                 dataFrame = dataFrame.withColumnRenamed(nvp[0], nvp[1])
-        elif isinstance(dataFrame, gpd.GeoDataFrame) or isinstance(
-            dataFrame, pd.DataFrame
-        ):
+        elif isinstance(dataFrame, gpd.GeoDataFrame) or isinstance(dataFrame, pd.DataFrame):
             print("renaming columns in GeoDataFrame or DataFrame")
             for rename_column in rename_columns:
                 nvp = rename_column.rsplit(":", 1)

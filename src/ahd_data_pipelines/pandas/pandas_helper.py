@@ -23,9 +23,7 @@ class PandasHelper:
         geometry_column = "geometry"
         if geometry_column in pysparksql_df.columns:
             pandas_df[geometry_column] = pandas_df[geometry_column].apply(wkt.loads)
-            return gpd.GeoDataFrame(
-                pandas_df, crs="EPSG:4326", geometry=geometry_column
-            )
+            return gpd.GeoDataFrame(pandas_df, crs="EPSG:4326", geometry=geometry_column)
         else:
             return pandas_df
 
@@ -51,9 +49,7 @@ class PandasHelper:
         return gpd.GeoDataFrame(pandas_df, crs="EPSG:4326", geometry=geometry_column)
 
     @staticmethod
-    def geopandas_to_pysparksql(
-        gpd_df: gpd.GeoDataFrame = None, spark: SparkSession = None
-    ) -> pyspark.sql.DataFrame:
+    def geopandas_to_pysparksql(gpd_df: gpd.GeoDataFrame = None, spark: SparkSession = None) -> pyspark.sql.DataFrame:
         if not isinstance(gpd_df, gpd.GeoDataFrame):
             raise ValueError(f"Unexpected type;{type(gpd_df)}")
 
@@ -63,21 +59,15 @@ class PandasHelper:
 
             STANDARD_GEOMETRY_FIELD = "geometry"
             if STANDARD_GEOMETRY_FIELD in gpd_df.columns:
-                gpd_df[STANDARD_GEOMETRY_FIELD] = gpd_df[STANDARD_GEOMETRY_FIELD].apply(
-                    lambda x: wkt.dumps(x)
-                )
+                gpd_df[STANDARD_GEOMETRY_FIELD] = gpd_df[STANDARD_GEOMETRY_FIELD].apply(lambda x: wkt.dumps(x))
 
             STANDARD_GEOMETRY_FIELD_X = "geometry_x"
             if STANDARD_GEOMETRY_FIELD_X in gpd_df.columns:
-                gpd_df[STANDARD_GEOMETRY_FIELD_X] = gpd_df[
-                    STANDARD_GEOMETRY_FIELD_X
-                ].apply(lambda x: wkt.dumps(x))
+                gpd_df[STANDARD_GEOMETRY_FIELD_X] = gpd_df[STANDARD_GEOMETRY_FIELD_X].apply(lambda x: wkt.dumps(x))
 
             STANDARD_GEOMETRY_FIELD_Y = "geometry_y"
             if STANDARD_GEOMETRY_FIELD_Y in gpd_df.columns:
-                gpd_df[STANDARD_GEOMETRY_FIELD_Y] = gpd_df[
-                    STANDARD_GEOMETRY_FIELD_Y
-                ].apply(lambda x: wkt.dumps(x))
+                gpd_df[STANDARD_GEOMETRY_FIELD_Y] = gpd_df[STANDARD_GEOMETRY_FIELD_Y].apply(lambda x: wkt.dumps(x))
 
             return spark.createDataFrame(pd.DataFrame(gpd_df))
         else:
@@ -89,9 +79,7 @@ class PandasHelper:
         return spark.createDataFrame([], schema)
 
     @staticmethod
-    def pandas_to_pysparksql(
-        pd_df: pd.DataFrame = None, spark: SparkSession = None
-    ) -> pyspark.sql.DataFrame:
+    def pandas_to_pysparksql(pd_df: pd.DataFrame = None, spark: SparkSession = None) -> pyspark.sql.DataFrame:
         if not isinstance(pd_df, pd.DataFrame):
             raise ValueError(f"Unexpected type;{type(pd_df)}")
 

@@ -17,12 +17,12 @@ jobs:
         with:
           python-version: '3.10'
       
-      - name: 2. Create Coverage Config File
-        run: |
-          echo "[run]" > /home/runner/.coveragerc
-          echo "omit = src/ahd_data_pipelines/common/ArcGIS/OverwriteFS/OverwriteFS.py " >> /home/runner/.coveragerc
-          echo "       src/ahd_data_pipelines/tasks/esri/green_data_update.py" >> /home/runner/.coveragerc
-          echo "       src/ahd_data_pipelines/tasks/esri/green_data_update_job.py" >> /home/runner/.coveragerc
+      # - name: 2. Create Coverage Config File
+      #   run: |
+      #     echo "[run]" > /home/runner/.coveragerc
+      #     echo "omit = src/ahd_data_pipelines/common/ArcGIS/OverwriteFS/OverwriteFS.py " >> /home/runner/.coveragerc
+      #     echo "       src/ahd_data_pipelines/tasks/esri/green_data_update.py" >> /home/runner/.coveragerc
+      #     echo "       src/ahd_data_pipelines/tasks/esri/green_data_update_job.py" >> /home/runner/.coveragerc
 
       - name: Install modules
         run: |
@@ -30,7 +30,7 @@ jobs:
           pip install pytest-cov
 
       - name: Run pytest coverage check
-        run: pytest --cov=src --cov-fail-under=14.60
+        run: pytest --cov=src --cov-fail-under=30.00
 
 
 

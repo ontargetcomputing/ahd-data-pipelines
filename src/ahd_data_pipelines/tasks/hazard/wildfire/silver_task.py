@@ -24,15 +24,11 @@ class WildfireSilverTask(MedallionETLTask):
         print(f"Unnest: started with {dataFrame.count()} records")
         if dataFrame.count() > 0 and IRWINID in dataFrame.columns:
             cooked_df = dataFrame.withColumn(IRWINID, explode(split(IRWINID, ",")))
-            cooked_df = cooked_df.withColumn(
-                IRWINID, regexp_replace(IRWINID, "\\{|\\}", "")
-            )
+            cooked_df = cooked_df.withColumn(IRWINID, regexp_replace(IRWINID, "\\{|\\}", ""))
             print(f"Unnest: ended with {cooked_df.count()} records")
             return cooked_df
         else:
-            print(
-                f"No unnesting to perform: count{dataFrame.count()}, {IRWINID} exits: {IRWINID in dataFrame.columns}"
-            )
+            print(f"No unnesting to perform: count{dataFrame.count()}, {IRWINID} exits: {IRWINID in dataFrame.columns}")
             return dataFrame
 
 

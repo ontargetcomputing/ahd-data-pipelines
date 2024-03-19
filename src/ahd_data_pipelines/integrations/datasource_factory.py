@@ -24,33 +24,21 @@ class DatasourceFactory:
         print(f"Constructing Datasource : ${params}")
         print(f"Dbutils is {dbutils}")
         if type == DatasourceType.AGOL:
-            return DatasourceFactory.getAgolDatasource(
-                params=params, dbutils=dbutils, spark=spark, stage=stage
-            )
+            return DatasourceFactory.getAgolDatasource(params=params, dbutils=dbutils, spark=spark, stage=stage)
         elif type == DatasourceType.DATABRICKS:
             return DatasourceFactory.getDatabricksDatasource(params=params, spark=spark)
         elif type == DatasourceType.NOOP:
             return DatasourceFactory.getNoopDatasource(spark=spark)
         elif type == DatasourceType.S3:
-            return DatasourceFactory.getS3Datasource(
-                params=params, dbutils=dbutils, spark=spark, stage=stage
-            )
+            return DatasourceFactory.getS3Datasource(params=params, dbutils=dbutils, spark=spark, stage=stage)
         elif type == DatasourceType.HTTP:
-            return DatasourceFactory.getHTTPDatasource(
-                params=params, dbutils=dbutils, spark=spark, stage=stage
-            )
+            return DatasourceFactory.getHTTPDatasource(params=params, dbutils=dbutils, spark=spark, stage=stage)
         elif type == DatasourceType.FILE:
-            return DatasourceFactory.getFileDatasource(
-                params=params, dbutils=dbutils, spark=spark, stage=stage
-            )
+            return DatasourceFactory.getFileDatasource(params=params, dbutils=dbutils, spark=spark, stage=stage)
         elif type == DatasourceType.JDBC:
-            return DatasourceFactory.getJdbcDatasource(
-                params=params, dbutils=dbutils, spark=spark, stage=stage
-            )
+            return DatasourceFactory.getJdbcDatasource(params=params, dbutils=dbutils, spark=spark, stage=stage)
         elif type == DatasourceType.PANDAS:
-            return DatasourceFactory.getPandasDatasource(
-                params=params, dbutils=dbutils, spark=spark, stage=stage
-            )
+            return DatasourceFactory.getPandasDatasource(params=params, dbutils=dbutils, spark=spark, stage=stage)
         else:
             raise ValueError(type)
 
@@ -88,12 +76,8 @@ class DatasourceFactory:
             aws_secret_key = os.environ.get(f"AWS_SECRET_KEY_{agency}_{stage}")
         else:
             print(f"Reading AWS CREDS from dbutils for agency:{agency}")
-            aws_access_key = dbutils.secrets.get(
-                "SECRET_KEYS", f"AWS_ACCESS_KEY_{agency}_{stage}"
-            )
-            aws_secret_key = dbutils.secrets.get(
-                "SECRET_KEYS", f"AWS_SECRET_KEY_{agency}_{stage}"
-            )
+            aws_access_key = dbutils.secrets.get("SECRET_KEYS", f"AWS_ACCESS_KEY_{agency}_{stage}")
+            aws_secret_key = dbutils.secrets.get("SECRET_KEYS", f"AWS_SECRET_KEY_{agency}_{stage}")
 
         params["aws_access_key"] = aws_access_key
         params["aws_secret_key"] = aws_secret_key

@@ -15,5 +15,17 @@ deploy: validate
 	databricks bundle deploy -t ${ENV} --profile ${ENV}
 	mv .gitignore.orig .gitignore
 
-activate-rdb: 
-	source ~/.local/share/virtualenvs/ahd-data-pipelines/bin/activate 
+venv:
+	poetry shell
+
+unit-test:
+	pytest
+
+unit-test-cov:
+	pytest --cov=src --cov-fail-under=30.00
+
+lint:
+	flake8 src --ignore=E501
+
+black:
+	black src

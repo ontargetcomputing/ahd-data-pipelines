@@ -41,9 +41,7 @@ class MedallionETLTask(ETLTask):
             dataFrames = self.__join(dataFrames=dataFrames, params=self.conf)
             dataFrames = self.__spatial_join(dataFrames=dataFrames, params=self.conf)
             dataFrames = self.custom_transform(dataFrames=dataFrames, params=self.conf)
-            dataFrames = self.__outbound_transform(
-                dataFrames=dataFrames, params=self.conf
-            )
+            dataFrames = self.__outbound_transform(dataFrames=dataFrames, params=self.conf)
             new_dataFrames = dataFrames
         else:
             print('Is Bronze - only adding "ade_date_submitted" and renanming columns')
@@ -131,13 +129,9 @@ class MedallionETLTask(ETLTask):
                     left_df = PandasHelper.pysparksql_to_geopandas(left_pdf)
                     right_df = PandasHelper.pysparksql_to_geopandas(right_pdf)
 
-                    joined = GeoPandasWrapper.sjoin(
-                        left_df, right_df, how=how, predicate=predicate
-                    )
+                    joined = GeoPandasWrapper.sjoin(left_df, right_df, how=how, predicate=predicate)
                     joined.drop(columns=drop_columns, inplace=True)
-                    dataFrames[left_index] = PandasHelper.geopandas_to_pysparksql(
-                        joined, spark=self.spark
-                    )
+                    dataFrames[left_index] = PandasHelper.geopandas_to_pysparksql(joined, spark=self.spark)
 
         return dataFrames
 
@@ -175,9 +169,7 @@ class MedallionETLTask(ETLTask):
                 if left_count == 0 or right_count == 0:
                     print("We have an empty dataset, nothing to join")
                 else:
-                    print(
-                        f"Merging {left_count} records from left with {right_count} records from right"
-                    )
+                    print(f"Merging {left_count} records from left with {right_count} records from right")
                     left_df = PandasHelper.pysparksql_to_pandas_or_geopandas(left_pdf)
                     right_df = PandasHelper.pysparksql_to_pandas_or_geopandas(right_pdf)
                     how = join.get("how", "left")
@@ -198,17 +190,11 @@ class MedallionETLTask(ETLTask):
                         transformations=transformations, dataFrame=merged, params=join
                     )
                     print(merged.head())
-                    if isinstance(
-                        merged, pd.DataFrame
-                    ) and PandasHelper.contains_geometry(merged):
+                    if isinstance(merged, pd.DataFrame) and PandasHelper.contains_geometry(merged):
                         merged = gpd.GeoDataFrame(merged, geometry="geometry")
-                        dataFrames[left_index] = PandasHelper.geopandas_to_pysparksql(
-                            merged, spark=self.spark
-                        )
+                        dataFrames[left_index] = PandasHelper.geopandas_to_pysparksql(merged, spark=self.spark)
                     else:
-                        dataFrames[left_index] = PandasHelper.pandas_to_pysparksql(
-                            merged, spark=self.spark
-                        )
+                        dataFrames[left_index] = PandasHelper.pandas_to_pysparksql(merged, spark=self.spark)
 
         return dataFrames
 
@@ -220,9 +206,7 @@ def entrypoint():
     if "true" != os.environ.get("LOCAL"):
         init_conf = None
     else:
-        yaml_file_path = (
-            "./conf/parameters/shelter/bootstrap/bronze_shelter_sites_historical.yml"
-        )
+        yaml_file_path = "./conf/parameters/shelter/bootstrap/bronze_shelter_sites_historical.yml"
         init_conf = ETLTask.load_yaml(yaml_file_path=yaml_file_path)
         print("******************************")
         print("LOADED CONFIG FROM YAML FILE LOCALLY")
