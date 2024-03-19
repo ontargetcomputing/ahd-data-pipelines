@@ -1,0 +1,7 @@
+[run]
+branch = True
+source src
+omit = 
+      src/ahd_data_pipelines/common/ArcGIS/OverwriteFS/OverwriteFS.py
+      src/ahd_data_pipelines/tasks/esri/green_data_update.py
+      src/ahd_data_pipelines/tasks/esri/green_data_update_job.py

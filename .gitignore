@@ -12,4 +12,4 @@ conf/
 .envrc
 databricks.yml
 
-.coverage*
+.coverage
