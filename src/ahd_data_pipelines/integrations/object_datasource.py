@@ -36,20 +36,14 @@ class ObjectDatasource(Datasource):
             print(f"get_object did not return a DataFrame, processing as {format}")
 
             if format == "csv":
-                raise NotImplementedError(
-                    "csv has not been implemented as a text format yet."
-                )
+                raise NotImplementedError("csv has not been implemented as a text format yet.")
             elif format == "yaml":
-                raise NotImplementedError(
-                    "yaml has not been implemented as a text format yet."
-                )
+                raise NotImplementedError("yaml has not been implemented as a text format yet.")
             elif format == "json":
                 return self._create_dataframe_from_json_text(object)
             elif format == "json_object":
                 return self._create_dataframe_from_json_object(object)
-            elif (
-                format == "excel"
-            ):  # yes, this is a hack, this is not text but let's go with it.
+            elif format == "excel":  # yes, this is a hack, this is not text but let's go with it.
                 return self._create_dataframe_from_excel(object)
             else:
                 raise ValueError(f"Unknown object format '{format}'")
@@ -81,24 +75,14 @@ class ObjectDatasource(Datasource):
         print(f"writing as {format}")
 
         if format == "csv":
-            raise NotImplementedError(
-                "csv has not been implemented as a text format yet."
-            )
+            raise NotImplementedError("csv has not been implemented as a text format yet.")
         elif format == "yaml":
-            raise NotImplementedError(
-                "yaml has not been implemented as a text format yet."
-            )
+            raise NotImplementedError("yaml has not been implemented as a text format yet.")
         elif format == "json":
-            raise NotImplementedError(
-                "json has not been implemented as a text format yet."
-            )
+            raise NotImplementedError("json has not been implemented as a text format yet.")
         elif format == "json_object":
-            raise NotImplementedError(
-                "json_object has not been implemented as a text format yet."
-            )
-        elif (
-            format == "excel"
-        ):  # yes, this is a hack, this is not text but let's go with it.
+            raise NotImplementedError("json_object has not been implemented as a text format yet.")
+        elif format == "excel":  # yes, this is a hack, this is not text but let's go with it.
             obj = self._get_excel(dataFrame)
             self._write(obj)
         else:

@@ -13,15 +13,9 @@ class Pipeline(ABC):
             self.agol_password = os.environ.get("RD_OPTION_AGOL_PASSWORD")
         else:
             self.db_user = dbutils.secrets.get("SECRET_KEYS", f"JDBC_USERNAME_{stage}")
-            self.db_password = dbutils.secrets.get(
-                "SECRET_KEYS", f"JDBC_PASSWORD_{stage}"
-            )
-            self.agol_user = dbutils.secrets.get(
-                "SECRET_KEYS", f"AGOL_USERNAME_{stage}"
-            )
-            self.agol_password = dbutils.secrets.get(
-                "SECRET_KEYS", f"AGOL_PASSWORD_{stage}"
-            )
+            self.db_password = dbutils.secrets.get("SECRET_KEYS", f"JDBC_PASSWORD_{stage}")
+            self.agol_user = dbutils.secrets.get("SECRET_KEYS", f"AGOL_USERNAME_{stage}")
+            self.agol_password = dbutils.secrets.get("SECRET_KEYS", f"AGOL_PASSWORD_{stage}")
 
         if log4j_logger is None:
             raise Exception("No Logger Configured")

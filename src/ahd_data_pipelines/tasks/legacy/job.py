@@ -68,9 +68,7 @@ class Job(ABC):
             )
             return {}
         else:
-            self.logger.info(
-                f"Conf file was provided, reading configuration from {conf_file}"
-            )
+            self.logger.info(f"Conf file was provided, reading configuration from {conf_file}")
             return self._read_config(conf_file)
 
     def _determine_stage(self):

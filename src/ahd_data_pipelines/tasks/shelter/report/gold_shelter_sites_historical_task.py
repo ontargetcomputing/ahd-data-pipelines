@@ -10,25 +10,15 @@ from pyspark.sql.functions import to_date, col
 
 class ShelterSitesHistoricalGoldTask(MedallionETLTask):
     def __init__(self, spark: SparkSession = None, init_conf: dict = None):
-        super(ShelterSitesHistoricalGoldTask, self).__init__(
-            spark=spark, init_conf=init_conf
-        )
+        super(ShelterSitesHistoricalGoldTask, self).__init__(spark=spark, init_conf=init_conf)
 
     def custom_transform(self, dataFrames: array, params: dict = None) -> array:
         print("Doing custom transformation of ShelterSitesHistoricalGoldTask")
 
         final_dataFrames = []
 
-        cs_delta = (
-            dataFrames[1]
-            .filter(dataFrames[1]["site_type"] == "Congregate")
-            .first()["difference"]
-        )
-        ncs_delta = (
-            dataFrames[1]
-            .filter(dataFrames[1]["site_type"] == "Non Congregate")
-            .first()["difference"]
-        )
+        cs_delta = dataFrames[1].filter(dataFrames[1]["site_type"] == "Congregate").first()["difference"]
+        ncs_delta = dataFrames[1].filter(dataFrames[1]["site_type"] == "Non Congregate").first()["difference"]
         dataFrames[0] = dataFrames[0].withColumn("cs_delta", lit(cs_delta))
         dataFrames[0] = dataFrames[0].withColumn("ncs_delta", lit(ncs_delta))
         dataFrames[0] = dataFrames[0].withColumn(

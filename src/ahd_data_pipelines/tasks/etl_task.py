@@ -21,11 +21,7 @@ class ETLTask(Task):
     def __prepare_source_datasources(self, params: dict = None) -> array:
         sources = []
 
-        params = (
-            []
-            if (params is None or "source_datasources" not in params)
-            else params["source_datasources"]
-        )
+        params = [] if (params is None or "source_datasources" not in params) else params["source_datasources"]
         for integration in params:
             print(f"Configuring source:${integration}")
             sources.append(
@@ -44,9 +40,7 @@ class ETLTask(Task):
         destinations = []
         print(params)
         params = (
-            []
-            if (params is None or "destination_datasources" not in params)
-            else params["destination_datasources"]
+            [] if (params is None or "destination_datasources" not in params) else params["destination_datasources"]
         )
         for integration in params:
             print(f"Configuring destination:${integration}")

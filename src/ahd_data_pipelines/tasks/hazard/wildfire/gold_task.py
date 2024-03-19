@@ -24,9 +24,7 @@ class WildfireGoldTask(MedallionETLTask):
         print("Custom Transforming")
         new_dataFrames = []
         dataFrame = dataFrames[0]
-        dataFrame = WildfireGoldTask._create_polygons(
-            dataFrame=dataFrame, spark=self.spark
-        )
+        dataFrame = WildfireGoldTask._create_polygons(dataFrame=dataFrame, spark=self.spark)
 
         new_dataFrames.append(dataFrame)
         return new_dataFrames
@@ -38,12 +36,8 @@ class WildfireGoldTask(MedallionETLTask):
 
         origin = geopy.Point(point.y, point.x)
         north_point = geopy.distance.distance(kilometers=0.1).destination(origin, 0)
-        southeast_point = geopy.distance.distance(kilometers=0.1).destination(
-            origin, 135
-        )
-        southwest_point = geopy.distance.distance(kilometers=0.1).destination(
-            origin, 225
-        )
+        southeast_point = geopy.distance.distance(kilometers=0.1).destination(origin, 135)
+        southwest_point = geopy.distance.distance(kilometers=0.1).destination(origin, 225)
         poly = Polygon(
             [
                 [north_point.longitude, north_point.latitude],
@@ -56,9 +50,7 @@ class WildfireGoldTask(MedallionETLTask):
         return poly_str
 
     @staticmethod
-    def _create_polygons(
-        dataFrame: DataFrame = None, spark: SparkSession = None
-    ) -> DataFrame:
+    def _create_polygons(dataFrame: DataFrame = None, spark: SparkSession = None) -> DataFrame:
         print("Creating Polygons")
         my_udf = udf(WildfireGoldTask._create_poly_agol, StringType())
         full = dataFrame.filter(col("geometry").isNotNull() & (col("geometry") != ""))

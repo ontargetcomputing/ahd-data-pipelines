@@ -12,13 +12,9 @@ class MutateColumns(Transformation):
             print(f"Mutation - {mutation}")
 
             if mutation["mutation"] == "uppercase":
-                dataFrame = dataFrame.withColumn(
-                    mutation["column"], upper(col(mutation["column"]))
-                )
+                dataFrame = dataFrame.withColumn(mutation["column"], upper(col(mutation["column"])))
             elif mutation["mutation"] == "lowercase":
-                dataFrame = dataFrame.withColumn(
-                    mutation["column"], lower(col(mutation["column"]))
-                )
+                dataFrame = dataFrame.withColumn(mutation["column"], lower(col(mutation["column"])))
             else:
                 print(f"Unknown mutation {mutation}")
         return dataFrame
