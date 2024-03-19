@@ -22,7 +22,7 @@ unit-test:
 	pytest
 
 unit-test-cov:
-	pytest --cov=src --cov-fail-under=14.60
+	pytest --cov=src --cov-fail-under=30.00
 
 lint:
 	flake8 src --ignore=E501
