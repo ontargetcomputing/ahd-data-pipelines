@@ -30,7 +30,7 @@ jobs:
           pip install pytest-cov
 
       - name: Run pytest coverage check
-        run: pytest --cov=src --cov-fail-under=30.00 --cov-config=./.coveragerc
+        run: pytest --cov=src --cov-fail-under=30.00
 
 
 
