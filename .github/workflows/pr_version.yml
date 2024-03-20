@@ -20,6 +20,7 @@ jobs:
           git fetch --tags
           latest_tag=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
           echo "Latest Tag: $latest_tag" > latest_tag.txt
+          echo "::set-output name=latest_tag::$latest_tag"
 
       - name: Determine Semantic Version Label
         id: determine_label
@@ -36,31 +37,12 @@ jobs:
           fi
           echo "Label: $label"
 
-    - name: Increase version number
-      id: increase_version
-      run: |
-        latest_tag=$(<latest_tag.txt)
-        current_version=$(echo $latest_tag | cut -d 'v' -f 2)
-        IFS='.' read -r major minor patch <<< "$current_version"
-        case $label in
-          major)
-            new_version="$((major + 1)).0.0"
-            ;;
-          minor)
-            new_version="$major.$((minor + 1)).0"
-            ;;
-          patch)
-            new_version="$major.$minor.$((patch + 1))"
-            ;;
-        esac
-        echo "New Version: $new_version"
-
       - name: Increase version number
         id: increase_version
         run: |
-          label=${{ env.LABEL }}
-          latest_tag=${{ env.LATEST_TAG }}
-          IFS='.' read -r major minor patch <<< "$(echo $latest_tag | cut -d 'v' -f 2)"
+          latest_tag=$(<latest_tag.txt)
+          current_version=$(echo $latest_tag | cut -d 'v' -f 2)
+          IFS='.' read -r major minor patch <<< "$current_version"
           case $label in
             major)
               new_version="$((major + 1)).0.0"
@@ -72,25 +54,21 @@ jobs:
               new_version="$major.$minor.$((patch + 1))"
               ;;
           esac
-          echo "::set-env name=NEW_VERSION::$new_version"
           echo "New Version: $new_version"
 
       # - name: Update pyproject.toml and __init__.py
       #   run: |
-      #     new_version=${{ env.NEW_VERSION }}
+      #     new_version=$(<latest_tag.txt)
       #     sed -i "s/version = .*/version = \"$new_version\"/" pyproject.toml
       #     sed -i "s/__version__ = .*/__version__ = \"$new_version\"/" Src/ahd_data_piplines/__init__.py
-      #     echo "Updated pyproject.toml and __init__.py with version $new_version"
 
       # - name: Commit changes
       #   run: |
       #     git add pyproject.toml Src/ahd_data_piplines/__init__.py
-      #     git commit -m "Update version to ${{ env.NEW_VERSION }}"
-      #     echo "Committed changes"
+      #     git commit -m "Update version to $(<latest_tag.txt)"
 
       # - name: Tag and push changes
       #   run: |
-      #     new_version=${{ env.NEW_VERSION }}
+      #     new_version=$(<latest_tag.txt)
       #     git tag -a "v$new_version" -m "Version $new_version"
       #     git push origin HEAD --tags
-      #     echo "Tagged and pushed changes"
