@@ -20,12 +20,11 @@ jobs:
           git fetch --tags
           latest_tag=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
           echo "Latest Tag: $latest_tag" > latest_tag.txt
-          echo "::set-env name=LATEST_TAG::$latest_tag"
 
       - name: Determine Semantic Version Label
         id: determine_label
         run: |
-          latest_tag=$(cat latest_tag.txt)
+          latest_tag=$(<latest_tag.txt)
           current_version=$(echo $latest_tag | cut -d 'v' -f 2)
           IFS='.' read -r major minor patch <<< "$current_version"
           if [ $major -eq 0 ]; then
@@ -35,8 +34,26 @@ jobs:
           else
             label="patch"
           fi
-          echo "::set-env name=LABEL::$label"
           echo "Label: $label"
+
+    - name: Increase version number
+      id: increase_version
+      run: |
+        latest_tag=$(<latest_tag.txt)
+        current_version=$(echo $latest_tag | cut -d 'v' -f 2)
+        IFS='.' read -r major minor patch <<< "$current_version"
+        case $label in
+          major)
+            new_version="$((major + 1)).0.0"
+            ;;
+          minor)
+            new_version="$major.$((minor + 1)).0"
+            ;;
+          patch)
+            new_version="$major.$minor.$((patch + 1))"
+            ;;
+        esac
+        echo "New Version: $new_version"
 
       - name: Increase version number
         id: increase_version
