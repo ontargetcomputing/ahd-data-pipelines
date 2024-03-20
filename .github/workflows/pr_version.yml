@@ -17,8 +17,7 @@ jobs:
       - name: Get latest version tag
         id: get_version
         run: |
-          git fetch --tags
-          latest_tag=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+          latest_tag=$(git for-each-ref --sort=creatordate --format '%(refname)' refs/tags | tail -n 1 | cut -d '/' -f 3)
           echo "Latest Tag: $latest_tag" > latest_tag.txt
           echo "::set-output name=latest_tag::$latest_tag"
 
