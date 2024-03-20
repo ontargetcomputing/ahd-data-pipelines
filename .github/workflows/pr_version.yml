@@ -14,12 +14,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Get latest version tag
-        id: get_version
-        run: |
-          latest_tag=$(git for-each-ref --sort=creatordate --format '%(refname)' refs/tags | tail -n 1 | cut -d '/' -f 3)
-          echo "Latest Tag: $latest_tag" > latest_tag.txt
-          echo "::set-output name=latest_tag::$latest_tag"
+      - uses: actions-ecosystem/action-get-latest-tag@v1
+        id: get-latest-tag
+        if: ${{ steps.release-label.outputs.level != null }}
+        message: steps.release-label.outputs.level
 
       - name: Determine Semantic Version Label
         id: determine_label
