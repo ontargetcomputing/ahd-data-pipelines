@@ -18,6 +18,11 @@ jobs:
         id: set-latest-tag
         run: echo "latest_tag=$(git tag | sort --version-sort | tail -n1)" >> $GITHUB_ENV
 
+      - name: "Print latest tag"
+        run: echo "Latest Git tag is $latest_tag"
+        env:
+          latest_tag: ${{ steps.set-latest-tag.outputs.latest_tag }}
+
       - name: Determine Semantic Version Label
         id: determine_label
         run: |
