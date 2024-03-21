@@ -33,6 +33,7 @@ pytest-mock = "3.10.0"
 delta-spark = "2.4.0"
 flake8 = "^7.0.0"
 black = "^24.2.0"
+databricks-connect = "13.0.1"
 
 [tool.black]
 line-length = 120
