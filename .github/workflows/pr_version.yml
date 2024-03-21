@@ -18,8 +18,10 @@ jobs:
         id: set-latest-tag
         run: echo "latest_tag=$(git tag | sort --version-sort | tail -n1)" >> $GITHUB_ENV
 
-      - name: "Print latest tag"
-        run: echo "Latest Git tag is $latest_tag"
+      - name: "Print latest tag and GitHub environment variables"
+        run: |
+          echo "Latest Git tag is $latest_tag"
+          cat $GITHUB_ENV
         env:
           latest_tag: ${{ steps.set-latest-tag.outputs.latest_tag }}
 
