@@ -1,0 +1,37 @@
+bronze: true
+source_datasources:
+  - type: http
+    http_processor: cdii_data_pipelines.integrations.http_processors.national_weather_service_http_processor.NationalWeatherServiceHttpProcessor
+    endpoint: https://api.weather.gov/alerts/active/area/CA
+destination_datasources:
+  - type: databricks
+    table: {{ workflows['hazard_weather'].catalog }}.bronze.alerts_{{ env }}
+    data_types:
+      - column: Type
+        type: string
+      - column: Severity
+        type: string
+      - column: Summary
+        type: string
+      - column: Link
+        type: string
+      - column: Urgency
+        type: string
+      - column: Certainty
+        type: string
+      - column: Category
+        type: string
+      - column: UpdatedDate
+        type: string
+      - column: EffectiveDate
+        type: string
+      - column: ExpirationDate
+        type: string
+      - column: UniqueId
+        type: string
+      - column: AreasAffected
+        type: string
+      - column: AreaIdsAffected
+        type: string
+      - column: Geometry
+        type: string

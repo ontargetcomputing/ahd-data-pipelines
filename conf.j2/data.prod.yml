@@ -141,3 +141,7 @@ workflows:
 
   census_language:
     template: conf/workflows/census/language.yml
+
+  hazard_weather:
+    template: conf/workflows/hazard/weather.yml
+    catalog: ahd_weather
