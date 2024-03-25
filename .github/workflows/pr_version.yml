@@ -14,16 +14,25 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: "Set latest tag"
-        id: set-latest-tag
-        run: echo "latest_tag=$(git tag | sort --version-sort | tail -n1)" >> $GITHUB_ENV
+    # Check GitHub API for newest tag of check_rancher2 
+      - name: ahd-data-pipelines - Check for newest available version
+        uri:
+          url: https://api.github.com/repos/ontargetcomputing/ahd-data-pipelines/tags
+          method: GET
+          return_content: yes
+          status_code: 200
+          body_format: json
+        register: result
 
-      - name: "Print latest tag and GitHub environment variables"
-        run: |
-          echo "Latest Git tag is $latest_tag"
-          cat $GITHUB_ENV
-        env:
-          latest_tag: ${{ steps.set-latest-tag.outputs.latest_tag }}
+      # Debug output for the full result variable
+      - debug:
+          msg: "{{ result }}"
+        ignore_errors: True
+
+      # Debug output to see the latest tag. This should show an output like: 1.12.0
+      - debug:
+          msg: "{{ result.json[0].name }}"
+        ignore_errors: True
 
       - name: Determine Semantic Version Label
         id: determine_label
