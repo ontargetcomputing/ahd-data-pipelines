@@ -24,15 +24,15 @@ jobs:
           body_format: json
         register: result
 
-      # Debug output for the full result variable
-      - debug:
-          msg: "{{ result }}"
-        ignore_errors: True
+      # # Debug output for the full result variable
+      # - debug:
+      #     msg: "{{ result }}"
+      #   ignore_errors: True
 
-      # Debug output to see the latest tag. This should show an output like: 1.12.0
-      - debug:
-          msg: "{{ result.json[0].name }}"
-        ignore_errors: True
+      # # Debug output to see the latest tag. This should show an output like: 1.12.0
+      # - debug:
+      #     msg: "{{ result.json[0].name }}"
+      #   ignore_errors: True
 
       - name: Determine Semantic Version Label
         id: determine_label
