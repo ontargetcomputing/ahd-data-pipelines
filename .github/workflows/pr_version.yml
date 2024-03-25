@@ -10,29 +10,14 @@ jobs:
   update_version:
     runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-    # Check GitHub API for newest tag of check_rancher2 
-      - name: Get Latest Tag
-        uri:
-          url: https://api.github.com/repos/ontargetcomputing/ahd-data-pipelines/tags
-          method: GET
-          return_content: yes
-          status_code: 200
-          body_format: json
-        register: result
-
-      # # Debug output for the full result variable
-      # - debug:
-      #     msg: "{{ result }}"
-      #   ignore_errors: True
-
-      # # Debug output to see the latest tag. This should show an output like: 1.12.0
-      # - debug:
-      #     msg: "{{ result.json[0].name }}"
-      #   ignore_errors: True
+steps:
+      - name: Find Latest Tag for ontargetcomputing/ahd-data-pipelines
+        uses: tdemin/find-latest-tag@v1
+        with:
+          repo: https://github.com/ontargetcomputing/ahd-data-pipelines.git
+        id: ahd_data_pipelines_tag
+      - name: Print Latest Tag for ontargetcomputing/ahd-data-pipelines
+        run: echo "Latest tag for ontargetcomputing/ahd-data-pipelines is ${{ steps.ahd_data_pipelines_tag.outputs.tag }}"
 
       - name: Determine Semantic Version Label
         id: determine_label
