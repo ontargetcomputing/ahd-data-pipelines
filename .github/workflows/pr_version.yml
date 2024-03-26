@@ -63,11 +63,11 @@ jobs:
           OLD_VERSION="${{ steps.ahd_data_pipelines_tag.outputs.tag }}"
           IFS='.' read -ra VERSION_PARTS <<< "$OLD_VERSION"
 
-          if [[ "${{ steps.extract_labels.outputs.major_label }}" -eq 1 ]]; then
+          if [[ -n "${{ steps.extract_labels.outputs.major_label }}" ]]; then
             NEW_VERSION="${VERSION_PARTS[0]}.0.0"
-          elif [[ "${{ steps.extract_labels.outputs.minor_label }}" -eq 1 ]]; then
+          elif [[ -n "${{ steps.extract_labels.outputs.minor_label }}" ]]; then
             NEW_VERSION="${VERSION_PARTS[0]}.$((${VERSION_PARTS[1]} + 1)).0"
-          elif [[ "${{ steps.extract_labels.outputs.patch_label }}" -eq 1 ]]; then
+          elif [[ -n "${{ steps.extract_labels.outputs.patch_label }}" ]]; then
             NEW_VERSION="${VERSION_PARTS[0]}.${VERSION_PARTS[1]}.$((${VERSION_PARTS[2]} + 1))"
           else
             echo "No version label found. Exiting..."
