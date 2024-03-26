@@ -59,6 +59,7 @@ jobs:
           fi
 
       - name: Calculate new version tag
+        id: calculated_new_version
         run: |
           OLD_VERSION="${{ steps.ahd_data_pipelines_tag.outputs.tag }}"
           IFS='.' read -ra VERSION_PARTS <<< "$OLD_VERSION"
@@ -75,3 +76,4 @@ jobs:
           fi
 
           echo "::set-output name=new_version::$NEW_VERSION"
+          echo "New Version: ${{ steps.calculated_new_version.outputs.new_version }}"
