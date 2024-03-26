@@ -44,3 +44,15 @@ jobs:
           echo "Minor Label: ${{ steps.extract_labels.outputs.minor_label }}"
           echo "Major Label: ${{ steps.extract_labels.outputs.major_label }}"
           echo "Patch Label: ${{ steps.extract_labels.outputs.patch_label }}"
+
+        - name: Check for multiple version labels
+        run: |
+          if [[ ! -z "${{ steps.extract_labels.outputs.minor_label }}" && \
+                ! -z "${{ steps.extract_labels.outputs.major_label }}" || \
+                ! -z "${{ steps.extract_labels.outputs.minor_label }}" && \
+                ! -z "${{ steps.extract_labels.outputs.patch_label }}" || \
+                ! -z "${{ steps.extract_labels.outputs.major_label }}" && \
+                ! -z "${{ steps.extract_labels.outputs.patch_label }}" ]]; then
+            echo "Error: More than one of the version labels (minor, major, patch) exist. Exiting..."
+            exit 1
+          fi
