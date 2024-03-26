@@ -135,3 +135,12 @@ workflows:
 
   census_language:
     template: conf/workflows/census/language.yml
+
+  hazard_emsa:
+    template: workflows/hazard/emsa.j2.yml
+    bronze:
+      source:
+        bucket_name: chhs-datahub-emsa
+        agency: EMSA
+        aws_region: us-west-1
+        file_name: upload/EMSA_Deployments_Mock_Data.xlsx
