@@ -1,7 +1,7 @@
 resources:
   jobs:
     hazard_emsa:
-      name: hazard_emsa
+      name: EMSA
 
       email_notifications:
         on_failure:
