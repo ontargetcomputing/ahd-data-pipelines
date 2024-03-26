@@ -65,10 +65,13 @@ jobs:
           IFS='.' read -ra VERSION_PARTS <<< "$OLD_VERSION"
 
           if [[ -n "${{ steps.extract_labels.outputs.major_label }}" ]]; then
+            echo "Major label found"
             NEW_VERSION="${VERSION_PARTS[0]}.0.0"
           elif [[ -n "${{ steps.extract_labels.outputs.minor_label }}" ]]; then
+            echo "Minor label found"
             NEW_VERSION="${VERSION_PARTS[0]}.$((${VERSION_PARTS[1]} + 1)).0"
           elif [[ -n "${{ steps.extract_labels.outputs.patch_label }}" ]]; then
+            echo "Patch label found"
             NEW_VERSION="${VERSION_PARTS[0]}.${VERSION_PARTS[1]}.$((${VERSION_PARTS[2]} + 1))"
           else
             echo "No version label found. Exiting..."
