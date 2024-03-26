@@ -45,6 +45,7 @@ jobs:
           echo "Major Label: ${{ steps.extract_labels.outputs.major_label }}"
           echo "Patch Label: ${{ steps.extract_labels.outputs.patch_label }}"
 
+      # Make sure two labels don't exist
       - name: Check for multiple version labels
         run: |
           if [[ ! -z "${{ steps.extract_labels.outputs.minor_label }}" && \
@@ -56,3 +57,20 @@ jobs:
             echo "Error: More than one of the version labels (minor, major, patch) exist. Exiting..."
             exit 1
           fi
+
+      # Calculate the updated version
+          OLD_VERSION="${{ steps.ahd_data_pipelines_tag.outputs.tag }}"  # Assuming version.txt contains the current version
+          IFS='.' read -ra VERSION_PARTS <<< "$OLD_VERSION"
+
+          if [[ $MAJOR -eq 1 ]]; then
+            NEW_VERSION="${VERSION_PARTS[0]}.0.0"
+          elif [[ $MINOR -eq 1 ]]; then
+            NEW_VERSION="${VERSION_PARTS[0]}.$((${VERSION_PARTS[1]} + 1)).0"
+          elif [[ $PATCH -eq 1 ]]; then
+            NEW_VERSION="${VERSION_PARTS[0]}.${VERSION_PARTS[1]}.$((${VERSION_PARTS[2]} + 1))"
+          else
+            echo "No version label found. Exiting..."
+            exit 1
+          fi
+
+          echo "::set-output name=new_version::$NEW_VERSION"
