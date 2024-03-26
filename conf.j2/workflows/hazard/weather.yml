@@ -1,7 +1,7 @@
 resources:
   jobs:
     hazard_weather:
-      name: hazard_weather
+      name: Weather Alerts
 
       email_notifications:
         on_failure:
