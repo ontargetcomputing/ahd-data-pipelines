@@ -73,3 +73,4 @@ jobs:
           fi
 
           echo "::set-output name=new_version::$NEW_VERSION"
+          
