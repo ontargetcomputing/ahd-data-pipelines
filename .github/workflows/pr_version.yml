@@ -58,8 +58,7 @@ jobs:
             exit 1
           fi
 
-      # Calculate the updated version
-          OLD_VERSION="${{ steps.ahd_data_pipelines_tag.outputs.tag }}"  # Assuming version.txt contains the current version
+          OLD_VERSION="${{ steps.ahd_data_pipelines_tag.outputs.tag }}"
           IFS='.' read -ra VERSION_PARTS <<< "$OLD_VERSION"
 
           if [[ $MAJOR -eq 1 ]]; then
