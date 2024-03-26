@@ -25,9 +25,15 @@ jobs:
         run: |
           PR_LABELS=$(jq --raw-output '.pull_request.labels[].name' "$GITHUB_EVENT_PATH" || echo "")
           
-          MINOR_LABEL=$(echo "$PR_LABELS" | grep -i 'minor')
-          MAJOR_LABEL=$(echo "$PR_LABELS" | grep -i 'major')
-          PATCH_LABEL=$(echo "$PR_LABELS" | grep -i 'patch')
+          MINOR_LABEL=""
+          MAJOR_LABEL=""
+          PATCH_LABEL=""
+
+          if [[ ! -z "$PR_LABELS" ]]; then
+            MINOR_LABEL=$(echo "$PR_LABELS" | grep -i 'minor' || echo "")
+            MAJOR_LABEL=$(echo "$PR_LABELS" | grep -i 'major' || echo "")
+            PATCH_LABEL=$(echo "$PR_LABELS" | grep -i 'patch' || echo "")
+          fi
           
           echo "::set-output name=minor_label::$MINOR_LABEL"
           echo "::set-output name=major_label::$MAJOR_LABEL"
