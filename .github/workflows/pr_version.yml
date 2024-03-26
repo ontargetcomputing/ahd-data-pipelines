@@ -45,7 +45,7 @@ jobs:
           echo "Major Label: ${{ steps.extract_labels.outputs.major_label }}"
           echo "Patch Label: ${{ steps.extract_labels.outputs.patch_label }}"
 
-        - name: Check for multiple version labels
+      - name: Check for multiple version labels
         run: |
           if [[ ! -z "${{ steps.extract_labels.outputs.minor_label }}" && \
                 ! -z "${{ steps.extract_labels.outputs.major_label }}" || \
