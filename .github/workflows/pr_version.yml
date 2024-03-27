@@ -34,10 +34,6 @@ jobs:
             MAJOR_LABEL=$(echo "$PR_LABELS" | grep -i 'major' || echo "")
             PATCH_LABEL=$(echo "$PR_LABELS" | grep -i 'patch' || echo "")
           fi
-          
-          echo "::set-output name=minor_label::$MINOR_LABEL"
-          echo "::set-output name=major_label::$MAJOR_LABEL"
-          echo "::set-output name=patch_label::$PATCH_LABEL"
 
       - name: Display version labels
         run: |
@@ -78,5 +74,4 @@ jobs:
             exit 1
           fi
 
-          echo "::set-output name=new_version::$NEW_VERSION"
           echo "New Version: ${{ steps.calculated_new_version.outputs.new_version }}"
