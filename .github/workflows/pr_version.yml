@@ -79,7 +79,7 @@ jobs:
 
           if [[ -n "$MAJOR_LABEL" ]]; then
             echo "Major label found"
-            NEW_VERSION="${VERSION_PARTS[0]}.0.0"
+            NEW_VERSION="$((VERSION_PARTS[0] + 1)).0.0"
           elif [[ -n "$MINOR_LABEL" ]]; then
             echo "Minor label found"
             NEW_VERSION="${VERSION_PARTS[0]}.$((${VERSION_PARTS[1]} + 1)).0"
