@@ -27,17 +27,11 @@ jobs:
       - name: Print Latest Tag for ontargetcomputing/ahd-data-pipelines
         run: echo "Latest tag for ontargetcomputing/ahd-data-pipelines is ${{ steps.ahd_data_pipelines_tag.outputs.tag }}"
 
-      - name: Debug Event Payload
-        run: cat $GITHUB_EVENT_PATH
-
       - name: Extract PR labels
         run: |
-          PR_LABELS=$(jq --raw-output '.pull_request.labels[].name' "$GITHUB_EVENT_PATH" || echo "")
+          PR_LABELS=$(jq --raw-output '.pull_request.labels[].name' "$GITHUB_EVENT_PATH" | paste -sd ',' - || echo "")
           echo "PR_LABELS=$PR_LABELS" >> $GITHUB_ENV
           echo "PR Labels: $PR_LABELS"
-      
-      - name: Debug Event Payload
-        run: cat $GITHUB_EVENT_PATH
 
       - name: Process PR labels
         run: |
