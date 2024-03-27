@@ -95,3 +95,4 @@ jobs:
           echo "::set-output name=new_version::$NEW_VERSION"
           echo "New Version: ${{ steps.calculated_new_version.outputs.new_version }}"
           
+          
