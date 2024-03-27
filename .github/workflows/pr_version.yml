@@ -72,8 +72,7 @@ jobs:
             exit 1
           fi
 
-      - name: Calculate new version tag
-        id: calculated_new_version
+      - name: Set New Version
         run: |
           OLD_VERSION="${{ steps.ahd_data_pipelines_tag.outputs.tag }}"
           IFS='.' read -ra VERSION_PARTS <<< "$OLD_VERSION"
@@ -94,5 +93,6 @@ jobs:
 
           echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
           echo "New Version: $NEW_VERSION"
+
 
           
