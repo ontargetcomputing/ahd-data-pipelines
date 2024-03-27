@@ -1,0 +1,95 @@
+name: Update Version
+
+on:
+  pull_request:
+    branches:
+      - main
+    types: [opened, synchronize]
+
+jobs:
+  update_version:
+    runs-on: ubuntu-latest
+
+    env:
+      GITHUB_EVENT_PATH: ${{ github.event_path }}
+
+    steps:
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Get latest Tag 
+      - name: Find Latest Tag for ontargetcomputing/ahd-data-pipelines
+        uses: tdemin/find-latest-tag@v1
+        with:
+          repo: https://github.com/ontargetcomputing/ahd-data-pipelines.git
+        id: ahd_data_pipelines_tag
+      - name: Print Latest Tag for ontargetcomputing/ahd-data-pipelines
+        run: echo "Latest tag for ontargetcomputing/ahd-data-pipelines is ${{ steps.ahd_data_pipelines_tag.outputs.tag }}"
+
+      - name: Extract PR labels
+        run: |
+          PR_LABELS=$(jq --raw-output '.pull_request.labels[].name' "$GITHUB_EVENT_PATH" | paste -sd ',' - || echo "")
+          echo "PR_LABELS=$PR_LABELS" >> $GITHUB_ENV
+          echo "PR Labels: $PR_LABELS"
+
+      - name: Process PR labels
+        run: |
+          MINOR_LABEL=""
+          MAJOR_LABEL=""
+          PATCH_LABEL=""
+
+          if [[ ! -z "$PR_LABELS" ]]; then
+            if echo "$PR_LABELS" | grep -qi 'minor'; then
+              MINOR_LABEL="minor"
+            fi
+            if echo "$PR_LABELS" | grep -qi 'major'; then
+              MAJOR_LABEL="major"
+            fi
+            if echo "$PR_LABELS" | grep -qi 'patch'; then
+              PATCH_LABEL="patch"
+            fi
+          fi
+
+          echo "MINOR_LABEL=$MINOR_LABEL" >> $GITHUB_ENV
+          echo "MAJOR_LABEL=$MAJOR_LABEL" >> $GITHUB_ENV
+          echo "PATCH_LABEL=$PATCH_LABEL" >> $GITHUB_ENV
+
+          echo "Minor Label: $MINOR_LABEL"
+          echo "Major Label: $MAJOR_LABEL"
+          echo "Patch Label: $PATCH_LABEL"
+
+      # Make sure two labels don't exist
+      - name: Check for multiple version labels
+        run: |
+          if [[ ! -z "$MINOR_LABEL" && \
+                ! -z "$MAJOR_LABEL" || \
+                ! -z "$MINOR_LABEL" && \
+                ! -z "$PATCH_LABEL" || \
+                ! -z "$MAJOR_LABEL" && \
+                ! -z "$PATCH_LABEL" ]]; then
+            echo "Error: More than one of the version labels (minor, major, patch) exist. Exiting..."
+            exit 1
+          fi
+
+      - name: Set New Version
+        run: |
+          OLD_VERSION="${{ steps.ahd_data_pipelines_tag.outputs.tag }}"
+          IFS='.' read -ra VERSION_PARTS <<< "$OLD_VERSION"
+
+          if [[ -n "$MAJOR_LABEL" ]]; then
+            echo "Major label found"
+            NEW_VERSION="$((VERSION_PARTS[0] + 1)).0.0"
+          elif [[ -n "$MINOR_LABEL" ]]; then
+            echo "Minor label found"
+            NEW_VERSION="${VERSION_PARTS[0]}.$((${VERSION_PARTS[1]} + 1)).0"
+          elif [[ -n "$PATCH_LABEL" ]]; then
+            echo "Patch label found"
+            NEW_VERSION="${VERSION_PARTS[0]}.${VERSION_PARTS[1]}.$((${VERSION_PARTS[2]} + 1))"
+          else
+            echo "No version label found. Exiting..."
+            exit 1
+          fi
+
+          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+          echo "New Version: $NEW_VERSION"
