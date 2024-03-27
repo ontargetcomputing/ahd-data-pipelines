@@ -14,6 +14,10 @@ jobs:
       GITHUB_EVENT_PATH: ${{ github.event_path }}
 
     steps:
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       # Get latest Tag 
       - name: Find Latest Tag for ontargetcomputing/ahd-data-pipelines
         uses: tdemin/find-latest-tag@v1
@@ -27,6 +31,7 @@ jobs:
         run: |
           PR_LABELS=$(jq --raw-output '.pull_request.labels[].name' "$GITHUB_EVENT_PATH" || echo "")
           echo "PR_LABELS=$PR_LABELS" >> $GITHUB_ENV
+          echo "PR Labels: $PR_LABELS"
       
       - name: Process PR labels
         run: |
