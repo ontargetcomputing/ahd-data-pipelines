@@ -93,4 +93,3 @@ jobs:
 
           echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
           echo "New Version: $NEW_VERSION"
-
