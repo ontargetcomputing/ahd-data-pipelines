@@ -9,6 +9,10 @@ on:
 jobs:
   update_version:
     runs-on: ubuntu-latest
+
+    env:
+      GITHUB_EVENT_PATH: ${{ github.event_path }}
+
     steps:
       # Get latest Tag 
       - name: Find Latest Tag for ontargetcomputing/ahd-data-pipelines
@@ -19,27 +23,30 @@ jobs:
       - name: Print Latest Tag for ontargetcomputing/ahd-data-pipelines
         run: echo "Latest tag for ontargetcomputing/ahd-data-pipelines is ${{ steps.ahd_data_pipelines_tag.outputs.tag }}"
 
-      # Get version label 
-      - name: Extract version labels
-        id: extract_labels
+      - name: Extract PR labels
         run: |
           PR_LABELS=$(jq --raw-output '.pull_request.labels[].name' "$GITHUB_EVENT_PATH" || echo "")
-          
+          echo "PR_LABELS=$PR_LABELS" >> $GITHUB_ENV
+      
+      - name: Process PR labels
+        run: |
           MINOR_LABEL=""
           MAJOR_LABEL=""
           PATCH_LABEL=""
-
+          
           if [[ ! -z "$PR_LABELS" ]]; then
             MINOR_LABEL=$(echo "$PR_LABELS" | grep -i 'minor' || echo "")
             MAJOR_LABEL=$(echo "$PR_LABELS" | grep -i 'major' || echo "")
             PATCH_LABEL=$(echo "$PR_LABELS" | grep -i 'patch' || echo "")
           fi
+          
+          echo "MINOR_LABEL=$MINOR_LABEL" >> $GITHUB_ENV
+          echo "MAJOR_LABEL=$MAJOR_LABEL" >> $GITHUB_ENV
+          echo "PATCH_LABEL=$PATCH_LABEL" >> $GITHUB_ENV
 
-      - name: Display version labels
-        run: |
-          echo "Minor Label: ${{ steps.extract_labels.outputs.minor_label }}"
-          echo "Major Label: ${{ steps.extract_labels.outputs.major_label }}"
-          echo "Patch Label: ${{ steps.extract_labels.outputs.patch_label }}"
+          echo "Minor Label: $MINOR_LABEL"
+          echo "Major Label: $MAJOR_LABEL"
+          echo "Patch Label: $PATCH_LABEL"
 
       # Make sure two labels don't exist
       - name: Check for multiple version labels
@@ -74,4 +81,5 @@ jobs:
             exit 1
           fi
 
+          echo "::set-output name=new_version::$NEW_VERSION"
           echo "New Version: ${{ steps.calculated_new_version.outputs.new_version }}"
