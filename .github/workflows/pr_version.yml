@@ -78,13 +78,13 @@ jobs:
           OLD_VERSION="${{ steps.ahd_data_pipelines_tag.outputs.tag }}"
           IFS='.' read -ra VERSION_PARTS <<< "$OLD_VERSION"
 
-          if [[ -n "${{ steps.extract_labels.outputs.major_label }}" ]]; then
+          if [[ -n "$MAJOR_LABEL" ]]; then
             echo "Major label found"
             NEW_VERSION="${VERSION_PARTS[0]}.0.0"
-          elif [[ -n "${{ steps.extract_labels.outputs.minor_label }}" ]]; then
+          elif [[ -n "$MINOR_LABEL" ]]; then
             echo "Minor label found"
             NEW_VERSION="${VERSION_PARTS[0]}.$((${VERSION_PARTS[1]} + 1)).0"
-          elif [[ -n "${{ steps.extract_labels.outputs.patch_label }}" ]]; then
+          elif [[ -n "$PATCH_LABEL" ]]; then
             echo "Patch label found"
             NEW_VERSION="${VERSION_PARTS[0]}.${VERSION_PARTS[1]}.$((${VERSION_PARTS[2]} + 1))"
           else
@@ -92,7 +92,7 @@ jobs:
             exit 1
           fi
 
-          echo "::set-output name=new_version::$NEW_VERSION"
-          echo "New Version: ${{ steps.calculated_new_version.outputs.new_version }}"
-          
+          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+          echo "New Version: $NEW_VERSION"
+
           
