@@ -51,12 +51,12 @@ jobs:
       # Make sure two labels don't exist
       - name: Check for multiple version labels
         run: |
-          if [[ ! -z "${{ $MINOR_LABEL }}" && \
-                ! -z "${{ $MAJOR_LABEL }}" || \
-                ! -z "${{ $MINOR_LABEL }}" && \
-                ! -z "${{ $PATCH_LABEL }}" || \
-                ! -z "${{ $MAJOR_LABEL }}" && \
-                ! -z "${{ $PATCH_LABEL }}" ]]; then
+          if [[ ! -z "$MINOR_LABEL" && \
+                ! -z "$MAJOR_LABEL" || \
+                ! -z "$MINOR_LABEL" && \
+                ! -z "$PATCH_LABEL" || \
+                ! -z "$MAJOR_LABEL" && \
+                ! -z "$PATCH_LABEL" ]]; then
             echo "Error: More than one of the version labels (minor, major, patch) exist. Exiting..."
             exit 1
           fi
