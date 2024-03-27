@@ -33,13 +33,19 @@ jobs:
           MINOR_LABEL=""
           MAJOR_LABEL=""
           PATCH_LABEL=""
-          
+
           if [[ ! -z "$PR_LABELS" ]]; then
-            MINOR_LABEL=$(echo "$PR_LABELS" | grep -i 'minor' || echo "")
-            MAJOR_LABEL=$(echo "$PR_LABELS" | grep -i 'major' || echo "")
-            PATCH_LABEL=$(echo "$PR_LABELS" | grep -i 'patch' || echo "")
+            if echo "$PR_LABELS" | grep -qi 'minor'; then
+              MINOR_LABEL="minor"
+            fi
+            if echo "$PR_LABELS" | grep -qi 'major'; then
+              MAJOR_LABEL="major"
+            fi
+            if echo "$PR_LABELS" | grep -qi 'patch'; then
+              PATCH_LABEL="patch"
+            fi
           fi
-          
+
           echo "MINOR_LABEL=$MINOR_LABEL" >> $GITHUB_ENV
           echo "MAJOR_LABEL=$MAJOR_LABEL" >> $GITHUB_ENV
           echo "PATCH_LABEL=$PATCH_LABEL" >> $GITHUB_ENV
