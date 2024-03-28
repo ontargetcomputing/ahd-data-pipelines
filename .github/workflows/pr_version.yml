@@ -15,8 +15,21 @@ jobs:
 
     env:
       GITHUB_EVENT_PATH: ${{ github.event_path }}
+      IS_MERGE: false
 
     steps:
+
+        - name: Set IS_MERGE variable
+        run: |
+          if [ "${{ github.event_name }}" = "push" ]; then
+            if echo "${{ github.event.head_commit.message }}" | grep -qi 'Merge'; then
+              echo "IS_MERGE=true" >> $GITHUB_ENV
+            fi
+          elif [ "${{ github.event_name }}" = "pull_request" ]; then
+            if echo "${{ github.event.pull_request.title }}" | grep -qi 'Merge'; then
+              echo "IS_MERGE=true" >> $GITHUB_ENV
+            fi
+          fi
 
       # Checkout Code
       - name: Checkout code
