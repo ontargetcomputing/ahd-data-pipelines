@@ -121,6 +121,21 @@ jobs:
           echo "New Version: $NEW_VERSION"
 
         # Update to src/ahd_data_piplines/__init__.py and pyproject.toml
-        # Commit and push
+        - name: Update Version
+          if: env.IS_MERGE == 'true'
+          run: |
+            sed -i "s/version = \"[0-9].[0-9].[0-9]\"/version = \"$NEW_VERSION\"/" pyproject.toml
+            sed -i "s/__version__ = \"[0-9].[0-9].[0-9]\"/__version__ = \"$NEW_VERSION\"/" src/ahd_data_piplines/__init__.py
 
-        # Update tag
+        # Commit and push
+        - name: Commit and Push Changes
+          if: env.IS_MERGE == 'true'
+          run: |
+            git config --local user.email "action@github.com"
+            git config --local user.name "GitHub Action"
+
+            git add pyproject.toml src/ahd_data_piplines/__init__.py
+            git commit -m "Update version to $NEW_VERSION"
+            git tag -a "$NEW_VERSION" -m "Version $NEW_VERSION"
+            git push origin main --tags
+
