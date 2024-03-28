@@ -15,6 +15,7 @@ jobs:
 
     steps:
 
+      # Checkout Code
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -76,6 +77,7 @@ jobs:
             exit 1
           fi
 
+      # Calculate new version
       - name: Set New Version
         run: |
           OLD_VERSION="$LATEST_TAG"
@@ -97,3 +99,8 @@ jobs:
 
           echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
           echo "New Version: $NEW_VERSION"
+
+        # Update to src/ahd_data_piplines/__init__.py and pyproject.toml
+        # Commit and push
+
+        # Update tag
