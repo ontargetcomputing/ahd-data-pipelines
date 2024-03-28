@@ -12,12 +12,21 @@ resources:
         timezone_id: "America/Los_Angeles"
       
       tasks:
+        - task_key: "bronze_historical_agol"
+          existing_cluster_id: ${var.ahd_cluster_id}
+          python_wheel_task:
+            package_name: ${bundle.name}
+            entry_point: medallion_task
+            parameters: [ "--conf-file", "${var.param_files_dir}/hazard/emsa/bronze_from_agol_historical_task.yml", "--stage", "${bundle.target}"]
+          libraries:
+            - whl: /dist/*.whl
+
         - task_key: "bronze"
           existing_cluster_id: ${var.ahd_cluster_id}
           python_wheel_task:
             package_name: ${bundle.name}
             entry_point: medallion_task
-            parameters: [ "--conf-file", "${var.param_files_dir}/hazard/calmat/emsa/bronze_task.yml", "--stage", "${bundle.target}"]
+            parameters: [ "--conf-file", "${var.param_files_dir}/hazard/emsa/bronze_task.yml", "--stage", "${bundle.target}"]
           libraries:
             - whl: /dist/*.whl
 
@@ -28,7 +37,7 @@ resources:
           python_wheel_task:
             package_name: ${bundle.name}
             entry_point: medallion_task
-            parameters: [ "--conf-file", "${var.param_files_dir}/hazard/calmat/emsa/silver_dep_res_task.yml", "--stage", "${bundle.target}"]
+            parameters: [ "--conf-file", "${var.param_files_dir}/hazard/emsa/silver_dep_res_task.yml", "--stage", "${bundle.target}"]
           libraries:
             - whl: /dist/*.whl
 
@@ -39,50 +48,96 @@ resources:
           python_wheel_task:
             package_name: ${bundle.name}
             entry_point: medallion_task
-            parameters: [ "--conf-file", "${var.param_files_dir}/hazard/calmat/emsa/silver_avail_res_task.yml", "--stage", "${bundle.target}"]
+            parameters: [ "--conf-file", "${var.param_files_dir}/hazard/emsa/silver_avail_res_task.yml", "--stage", "${bundle.target}"]
           libraries:
             - whl: /dist/*.whl
 
-        - task_key: "gold_dep_resources"
+        - task_key: "gold_create_historical_all"
           depends_on: 
             - task_key:  silver_dep_resources
           existing_cluster_id: ${var.ahd_cluster_id}
           python_wheel_task:
             package_name: ${bundle.name}
             entry_point: medallion_task
-            parameters: [ "--conf-file", "${var.param_files_dir}/hazard/calmat/emsa/gold_dep_res_task.yml", "--stage", "${bundle.target}"]
+            parameters: [ "--conf-file", "${var.param_files_dir}/hazard/emsa/gold_create_historical_all.yml", "--stage", "${bundle.target}"]
           libraries:
             - whl: /dist/*.whl
 
-        - task_key: "gold_avail_resources"
+        - task_key: "gold_historical_all"
           depends_on: 
-            - task_key:  silver_avail_resources
+            - task_key:  gold_create_historical_all
           existing_cluster_id: ${var.ahd_cluster_id}
           python_wheel_task:
             package_name: ${bundle.name}
             entry_point: medallion_task
-            parameters: [ "--conf-file", "${var.param_files_dir}/hazard/calmat/emsa/gold_avail_res_task.yml", "--stage", "${bundle.target}"]
+            parameters: [ "--conf-file", "${var.param_files_dir}/hazard/emsa/gold_historical_all.yml", "--stage", "${bundle.target}"]
           libraries:
             - whl: /dist/*.whl
 
-        - task_key: "green_avail_resources"
-          depends_on: 
-            - task_key:  gold_avail_resources
-          existing_cluster_id: ${var.ahd_cluster_id}
-          python_wheel_task:
-            package_name: ${bundle.name}
-            entry_point: medallion_task
-            parameters: [ "--conf-file", "${var.param_files_dir}/hazard/calmat/emsa/green_avail_res_task.yml", "--stage", "${bundle.target}"]
-          libraries:
-            - whl: /dist/*.whl
 
-        - task_key: "green_dep_resources"
-          depends_on: 
-            - task_key:  gold_dep_resources
-          existing_cluster_id: ${var.ahd_cluster_id}
-          python_wheel_task:
-            package_name: ${bundle.name}
-            entry_point: medallion_task
-            parameters: [ "--conf-file", "${var.param_files_dir}/hazard/calmat/emsa/green_dep_res_task.yml", "--stage", "${bundle.target}"]
-          libraries:
-            - whl: /dist/*.whl
+        # - task_key: "gold_dep_resources"
+        #   depends_on: 
+        #     - task_key:  gold_create_historical_all
+        #   existing_cluster_id: ${var.ahd_cluster_id}
+        #   python_wheel_task:
+        #     package_name: ${bundle.name}
+        #     entry_point: medallion_task
+        #     parameters: [ "--conf-file", "${var.param_files_dir}/hazard/emsa/gold_dep_res_task.yml", "--stage", "${bundle.target}"]
+        #   libraries:
+        #     - whl: /dist/*.whl
+
+        # - task_key: "gold_avail_resources"
+        #   depends_on: 
+        #     - task_key:  silver_avail_resources
+        #   existing_cluster_id: ${var.ahd_cluster_id}
+        #   python_wheel_task:
+        #     package_name: ${bundle.name}
+        #     entry_point: medallion_task
+        #     parameters: [ "--conf-file", "${var.param_files_dir}/hazard/emsa/gold_avail_res_task.yml", "--stage", "${bundle.target}"]
+        #   libraries:
+        #     - whl: /dist/*.whl
+
+        # # - task_key: "green_avail_resources"
+        # #   depends_on: 
+        # #     - task_key:  gold_avail_resources
+        # #   existing_cluster_id: ${var.ahd_cluster_id}
+        # #   python_wheel_task:
+        # #     package_name: ${bundle.name}
+        # #     entry_point: medallion_task
+        # #     parameters: [ "--conf-file", "${var.param_files_dir}/hazard/emsa/green_avail_res_task.yml", "--stage", "${bundle.target}"]
+        # #   libraries:
+        # #     - whl: /dist/*.whl
+
+        # # - task_key: "green_dep_resources"
+        # #   depends_on: 
+        # #     - task_key:  gold_dep_resources
+        # #   existing_cluster_id: ${var.ahd_cluster_id}
+        # #   python_wheel_task:
+        # #     package_name: ${bundle.name}
+        # #     entry_point: medallion_task
+        # #     parameters: [ "--conf-file", "${var.param_files_dir}/hazard/emsa/green_dep_res_task.yml", "--stage", "${bundle.target}"]
+        # #   libraries:
+        # #     - whl: /dist/*.whl
+
+
+        # # # - task_key: "green_avail_resources"
+        # # #   depends_on: 
+        # # #     - task_key:  gold_avail_resources
+        # # #   existing_cluster_id: ${var.ahd_cluster_id}
+        # # #   python_wheel_task:
+        # # #     package_name: ${bundle.name}
+        # # #     entry_point: medallion_task
+        # # #     parameters: [ "--conf-file", "${var.param_files_dir}/hazard/emsa/green_avail_res_task.yml", "--stage", "${bundle.target}"]
+        # # #   libraries:
+        # # #     - whl: /dist/*.whl
+
+        # # # - task_key: "green_dep_resources"
+        # # #   depends_on: 
+        # # #     - task_key:  gold_dep_resources
+        # # #   existing_cluster_id: ${var.ahd_cluster_id}
+        # # #   python_wheel_task:
+        # # #     package_name: ${bundle.name}
+        # # #     entry_point: medallion_task
+        # # #     parameters: [ "--conf-file", "${var.param_files_dir}/hazard/emsa/green_dep_res_task.yml", "--stage", "${bundle.target}"]
+        # # #   libraries:
+        # # #     - whl: /dist/*.whl

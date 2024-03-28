@@ -113,7 +113,7 @@ workflows:
           dataset_id: b3f88f6f781044dabdc02e84d0bc073e
           layer: 0
 
-  hazard_calmat_emsa:
+  hazard_emsa:
     template: conf/workflows/hazard/emsa.yml
     bronze:
       source:

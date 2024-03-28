@@ -17,18 +17,12 @@ source_datasources:
                               from (select * from chhs_emsa.gold.calmat_emsa_active_deployments_{{ env }} where status = 'Active')
                               group by site, unit) as active on active.site = total_to_date.site and active.unit = total_to_date.unit )
 destination_datasources:
-  {% if env == 'ci' -%}
-  - type: databricks
-    table: chhs_emsa.green.calmat_emsa_active_deployments_{{ env }}
-  {% else -%}
   - type: agol
-    dataset_id: {{ workflows['hazard_calmat_emsa'].green.deployed.destination.dataset_id }}
-    table_index: {{ workflows['hazard_calmat_emsa'].green.deployed.destination.table_index }}    
+    dataset_id: {{ workflows['hazard_emsa'].green.deployed.destination.dataset_id }}
+    table_index: {{ workflows['hazard_emsa'].green.deployed.destination.table_index }}    
     is_table: true
     url: https://chhsagency.maps.arcgis.com/home/
     object_id: OBJECTID
-
-  {% endif %}
 
 
 
