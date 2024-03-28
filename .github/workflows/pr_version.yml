@@ -22,8 +22,9 @@ jobs:
       - name: Get latest tag
         id: latest_tag
         run: |
-          latest_tag=$(jq -r '.ref' ${{ env.GITHUB_EVENT_PATH }} | sed -e 's/^refs\/tags\///')
-          echo "LATEST_TAG=$latest_tag" >> $GITHUB_ENV
+          latest_tag=$(jq -r '.ref' "${GITHUB_EVENT_PATH}")
+          latest_tag=${latest_tag#refs/tags/}
+          echo "LATEST_TAG=${latest_tag}" >> $GITHUB_ENV
 
       - name: Output latest tag
         run: |
