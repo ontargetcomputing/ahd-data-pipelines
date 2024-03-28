@@ -19,14 +19,17 @@ jobs:
         uses: actions/checkout@v4
 
       # Get latest Tag 
-      - name: Find Latest Tag for ontargetcomputing/ahd-data-pipelines
-        uses: tdemin/find-latest-tag@v1
-        with:
-          repo: https://github.com/ontargetcomputing/ahd-data-pipelines.git
-        id: ahd_data_pipelines_tag
-      - name: Print Latest Tag for ontargetcomputing/ahd-data-pipelines
-        run: echo "Latest tag for ontargetcomputing/ahd-data-pipelines is ${{ steps.ahd_data_pipelines_tag.outputs.tag }}"
+      - name: Get latest tag
+        id: latest_tag
+        run: |
+          latest_tag=$(jq -r '.ref' ${{ env.GITHUB_EVENT_PATH }} | sed -e 's/^refs\/tags\///')
+          echo "LATEST_TAG=$latest_tag"
 
+      - name: Output latest tag
+        run: |
+          echo "Latest Tag: $LATEST_TAG"
+
+      # Extract PR Label
       - name: Extract PR labels
         run: |
           PR_LABELS=$(jq --raw-output '.pull_request.labels[].name' "$GITHUB_EVENT_PATH" | paste -sd ',' - || echo "")
@@ -74,7 +77,7 @@ jobs:
 
       - name: Set New Version
         run: |
-          OLD_VERSION="${{ steps.ahd_data_pipelines_tag.outputs.tag }}"
+          OLD_VERSION="$LATEST_TAG"
           IFS='.' read -ra VERSION_PARTS <<< "$OLD_VERSION"
 
           if [[ -n "$MAJOR_LABEL" ]]; then
