@@ -18,10 +18,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Print event payload for debugging
-      - name: Debug event payload
-        run: cat "${GITHUB_EVENT_PATH}"
-
       # Get latest Tag 
       - name: Actions Ecosystem Action Get Latest Tag
         id: get-latest-tag
