@@ -18,17 +18,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # Print event payload for debugging
+      - name: Debug event payload
+        run: cat "${GITHUB_EVENT_PATH}"
+
       # Get latest Tag 
       - name: Get latest tag
         id: latest_tag
         run: |
           latest_tag=$(jq -r '.ref' "${GITHUB_EVENT_PATH}")
+          echo "Latest Tag: ${latest_tag}"
           latest_tag=${latest_tag#refs/tags/}
           echo "LATEST_TAG=${latest_tag}" >> $GITHUB_ENV
-
-      - name: Output latest tag
-        run: |
-          echo "Latest Tag: $LATEST_TAG"
 
       # Extract PR Label
       - name: Extract PR labels
