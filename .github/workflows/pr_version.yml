@@ -12,12 +12,17 @@ jobs:
 
     env:
       GITHUB_EVENT_PATH: ${{ github.event_path }}
+      IS_MERGE: ${{ if (github.event_name == 'push' && github.event.head_commit.message =~ '^Merge') }}true{{ else }}false{{ endif }}
 
     steps:
 
       # Checkout Code
       - name: Checkout code
         uses: actions/checkout@v4
+
+      # output variables
+      - name: Check Variables
+        run: echo "IS_MERGE = $IS_MERGE"
 
       # Get latest Tag 
       - name: Actions Ecosystem Action Get Latest Tag
