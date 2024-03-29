@@ -139,31 +139,6 @@ workflows:
             dataset_id : c9fdd8e28baa408cb80daa9588fb2d49
             table_index: 0
 
-
-
-
-
-
-
-  hazard_emsa:
-    template: conf/workflows/hazard/emsa.yml
-    bronze:
-      source:
-        bucket_name: chhs-datahub-emsa
-        agency: EMSA
-        aws_region: us-west-1
-        file_name: upload/Shared with HHS ESRI.xlsx
-        unamed_iteration: 13
-    green:
-      available:
-        destination:
-          dataset_id: 0cb0e757a6734a6d82bd940c6df89daf
-          table_index: 1
-      deployed:
-        destination:
-          dataset_id : 0cb0e757a6734a6d82bd940c6df89daf
-          table_index: 0
-
   facilities_cdph:
     template: conf/workflows/facilities/cdph.yml
     bronze:
