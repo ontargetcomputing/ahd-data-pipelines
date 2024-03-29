@@ -158,3 +158,6 @@ workflows:
         destination:
           dataset_id : 0cb0e757a6734a6d82bd940c6df89daf
           table_index: 0
+          historical:
+            dataset_id : 10833d3faf9c4cb1a69ec667d374b5eb
+            table_index: 0

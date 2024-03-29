@@ -1,7 +1,0 @@
-source_datasources:
-  - type: databricks
-    query: >
-      CREATE TABLE IF NOT EXISTS chhs_emsa.gold.calmat_emsa_active_deployments_all_{{ env }}  
-      LIKE chhs_emsa.silver.calmat_emsa_active_deployments_{{ env }} ;
-destination_datasources:
-  - type: noop
