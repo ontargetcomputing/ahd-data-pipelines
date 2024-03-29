@@ -152,11 +152,11 @@ workflows:
     green:
       available:
         destination:
-          dataset_id: 0cb0e757a6734a6d82bd940c6df89daf
+          dataset_id: e184cd9994364bf79aedef60d575c6c1
           table_index: 1
       deployed:
         destination:
-          dataset_id : 0cb0e757a6734a6d82bd940c6df89daf
+          dataset_id : e184cd9994364bf79aedef60d575c6c1
           table_index: 0
           historical:
             dataset_id : 10833d3faf9c4cb1a69ec667d374b5eb
