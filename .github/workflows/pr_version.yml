@@ -54,7 +54,14 @@ jobs:
       # Extract PR Label
       - name: Extract PR labels
         run: |
-          PR_LABELS=$(jq --raw-output '.pull_request.labels[].name' "$GITHUB_EVENT_PATH" | paste -sd ',' - || echo "")
+          if [[ $(jq -e '.pull_request' "$GITHUB_EVENT_PATH") != "null" ]]; then
+            PR_LABELS=$(jq --raw-output '.pull_request.labels[].name' "$GITHUB_EVENT_PATH" | paste -sd ',' - || echo "")
+          elif [[ $(jq -e '.pull_request.merged' "$GITHUB_EVENT_PATH") == "true" ]]; then
+            PR_NUMBER=$(jq --raw-output '.number' "$GITHUB_EVENT_PATH")
+            PR_LABELS=$(jq --raw-output '.pull_request.labels[].name' "/github/workflow/event.json" | paste -sd ',' - || echo "")
+          else
+            PR_LABELS=""
+          fi
           echo "PR_LABELS=$PR_LABELS" >> $GITHUB_ENV
           echo "PR Labels: $PR_LABELS"
 
