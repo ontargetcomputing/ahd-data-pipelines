@@ -1,0 +1,11 @@
+source_datasources:
+  - type: databricks
+    table: chhs_emsa.green.calmat_emsa_active_deployments_{{ env }}
+destination_datasources:
+  - type: agol
+    dataset_id: {{ workflows['hazard_emsa'].green.deployed.destination.historical.dataset_id }}
+    table_index: {{ workflows['hazard_emsa'].green.deployed.destination.historical.table_index }}
+    is_table: true
+    method: append
+    url: https://chhsagency.maps.arcgis.com/home/
+    object_id: OBJECTID
