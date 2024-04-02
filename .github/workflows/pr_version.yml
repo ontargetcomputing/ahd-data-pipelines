@@ -52,9 +52,16 @@ jobs:
           echo "Latest Tag: $LATEST_TAG"
 
       # Extract PR Label
-      - name: Extract PR labels
+      - name: Extract PR labels on PR
         run: |
           PR_LABELS=$(jq --raw-output '.pull_request.labels[].name' "$GITHUB_EVENT_PATH" | paste -sd ',' - || echo "")
+          echo "PR_LABELS=$PR_LABELS" >> $GITHUB_ENV
+          echo "PR Labels: $PR_LABELS"
+
+      - name: Check if direct push to main branch
+        if: github.ref == 'refs/heads/main' && github.event.after != '0000000000000000000000000000000000000000'
+        run: |
+          PR_LABELS=$(git log -1 --pretty=%s "$GITHUB_SHA" | grep -oP 'Labels:\K.*' | tr -d '[:space:]' || echo "")
           echo "PR_LABELS=$PR_LABELS" >> $GITHUB_ENV
           echo "PR Labels: $PR_LABELS"
 
