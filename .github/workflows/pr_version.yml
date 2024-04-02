@@ -58,20 +58,19 @@ jobs:
           echo "PR_LABELS=$PR_LABELS" >> $GITHUB_ENV
           echo "PR Labels: $PR_LABELS"
 
-      - name: Check if direct push to main branch
-        if: github.ref == 'refs/heads/main' && github.event.after != '0000000000000000000000000000000000000000'
-        run: |
-          PR_LABELS=$(git log -1 --pretty=%s "$GITHUB_SHA" | grep -oP 'Labels:\K.*' | tr -d '[:space:]' || echo "")
-          echo "PR_LABELS=$PR_LABELS" >> $GITHUB_ENV
-          echo "PR Labels: $PR_LABELS"
-
-      - name: Label on merge
-        if: env.PR_LABELS != '' && github.ref == 'refs/heads/main' && github.event.after != '0000000000000000000000000000000000000000'
-        uses: actions/labeler@v2
+      - name: Check if push event is associated with a pull request
+        id: check_pull_request
+        uses: actions/github-script@v4
         with:
-          labels: ${{ env.PR_LABELS }}
-        run: |
-          echo "PR Labels: $PR_LABELS"
+          script: |
+            const payload = github.context.payload;
+            if (payload.pull_request) {
+              console.log('Pull request found:', payload.pull_request.number);
+              console.log('Labels:', payload.pull_request.labels.map(label => label.name).join(','));
+              console.log('PR_LABELS=' + payload.pull_request.labels.map(label => label.name).join(',') + ' >> $GITHUB_ENV');
+              return true;
+            }
+            return false;
 
       - name: Process PR labels
         run: |
