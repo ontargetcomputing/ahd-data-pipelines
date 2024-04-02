@@ -120,8 +120,7 @@ jobs:
             echo "Patch label found"
             NEW_VERSION="${VERSION_PARTS[0]}.${VERSION_PARTS[1]}.$((${VERSION_PARTS[2]} + 1))"
           else
-            echo "No version label found. Exiting..."
-            exit 1
+            echo "No version label found."
           fi
 
           echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
