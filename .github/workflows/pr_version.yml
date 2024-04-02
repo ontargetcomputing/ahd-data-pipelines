@@ -140,9 +140,9 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
 
-          git add pyproject.toml src/ahd_data_piplines/__init__.py
+          git add pyproject.toml src/ahd_data_pipelines/__init__.py
           git commit -m "Update version to $NEW_VERSION"
           git tag -a "$NEW_VERSION" -m "Version $NEW_VERSION"
           git push origin main --tags
 
-      # patch label test 258
+      # patch label test 307
