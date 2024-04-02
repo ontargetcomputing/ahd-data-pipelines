@@ -60,6 +60,7 @@ jobs:
 
       - name: Check if push event is associated with a pull request
         id: check_pull_request
+        if: startsWith(github.event.head_commit.message, 'Merge pull request')
         uses: actions/github-script@v4
         with:
           script: |
