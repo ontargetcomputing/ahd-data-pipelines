@@ -65,6 +65,14 @@ jobs:
           echo "PR_LABELS=$PR_LABELS" >> $GITHUB_ENV
           echo "PR Labels: $PR_LABELS"
 
+      - name: Label on merge
+        if: env.PR_LABELS != '' && github.ref == 'refs/heads/main' && github.event.after != '0000000000000000000000000000000000000000'
+        uses: actions/labeler@v2
+        with:
+          labels: ${{ env.PR_LABELS }}
+        run: |
+          echo "PR Labels: $PR_LABELS"
+
       - name: Process PR labels
         run: |
           MINOR_LABEL=""
