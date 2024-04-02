@@ -60,18 +60,11 @@ jobs:
 
       - name: Check if push event is associated with a pull request
         id: check_pull_request
-        if: startsWith(github.event.head_commit.message, 'Merge pull request')
-        uses: actions/github-script@v4
-        with:
-          script: |
-            const payload = github.context.payload;
-            if (payload.pull_request) {
-              console.log('Pull request found:', payload.pull_request.number);
-              console.log('Labels:', payload.pull_request.labels.map(label => label.name).join(','));
-              console.log('PR_LABELS=' + payload.pull_request.labels.map(label => label.name).join(',') + ' >> $GITHUB_ENV');
-              return true;
-            }
-            return false;
+        if: github.event.pull_request
+        run: |
+          echo "Pull request found: ${GITHUB_REF##*/}"
+          echo "Labels: $(jq -r '.pull_request.labels[].name' <<< '${{ toJson(github.event.pull_request)}}')"
+          echo "PR_LABELS=$(jq -r '.pull_request.labels[].name' <<< '${{ toJson(github.event.pull_request)}}')" >> $GITHUB_ENV
 
       - name: Process PR labels
         run: |
