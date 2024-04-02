@@ -128,7 +128,7 @@ jobs:
 
       # Find src/ahd_data_piplines
       - name: List files in directory
-        run: ls -al src/ahd_data_piplines
+        run: ls -al
 
       # Update to src/ahd_data_piplines/__init__.py and pyproject.toml
       - name: Update Version
@@ -149,4 +149,4 @@ jobs:
           git tag -a "$NEW_VERSION" -m "Version $NEW_VERSION"
           git push origin main --tags
 
-      # patch label test 256
+      # patch label test 258
