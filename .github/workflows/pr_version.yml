@@ -126,6 +126,10 @@ jobs:
           echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
           echo "New Version: $NEW_VERSION"
 
+      # Find src/ahd_data_piplines
+      - name: List files in directory
+        run: ls -al src/ahd_data_piplines
+
       # Update to src/ahd_data_piplines/__init__.py and pyproject.toml
       - name: Update Version
         if: env.IS_MERGE == 'true'
@@ -146,4 +150,3 @@ jobs:
           git push origin main --tags
 
       # patch label test
-      
