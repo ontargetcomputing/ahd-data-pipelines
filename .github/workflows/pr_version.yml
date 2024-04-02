@@ -128,7 +128,7 @@ jobs:
 
       # Find src/ahd_data_piplines
       - name: List files in directory
-        run: ls -al
+        run: ls -al src
 
       # Update to src/ahd_data_piplines/__init__.py and pyproject.toml
       - name: Update Version
