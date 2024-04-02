@@ -126,16 +126,12 @@ jobs:
           echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
           echo "New Version: $NEW_VERSION"
 
-      # Find src/ahd_data_piplines
-      - name: List files in directory
-        run: ls -al src
-
       # Update to src/ahd_data_piplines/__init__.py and pyproject.toml
       - name: Update Version
         if: env.IS_MERGE == 'true'
         run: |
           sed -i "s/version = \"[0-9].[0-9].[0-9]\"/version = \"$NEW_VERSION\"/" pyproject.toml
-          sed -i "s/__version__ = \"[0-9].[0-9].[0-9]\"/__version__ = \"$NEW_VERSION\"/" src/ahd_data_piplines/__init__.py
+          sed -i "s/__version__ = \"[0-9].[0-9].[0-9]\"/__version__ = \"$NEW_VERSION\"/" src/ahd_data_pipelines/__init__.py
 
       # Commit and push
       - name: Commit and Push Changes
