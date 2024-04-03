@@ -1,0 +1,26 @@
+
+
+source_datasources:
+  - type: databricks
+    query: >
+      select site, unit, site_type, total_to_date_cnt, event_name, event_start_date, event_end_date, cast(effective_date as TIMESTAMP) + INTERVAL 15 hours as effective_date,
+                CASE
+                    WHEN active_cnt is null THEN 0
+                    ELSE active_cnt
+                END AS active_count
+            from (
+                    select total_to_date.site, total_to_date.unit, total_to_date.site_type, active_cnt, total_to_date_cnt, event_name, event_start_date, event_end_date, effective_date
+                        from (select site, unit, site_type, event_name, event_start_date, event_end_date, effective_date, count(1) as total_to_date_cnt 
+                                from chhs_emsa.gold.calmat_emsa_active_deployments_{{ env }}
+                                group by site, unit, site_type, event_name, event_start_date, event_end_date, effective_date) as total_to_date 
+                        left join (select site, unit, count(1) as active_cnt 
+                                from (select * from chhs_emsa.gold.calmat_emsa_active_deployments_{{ env }} where demobed is Null or demobed > effective_date  )
+                group by site, unit) as active on active.site = total_to_date.site and active.unit = total_to_date.unit );
+
+destination_datasources:
+  - type: databricks
+    table: chhs_emsa.green.calmat_emsa_active_deployments_{{ env }}
+
+
+
+
