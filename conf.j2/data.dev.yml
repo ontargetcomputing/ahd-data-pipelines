@@ -136,6 +136,10 @@ workflows:
   census_language:
     template: conf/workflows/census/language.yml
 
+  hazard_weather:
+    template: conf/workflows/hazard/weather.yml
+    catalog: ahd_wildfires
+
   hazard_emsa:
     template: conf/workflows/hazard/emsa.yml
 
@@ -161,3 +165,4 @@ workflows:
           historical:
             dataset_id : 10833d3faf9c4cb1a69ec667d374b5eb
             table_index: 0
+
