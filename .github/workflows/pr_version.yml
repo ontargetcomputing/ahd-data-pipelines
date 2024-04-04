@@ -6,11 +6,13 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
     - uses: actions/checkout@master
-    - id: new_tag_version
     - name: Bump version and push tag
+      id: new_version
       uses: Instrument/github-tag-action@v1.0
       env:
+        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         BRANCH: master
         BUMP: major
