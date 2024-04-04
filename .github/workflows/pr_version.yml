@@ -1,18 +1,20 @@
 name: bump and tag branch
+
 on:
   push:
     branches:
-      - master
+      - main
+
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@master
+    - uses: actions/checkout@main
     - name: Bump version and push tag
       id: new_version
       uses: Instrument/github-tag-action@v1.0
       env:
         GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-        BRANCH: master
+        BRANCH: main
         BUMP: major
