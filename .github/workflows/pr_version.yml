@@ -20,7 +20,7 @@ jobs:
 
       - name: Get Latest Tag
         run: |
-          latest_tag=$(git describe --tags --abbrev=0)
+          latest_tag=$(git tag --sort=committerdate | grep -E '[0-9]' | tail -1)
           echo "LATEST_TAG=$latest_tag" >> $GITHUB_ENV
 
       - name: Output latest tag
