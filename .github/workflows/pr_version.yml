@@ -14,6 +14,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
+      GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       GITHUB_EVENT_PATH: ${{ github.event_path }}
 
     steps:
@@ -114,3 +115,4 @@ jobs:
           git commit -m "Update version to $NEW_VERSION"
           git tag -a "$NEW_VERSION" -m "Version $NEW_VERSION"
           git push origin main --tags
+          
