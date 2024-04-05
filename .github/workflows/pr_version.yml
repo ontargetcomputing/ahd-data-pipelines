@@ -7,7 +7,7 @@ on:
   pull_request:
     branches:
       - main
-    types: [opened, synchronize]
+    types: [opened, synchronize, closed]
 
 jobs:
   update_version:
@@ -15,31 +15,11 @@ jobs:
 
     env:
       GITHUB_EVENT_PATH: ${{ github.event_path }}
-      IS_MERGE: false
 
     steps:
-
-      - name: Set IS_MERGE variable
-        run: |
-          if [ "${{ github.event_name }}" = "push" ]; then
-            if echo "${{ github.event.head_commit.message }}" | grep -qi 'Merge'; then
-              echo "IS_MERGE=true" >> $GITHUB_ENV
-            fi
-          elif [ "${{ github.event_name }}" = "pull_request" ]; then
-            if echo "${{ github.event.pull_request.title }}" | grep -qi 'Merge'; then
-              echo "IS_MERGE=true" >> $GITHUB_ENV
-            fi
-          fi
-
-      # Checkout Code
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # output variables
-      - name: Check Variables
-        run: echo "IS_MERGE = $IS_MERGE"
-
-      # Get latest Tag 
       - name: Actions Ecosystem Action Get Latest Tag
         id: get-latest-tag
         uses: actions-ecosystem/action-get-latest-tag@v1.6.0
@@ -51,27 +31,11 @@ jobs:
         run: |
           echo "Latest Tag: $LATEST_TAG"
 
-      # Extract PR Label
       - name: Extract PR labels on PR
         run: |
           PR_LABELS=$(jq --raw-output '.pull_request.labels[].name' "$GITHUB_EVENT_PATH" | paste -sd ',' - || echo "")
           echo "PR_LABELS=$PR_LABELS" >> $GITHUB_ENV
           echo "PR Labels: $PR_LABELS"
-
-      - name: Check if push event is associated with a pull request
-        id: check_pull_request
-        if: startsWith(github.event.head_commit.message, 'Merge pull request')
-        uses: actions/github-script@v4
-        with:
-          script: |
-            const payload = github.context.payload;
-            if (payload.pull_request) {
-              console.log('Pull request found:', payload.pull_request.number);
-              console.log('Labels:', payload.pull_request.labels.map(label => label.name).join(','));
-              console.log('PR_LABELS=' + payload.pull_request.labels.map(label => label.name).join(',') + ' >> $GITHUB_ENV');
-              return true;
-            }
-            return false;
 
       - name: Process PR labels
         run: |
@@ -99,7 +63,6 @@ jobs:
           echo "Major Label: $MAJOR_LABEL"
           echo "Patch Label: $PATCH_LABEL"
 
-      # Make sure two labels don't exist
       - name: Check for multiple version labels
         run: |
           if [[ ! -z "$MINOR_LABEL" && \
@@ -108,11 +71,10 @@ jobs:
                 ! -z "$PATCH_LABEL" || \
                 ! -z "$MAJOR_LABEL" && \
                 ! -z "$PATCH_LABEL" ]]; then
-            echo "Error: More than one of the version labels (minor, major, patch) exist. Exiting..."
-            exit 1
+              echo "Error: More than one of the version labels (minor, major, patch) exist. Exiting..."
+              exit 1
           fi
 
-      # Calculate new version
       - name: Set New Version
         run: |
           OLD_VERSION="$LATEST_TAG"
@@ -136,14 +98,14 @@ jobs:
 
       # Update to src/ahd_data_piplines/__init__.py and pyproject.toml
       - name: Update Version
-        if: env.IS_MERGE == 'true'
+        if: github.event.pull_request.merged == true
         run: |
           sed -i "s/version = \"[0-9].[0-9].[0-9]\"/version = \"$NEW_VERSION\"/" pyproject.toml
           sed -i "s/__version__ = \"[0-9].[0-9].[0-9]\"/__version__ = \"$NEW_VERSION\"/" src/ahd_data_pipelines/__init__.py
 
       # Commit and push
       - name: Commit and Push Changes
-        if: env.IS_MERGE == 'true'
+        if: github.event.pull_request.merged == true
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
@@ -152,5 +114,3 @@ jobs:
           git commit -m "Update version to $NEW_VERSION"
           git tag -a "$NEW_VERSION" -m "Version $NEW_VERSION"
           git push origin main --tags
-
-      # patch label test 312
