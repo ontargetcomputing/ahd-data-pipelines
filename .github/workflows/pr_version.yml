@@ -18,6 +18,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Output all tags
+        run: |
+          git fetch --tags
+          git tag
+
       - name: Get Latest Tag
         run: |
           latest_tag=$(git tag --sort=committerdate | grep -E '[0-9]' | tail -1)
