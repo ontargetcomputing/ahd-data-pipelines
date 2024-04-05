@@ -1,105 +1,97 @@
 name: Update Version
- name: bump and tag branch
 
- on:
-   push:
-     branches:
-       - main
-   pull_request:
-     branches:
-       - main
-     types: [opened, synchronize, closed]
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+    types: [opened, synchronize, closed]
 
- jobs:
-   update_version:
-   build:
-     runs-on: ubuntu-latest
+jobs:
+  update_version:
+    runs-on: ubuntu-latest
 
-     env:
-       GITHUB_EVENT_PATH: ${{ github.event_path }}
+    env:
+      GITHUB_EVENT_PATH: ${{ github.event_path }}
 
-     steps:
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-       # Checkout Code
-       - name: Checkout code
-         uses: actions/checkout@v4
+      - name: Actions Ecosystem Action Get Latest Tag
+        id: get-latest-tag
+        uses: actions-ecosystem/action-get-latest-tag@v1.6.0
 
-       # Get latest Tag 
-       - name: Actions Ecosystem Action Get Latest Tag
-         id: get-latest-tag
-         uses: actions-ecosystem/action-get-latest-tag@v1.6.0
+      - name: Set latest tag as env variable
+        run: echo "LATEST_TAG=${{ steps.get-latest-tag.outputs.tag }}" >> $GITHUB_ENV
 
-       - name: Set latest tag as env variable
-         run: echo "LATEST_TAG=${{ steps.get-latest-tag.outputs.tag }}" >> $GITHUB_ENV
+      - name: Output latest tag
+        run: |
+          echo "Latest Tag: $LATEST_TAG"
 
-       - name: Output latest tag
-         run: |
-           echo "Latest Tag: $LATEST_TAG"
+      - name: Extract PR labels on PR
+        run: |
+          PR_LABELS=$(jq --raw-output '.pull_request.labels[].name' "$GITHUB_EVENT_PATH" | paste -sd ',' - || echo "")
+          echo "PR_LABELS=$PR_LABELS" >> $GITHUB_ENV
+          echo "PR Labels: $PR_LABELS"
 
-       # Extract PR Label
-       - name: Extract PR labels on PR
-         run: |
-           PR_LABELS=$(jq --raw-output '.pull_request.labels[].name' "$GITHUB_EVENT_PATH" | paste -sd ',' - || echo "")
-           echo "PR_LABELS=$PR_LABELS" >> $GITHUB_ENV
-           echo "PR Labels: $PR_LABELS"
+      - name: Process PR labels
+        run: |
+          MINOR_LABEL=""
+          MAJOR_LABEL=""
+          PATCH_LABEL=""
 
-       - name: Process PR labels
-         run: |
-           MINOR_LABEL=""
-           MAJOR_LABEL=""
-           PATCH_LABEL=""
+          if [[ ! -z "$PR_LABELS" ]]; then
+            if echo "$PR_LABELS" | grep -qi 'minor'; then
+              MINOR_LABEL="minor"
+            fi
+            if echo "$PR_LABELS" | grep -qi 'major'; then
+              MAJOR_LABEL="major"
+            fi
+            if echo "$PR_LABELS" | grep -qi 'patch'; then
+              PATCH_LABEL="patch"
+            fi
+          fi
 
-           if [[ ! -z "$PR_LABELS" ]]; then
-             if echo "$PR_LABELS" | grep -qi 'minor'; then
-               MINOR_LABEL="minor"
-             fi
-             if echo "$PR_LABELS" | grep -qi 'major'; then
-               MAJOR_LABEL="major"
-             fi
-             if echo "$PR_LABELS" | grep -qi 'patch'; then
-               PATCH_LABEL="patch"
-             fi
-           fi
+          echo "MINOR_LABEL=$MINOR_LABEL" >> $GITHUB_ENV
+          echo "MAJOR_LABEL=$MAJOR_LABEL" >> $GITHUB_ENV
+          echo "PATCH_LABEL=$PATCH_LABEL" >> $GITHUB_ENV
 
-           echo "MINOR_LABEL=$MINOR_LABEL" >> $GITHUB_ENV
-           echo "MAJOR_LABEL=$MAJOR_LABEL" >> $GITHUB_ENV
-           echo "PATCH_LABEL=$PATCH_LABEL" >> $GITHUB_ENV
+          echo "Minor Label: $MINOR_LABEL"
+          echo "Major Label: $MAJOR_LABEL"
+          echo "Patch Label: $PATCH_LABEL"
 
-           echo "Minor Label: $MINOR_LABEL"
-           echo "Major Label: $MAJOR_LABEL"
-           echo "Patch Label: $PATCH_LABEL"
+      - name: Check for multiple version labels
+        run: |
+          if [[ ! -z "$MINOR_LABEL" && \
+                ! -z "$MAJOR_LABEL" || \
+                ! -z "$MINOR_LABEL" && \
+                ! -z "$PATCH_LABEL" || \
+                ! -z "$MAJOR_LABEL" && \
+                ! -z "$PATCH_LABEL" ]]; then
+              echo "Error: More than one of the version labels (minor, major, patch) exist. Exiting..."
+              exit 1
+          fi
 
-       # Make sure two labels don't exist
-       - name: Check for multiple version labels
-         run: |
-           if [[ ! -z "$MINOR_LABEL" && \
-                 ! -z "$MAJOR_LABEL" || \
-                 ! -z "$MINOR_LABEL" && \
-                 ! -z "$PATCH_LABEL" || \
-                 ! -z "$MAJOR_LABEL" && \
-                 ! -z "$PATCH_LABEL" ]]; then
-             echo "Error: More than one of the version labels (minor, major, patch) exist. Exiting..."
-             exit 1
-           fi
+      - name: Set New Version
+        run: |
+          OLD_VERSION="$LATEST_TAG"
+          IFS='.' read -ra VERSION_PARTS <<< "$OLD_VERSION"
 
-       # Calculate new version
-       - name: Set New Version
-         run: |
-           OLD_VERSION="$LATEST_TAG"
-           IFS='.' read -ra VERSION_PARTS <<< "$OLD_VERSION"
+          if [[ -n "$MAJOR_LABEL" ]]; then
+            echo "Major label found"
+            NEW_VERSION="$((VERSION_PARTS[0] + 1)).0.0"
+          elif [[ -n "$MINOR_LABEL" ]]; then
+            echo "Minor label found"
+            NEW_VERSION="${VERSION_PARTS[0]}.$((${VERSION_PARTS[1]} + 1)).0"
+          elif [[ -n "$PATCH_LABEL" ]]; then
+            echo "Patch label found"
+            NEW_VERSION="${VERSION_PARTS[0]}.${VERSION_PARTS[1]}.$((${VERSION_PARTS[2]} + 1))"
+          else
+            echo "No version label found."
+          fi
 
-           if [[ -n "$MAJOR_LABEL" ]]; then
-             echo "Major label found"
-             NEW_VERSION="$((VERSION_PARTS[0] + 1)).0.0"
-           elif [[ -n "$MINOR_LABEL" ]]; then
-             echo "Minor label found"
-             NEW_VERSION="${VERSION_PARTS[0]}.$((${VERSION_PARTS[1]} + 1)).0"
-           elif [[ -n "$PATCH_LABEL" ]]; then
-             echo "Patch label found"
-             NEW_VERSION="${VERSION_PARTS[0]}.${VERSION_PARTS[1]}.$((${VERSION_PARTS[2]} + 1))"
-           else
-             echo "No version label found."
-           fi
-
-           echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
-           echo "New Version: $NEW_VERSION"
+          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+          echo "New Version: $NEW_VERSION"
