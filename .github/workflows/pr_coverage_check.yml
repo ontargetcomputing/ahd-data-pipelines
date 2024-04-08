@@ -6,6 +6,9 @@ on:
       - main
     types: [opened, synchronize]
 
+env:
+  ACTIONS_RUNNER_DEBUG: true
+
 jobs:
   validate:
     runs-on: ubuntu-latest
