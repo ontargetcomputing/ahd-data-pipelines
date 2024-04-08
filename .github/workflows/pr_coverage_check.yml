@@ -30,6 +30,9 @@ jobs:
           pip install pyspark
           pip install pytest
           pip install pytest-cov
+          pip install pandas
+          pip install geopandas
+          pip install requests
 
       - name: Run pytest coverage check
         run: pytest --cov=src --cov-fail-under=30.00
