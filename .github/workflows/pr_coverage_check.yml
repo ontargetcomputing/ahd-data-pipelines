@@ -26,6 +26,8 @@ jobs:
 
       - name: Install modules
         run: |
+          sudo apt-get install openjdk-8-jdk-headless -qq > /dev/null
+          pip install pyspark
           pip install pytest
           pip install pytest-cov
 
