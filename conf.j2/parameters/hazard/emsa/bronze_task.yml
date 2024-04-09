@@ -1,10 +1,10 @@
 bronze: true
 source_datasources:
   - type: s3
-    bucket_name: {{ workflows['hazard_calmat_emsa'].bronze.source.bucket_name }}
-    agency: {{ workflows['hazard_calmat_emsa'].bronze.source.agency }}
-    aws_region: {{ workflows['hazard_calmat_emsa'].bronze.source.aws_region }}
-    file_name: {{ workflows['hazard_calmat_emsa'].bronze.source.file_name }}
+    bucket_name: {{ workflows['hazard_emsa'].bronze.source.bucket_name }}
+    agency: {{ workflows['hazard_emsa'].bronze.source.agency }}
+    aws_region: {{ workflows['hazard_emsa'].bronze.source.aws_region }}
+    file_name: {{ workflows['hazard_emsa'].bronze.source.file_name }}
     format: excel
 
 destination_datasources:
@@ -25,14 +25,13 @@ destination_datasources:
       - Status:status
       - Deploy:deploy
       - Demobed:demobed
-      - "Unnamed: {{ workflows['hazard_calmat_emsa'].bronze.source.unamed_iteration }}:unamed{{ workflows['hazard_calmat_emsa'].bronze.source.unamed_iteration }}"
+      - "Unnamed: {{ workflows['hazard_emsa'].bronze.source.unamed_iteration }}:unamed{{ workflows['hazard_emsa'].bronze.source.unamed_iteration }}"
       - Availability  ->:availability_month
       - ESAR VHP:esar_vhp
       - Organization 1:organization1
       - Organization 1 Status:organization1_status
       - Occupation 1:occupation1
       - Availability:availability
-      - Effective Date:effective_date
     data_types:
     - column: esar_vhp_id_covid
       type: string
@@ -60,7 +59,7 @@ destination_datasources:
       type: string
     - column: demobed
       type: string
-    - column: unamed{{ workflows['hazard_calmat_emsa'].bronze.source.unamed_iteration }}
+    - column: unamed{{ workflows['hazard_emsa'].bronze.source.unamed_iteration }}
       type: string
     - column: availability_month
       type: string
@@ -76,45 +75,3 @@ destination_datasources:
       type: string
     - column: effective_date
       type: string
-
-
-    # - column: esar_vhp_id_covid
-    #   type: double
-    # - column: esar_vhp_id_fire
-    #   type: double
-    # - column: organization
-    #   type: string
-    # - column: unit
-    #   type: string
-    # - column: event_name
-    #   type: string
-    # - column: event_start_date
-    #   type: date
-    # - column: event_end_date
-    #   type: date
-    # - column: site
-    #   type: string
-    # - column: site_type
-    #   type: string
-    # - column: classification
-    #   type: string
-    # - column: status
-    #   type: string
-    # - column: deploy
-    #   type: date
-    # - column: demobed
-    #   type: date
-    # - column: unamed{{ workflows['hazard_calmat_emsa'].bronze.source.unamed_iteration }}
-    #   type: double
-    # - column: availability_month
-    #   type: string
-    # - column: esar_vhp
-    #   type: double
-    # - column: organization1
-    #   type: string
-    # - column: organization1_status
-    #   type: string
-    # - column: occupation1
-    #   type: string
-    # - column: availability
-    #   type: string      

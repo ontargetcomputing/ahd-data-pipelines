@@ -14,12 +14,10 @@ source_datasources:
               status,
               CAST(deploy as date) as deploy,
               CAST(demobed as date) as demobed,
-              CAST(effective_date as date) as effective_date,
               ade_date_submitted
         from chhs_emsa.bronze.cal_mat_emsa_raw_{{ env }}
         where ((esar_vhp_id_covid != '' and CAST(esar_vhp_id_covid as Double) != 0.0) 
           or (esar_vhp_id_fire != '' and CAST(esar_vhp_id_fire as Double) != 0.0))
-          and effective_date < demobed;
 destination_datasources:
   - type: databricks
     table: chhs_emsa.silver.calmat_emsa_active_deployments_{{ env }}
@@ -52,8 +50,6 @@ destination_datasources:
     - column: deploy
       type: date
     - column: demobed
-      type: date
-    - column: effective_date
       type: date
     - column: ade_date_submitted
       type: date

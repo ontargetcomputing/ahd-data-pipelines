@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ahd-data-pipelines"
-version = "0.5.2"
+version = "0.7.0"
 description = "wheel file based on ahd-data-pipelines"
 authors = ["balutbomber <balutbomber@gmail.com>"]
 readme = "README.md"
@@ -26,11 +26,14 @@ yamllint = "^1.35.1"
 jinja-cli = "^1.2.2"
 pyarrow = "15.0.0"
 pandas = "^2.2.0"
-databricks-connect = "^14.2.1"
+pytest = "8.0.2"
+pytest-cov = "^4.1.0"
 pyspark = "3.4.1"
+pytest-mock = "3.10.0"
 delta-spark = "2.4.0"
 flake8 = "^7.0.0"
 black = "^24.2.0"
+databricks-connect = "13.0.1"
 
 [tool.black]
 line-length = 120

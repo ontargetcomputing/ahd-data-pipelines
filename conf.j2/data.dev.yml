@@ -135,3 +135,34 @@ workflows:
 
   census_language:
     template: conf/workflows/census/language.yml
+
+  hazard_weather:
+    template: conf/workflows/hazard/weather.yml
+    catalog: ahd_wildfires
+
+  hazard_emsa:
+    template: conf/workflows/hazard/emsa.yml
+
+    bronze:
+      source:
+        bucket_name: chhs-datahub-emsa
+        agency: EMSA
+        aws_region: us-west-1
+        file_name: upload/EMSA_Deployments_Mock_Data.xlsx
+        unamed_iteration: 13
+      agol_historical:
+        dataset_id: 10833d3faf9c4cb1a69ec667d374b5eb
+        table_index: 0
+    green:
+      available:
+        destination:
+          dataset_id: e184cd9994364bf79aedef60d575c6c1
+          table_index: 1
+      deployed:
+        destination:
+          dataset_id : e184cd9994364bf79aedef60d575c6c1
+          table_index: 0
+          historical:
+            dataset_id : 10833d3faf9c4cb1a69ec667d374b5eb
+            table_index: 0
+

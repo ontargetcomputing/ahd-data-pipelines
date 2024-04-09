@@ -15,9 +15,7 @@ class DropColumns(Transformation):
             for column in cols_to_drop:
                 print(f"Dropping column - {column}")
                 dataFrame = dataFrame.drop(column)
-        elif isinstance(dataFrame, gpd.GeoDataFrame) or isinstance(
-            dataFrame, pd.DataFrame
-        ):
+        elif isinstance(dataFrame, gpd.GeoDataFrame) or isinstance(dataFrame, pd.DataFrame):
             print("dropping columns in GeoDataFrame or DataFrame")
             dataFrame.drop(columns=cols_to_drop, inplace=True)
 

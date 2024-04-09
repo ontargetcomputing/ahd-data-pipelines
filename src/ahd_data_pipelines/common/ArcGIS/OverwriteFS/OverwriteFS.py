@@ -134,11 +134,7 @@ def _getManager(item, verbose=None, outcome=None):
     #
     if not item.type == "Feature Service":
         if verbose:
-            print(
-                "\n * Item is not a Feature Service or View: {}, '{}'".format(
-                    item.id, item.title
-                )
-            )
+            print("\n * Item is not a Feature Service or View: {}, '{}'".format(item.id, item.title))
 
         outcome["items"].append(
             {
@@ -206,9 +202,7 @@ def _getCRC(filename):
     return crc
 
 
-def _asyncJob(
-    service, endpoint, data, verbose=None, indent="", noWait=False, timeout=None
-):
+def _asyncJob(service, endpoint, data, verbose=None, indent="", noWait=False, timeout=None):
     """Internal Function: _asyncJob( <service>, <endpoint>, <data>[, <verbose>[, <indent>[, <noWait>]])
 
          <service> = Service or Layer Object
@@ -273,14 +267,8 @@ def _asyncJob(
                         print("{}{} - Job Status: '{}'".format(msgSep, indent, status))
                     msgSep = ""
 
-                errorCode = (
-                    outcome["error"].get("code", 0) if "error" in outcome else 399
-                )
-                errorDesc = (
-                    outcome["error"].get("description", "N/A")
-                    if "error" in outcome
-                    else outcome
-                )
+                errorCode = outcome["error"].get("code", 0) if "error" in outcome else 399
+                errorDesc = outcome["error"].get("description", "N/A") if "error" in outcome else outcome
 
                 if status == "Completed":
                     outcome = {"success": True}
@@ -290,9 +278,7 @@ def _asyncJob(
                         "success": False,
                         "error": {
                             "code": errorCode,
-                            "message": "{}, '{}' request failed!".format(
-                                status, endpoint
-                            ),
+                            "message": "{}, '{}' request failed!".format(status, endpoint),
                             "details": str(errorDesc),
                         },
                     }
@@ -300,11 +286,7 @@ def _asyncJob(
 
                 if noWait:
                     if verbose:
-                        print(
-                            " * No Wait specified * Manual Status URL: '{}'".format(
-                                statusUrl
-                            )
-                        )
+                        print(" * No Wait specified * Manual Status URL: '{}'".format(statusUrl))
                     outcome = {"success": True, "status": statusUrl}
                     break
 
@@ -396,20 +378,12 @@ def _backupProperties(item, verbose=None, outcome=None, outPath=""):
                 backupDetails = json.load(open(backupFile, "r"))
             except Exception as e:
                 if verbose:
-                    print(
-                        " * Failed to load Backup File '{}', error: '{}'".format(
-                            backupFile, e
-                        )
-                    )
+                    print(" * Failed to load Backup File '{}', error: '{}'".format(backupFile, e))
 
         # Backup Item or View properties
         itemProps = backupDetails.get("itemDetails", makeDict(item, itemProperties))
         for key, value in itemProps.copy().items():
-            if (
-                (isinstance(value, list) or isinstance(value, tuple))
-                and value
-                and key == value[0]
-            ):
+            if (isinstance(value, list) or isinstance(value, tuple)) and value and key == value[0]:
                 # Is old structure, update
                 itemProps[key] = value[1]
 
@@ -424,11 +398,7 @@ def _backupProperties(item, verbose=None, outcome=None, outPath=""):
             if thumbnail and item.thumbnail:
                 try:
                     thumbnail = "".join(
-                        [
-                            "data:image/{};base64,".format(
-                                os.path.splitext(item.thumbnail)[-1][1:]
-                            )
-                        ]
+                        ["data:image/{};base64,".format(os.path.splitext(item.thumbnail)[-1][1:])]
                         + base64.encodebytes(thumbnail).decode().split()
                     )
                     setattr(
@@ -438,15 +408,11 @@ def _backupProperties(item, verbose=None, outcome=None, outPath=""):
                     )
                 except Exception as e:
                     if verbose:
-                        print(
-                            " * Failed to backup item Thumbnail, error: '{}'".format(e)
-                        )
+                        print(" * Failed to backup item Thumbnail, error: '{}'".format(e))
 
         # Backup Item Data, if it has any!
         for loop in range(2, -1, -1):
-            setattr(
-                item, "backupItemData", backupDetails.get("itemData", item.get_data())
-            )
+            setattr(item, "backupItemData", backupDetails.get("itemData", item.get_data()))
             if item.backupItemData:
                 break
             if loop:
@@ -457,20 +423,14 @@ def _backupProperties(item, verbose=None, outcome=None, outPath=""):
 
         # Backup Service properties
         manager = _getManager(item, verbose=verbose, outcome=outcome)
-        managerProperties = (
-            dict(manager.properties) if hasattr(manager, "properties") else {}
-        )
+        managerProperties = dict(manager.properties) if hasattr(manager, "properties") else {}
         if managerProperties:
             # Service Layer properties differ from Layer properties, which contain more detail
             managerProperties["layers"] = (
-                [dict(layer.properties) for layer in manager.layers]
-                if hasattr(manager, "layers")
-                else []
+                [dict(layer.properties) for layer in manager.layers] if hasattr(manager, "layers") else []
             )
             managerProperties["tables"] = (
-                [dict(table.properties) for table in manager.tables]
-                if hasattr(manager, "tables")
-                else []
+                [dict(table.properties) for table in manager.tables] if hasattr(manager, "tables") else []
             )
 
         # serviceDetails = backupDetails.get( "serviceDetails", dict( manager.properties) if hasattr( manager, "properties") else {})
@@ -485,19 +445,14 @@ def _backupProperties(item, verbose=None, outcome=None, outPath=""):
 
             # Backup View's Related Items, favor existing related items over backup, as long as the relation count is correct!
             relatedItems = (
-                [
-                    relItem.id
-                    for relItem in item.related_items("Service2Service", "reverse")
-                ]
+                [relItem.id for relItem in item.related_items("Service2Service", "reverse")]
                 if manager.properties.get("isView", False)
                 else []
             )
             setattr(
                 item,
                 "backupRelationships",
-                relatedItems
-                if len(relatedItems) == 2
-                else backupDetails.get("relatedItems", relatedItems),
+                relatedItems if len(relatedItems) == 2 else backupDetails.get("relatedItems", relatedItems),
             )
             # setattr( item, "backupRelationships", backupDetails.get( "relatedItems", [relItem.id for relItem in item.related_items( "Service2Service", "reverse")] if manager.properties.get( "isView", False) else []))
 
@@ -535,11 +490,7 @@ def _backupProperties(item, verbose=None, outcome=None, outPath=""):
     except Exception as e:
         if verbose:
             traceback.print_exc()
-            print(
-                " * Backup Properties Failed, Item: {}, '{}', Error: {}".format(
-                    item.id, item.title, e
-                )
-            )
+            print(" * Backup Properties Failed, Item: {}, '{}', Error: {}".format(item.id, item.title, e))
         outcome["items"].append(
             {
                 "id": item.id,
@@ -593,44 +544,26 @@ def _restoreProperties(
 
     # Grab backed up properties
     backupFile = item.backupFile if hasattr(item, "backupFile") else None
-    serviceProperties = (
-        item.backupServiceProperties if hasattr(item, "backupServiceProperties") else {}
-    )
-    itemProperties = (
-        item.backupItemProperties if hasattr(item, "backupItemProperties") else {}
-    )
-    itemThumbnail = (
-        item.backupItemThumbnail if hasattr(item, "backupItemThumbnail") else {}
-    )
-    layerProperties = (
-        item.backupLayerProperties if hasattr(item, "backupLayerProperties") else []
-    )
-    tableProperties = (
-        item.backupTableProperties if hasattr(item, "backupTableProperties") else []
-    )
+    serviceProperties = item.backupServiceProperties if hasattr(item, "backupServiceProperties") else {}
+    itemProperties = item.backupItemProperties if hasattr(item, "backupItemProperties") else {}
+    itemThumbnail = item.backupItemThumbnail if hasattr(item, "backupItemThumbnail") else {}
+    layerProperties = item.backupLayerProperties if hasattr(item, "backupLayerProperties") else []
+    tableProperties = item.backupTableProperties if hasattr(item, "backupTableProperties") else []
     itemData = item.backupItemData if hasattr(item, "backupItemData") else {}
-    relatedItems = (
-        item.backupRelationships if hasattr(item, "backupRelationships") else []
-    )
+    relatedItems = item.backupRelationships if hasattr(item, "backupRelationships") else []
 
     # Reload Item before checking for changes, to gather up to date details, backup attributes are automatically dropped!
     item = item._gis.content.get(item.id)
     manager = _getManager(item, verbose=verbose, outcome=outcome)
 
     if verbose and manager and not noProps:
-        print(
-            "\nCurrent Details Gathered, Elapsed Time: {}".format(
-                datetime.datetime.now() - startRestore
-            )
-        )
+        print("\nCurrent Details Gathered, Elapsed Time: {}".format(datetime.datetime.now() - startRestore))
 
     # Restore Related items
     setRelated = False
     if relatedItems:
         outcomeCount = len(outcome["items"])
-        updateRelationships(
-            item, relatedItems, verbose=verbose, outcome=outcome, dryRun=dryRun
-        )
+        updateRelationships(item, relatedItems, verbose=verbose, outcome=outcome, dryRun=dryRun)
         if not outcomeCount == len(outcome["items"]):
             # Error detected, set retry condition for a second attempt after item/service restoration
             setRelated = True
@@ -639,9 +572,7 @@ def _restoreProperties(
         useDP = True if globals().get("optimizedp") else False
         # Restore only if 'noProps' is False!
         if hasattr(manager, "properties"):
-            serviceIndexes = (
-                set()
-            )  # Record any indexes created for service, as not to repeat on multiple Layers!
+            serviceIndexes = set()  # Record any indexes created for service, as not to repeat on multiple Layers!
             isView = "isView" in manager.properties and manager.properties["isView"]
             # Restore Layer and Table properties
             for title, array, backup in [
@@ -659,61 +590,46 @@ def _restoreProperties(
                 for index, layer in enumerate(array):
                     serviceDefinition = backup[index] if len(backup) > index else {}
                     layerName = layer.properties.get("name", "")
-                    userTable = (
-                        layer.properties.get("adminLayerInfo", {})
-                        .get("tableName", "")
-                        .split(".", 1)[-1]
-                    )
+                    userTable = layer.properties.get("adminLayerInfo", {}).get("tableName", "").split(".", 1)[-1]
                     timeDefinition = {}
                     timeAction = "updateDefinition"
                     multiScaleGeometry = {}  # Supporting Layer Optimization
 
                     if "multiScaleGeometryInfo" in serviceDefinition and not isView:
                         multiScaleGeometry = {
-                            "multiScaleGeometryInfo": eval(
-                                serviceDefinition["multiScaleGeometryInfo"].__repr__()
-                            )
+                            "multiScaleGeometryInfo": eval(serviceDefinition["multiScaleGeometryInfo"].__repr__())
                         }
                         if useDP:
-                            multiScaleGeometry["multiScaleGeometryInfo"][
-                                "generalizationType"
-                            ] = "DP"
+                            multiScaleGeometry["multiScaleGeometryInfo"]["generalizationType"] = "DP"
 
                         del serviceDefinition["multiScaleGeometryInfo"]
 
                     if verbose:
                         isDP = (
-                            multiScaleGeometry.get("multiScaleGeometryInfo", {}).get(
-                                "generalizationType", ""
-                            )
-                            == "DP"
+                            multiScaleGeometry.get("multiScaleGeometryInfo", {}).get("generalizationType", "") == "DP"
                         )
                         print(
                             "\nRestoring {} Properties for: '{}'{}".format(
                                 title,
                                 layerName,
-                                " * Optimized Layer{} *".format(
-                                    " (w/DP)" if isDP else ""
-                                )
-                                if multiScaleGeometry
-                                else "",
+                                (
+                                    " * Optimized Layer{} *".format(" (w/DP)" if isDP else "")
+                                    if multiScaleGeometry
+                                    else ""
+                                ),
                             )
                         )
 
                     if "timeInfo" in serviceDefinition:
                         if touchTimeSeries:
-                            timeDefinition["timeInfo"] = dict(
-                                serviceDefinition.get("timeInfo", {})
-                            )
+                            timeDefinition["timeInfo"] = dict(serviceDefinition.get("timeInfo", {}))
                             if timeDefinition["timeInfo"].get("hasLiveData", False):
                                 if verbose:
                                     print(" - Turning OFF live data in Time Info!")
                                 timeDefinition["timeInfo"]["hasLiveData"] = False
 
                         elif "timeInfo" not in layer.properties:
-                            timeDefinition["timeInfo"] = dict(
-                                serviceDefinition.get("timeInfo", {})
-                            )
+                            timeDefinition["timeInfo"] = dict(serviceDefinition.get("timeInfo", {}))
                             if verbose:
                                 print(" - Adding Time Info to Layer!")
                             timeAction = "addToDefinition"
@@ -727,18 +643,12 @@ def _restoreProperties(
                     if "indexes" in serviceDefinition:
                         if not isView:
                             # Get Fields as Dict
-                            fields = {
-                                field["name"].lower(): field
-                                for field in layer.properties["fields"]
-                            }
+                            fields = {field["name"].lower(): field for field in layer.properties["fields"]}
 
                             for index in serviceDefinition["indexes"]:
                                 indexFields = str(index["fields"]).lower()
                                 for newLayerIndex in layer.properties["indexes"]:
-                                    if (
-                                        indexFields
-                                        == str(newLayerIndex["fields"]).lower()
-                                    ):  # v2.1.2
+                                    if indexFields == str(newLayerIndex["fields"]).lower():  # v2.1.2
                                         break
                                 else:
                                     skipMessage = ""
@@ -757,14 +667,9 @@ def _restoreProperties(
                                         for field in index["fields"].split(","):
                                             field = field.strip()
                                             if not field.lower() in fields:
-                                                skipMessage = "index field '{}' does not exist!".format(
-                                                    field
-                                                )
+                                                skipMessage = "index field '{}' does not exist!".format(field)
                                                 break
-                                            elif (
-                                                fields[field.lower()].get("length", 0)
-                                                > 4000
-                                            ):
+                                            elif fields[field.lower()].get("length", 0) > 4000:
                                                 skipMessage = "index field '{}' cannot be used as a key column, too large (>4000 bytes)!".format(
                                                     field
                                                 )
@@ -775,23 +680,15 @@ def _restoreProperties(
                                     if skipMessage:
                                         if verbose:
                                             print(
-                                                " * Skipping missing index: '{}', {}".format(
-                                                    index["name"], skipMessage
-                                                )
+                                                " * Skipping missing index: '{}', {}".format(index["name"], skipMessage)
                                             )
                                         continue
 
                                     # Add Index to list
-                                    indexName = "_".join(
-                                        [userTable] + indexFields + ["idx"]
-                                    )
+                                    indexName = "_".join([userTable] + indexFields + ["idx"])
                                     if indexName in serviceIndexes:
                                         if verbose:
-                                            print(
-                                                " * Skipping creation, index already exists: '{}'".format(
-                                                    indexName
-                                                )
-                                            )
+                                            print(" * Skipping creation, index already exists: '{}'".format(indexName))
                                         continue
 
                                     serviceIndexes.add(indexName)
@@ -855,11 +752,7 @@ def _restoreProperties(
 
                         if property not in layer.properties:
                             if verbose:
-                                print(
-                                    " - Ignoring Layer Property: '{}', no longer on file!".format(
-                                        property
-                                    )
-                                )
+                                print(" - Ignoring Layer Property: '{}', no longer on file!".format(property))
                             del serviceDefinition[property]
 
                         # elif json.dumps( serviceDefinition[ property]) == json.dumps( layer.properties.get( property, "")):
@@ -869,11 +762,7 @@ def _restoreProperties(
                             del serviceDefinition[property]
 
                     if serviceDefinition and verbose:
-                        print(
-                            " - {} Properties to Restore: '{}'".format(
-                                title, "', '".join(serviceDefinition.keys())
-                            )
-                        )
+                        print(" - {} Properties to Restore: '{}'".format(title, "', '".join(serviceDefinition.keys())))
 
                     # makeAsyncCall = True if globals().get( "async") else False
                     makeAsyncCall = False  # True
@@ -958,17 +847,13 @@ def _restoreProperties(
                                         layer,
                                         defAction,
                                         data,
-                                        verbose=True
-                                        if maxVerbose
-                                        else (None if verbose else False),
+                                        verbose=True if maxVerbose else (None if verbose else False),
                                         noWait=asyncNoWait,
                                     )
                                 else:
                                     # Apply Definition X times, to make sure it sticks!
                                     for loop in range(applyDef - 1, -1, -1):
-                                        status = layer._gis._con.post(
-                                            layer.url + "/" + defAction, data
-                                        )
+                                        status = layer._gis._con.post(layer.url + "/" + defAction, data)
                                         if loop:
                                             time.sleep(1)  # Pause between applications
 
@@ -978,17 +863,13 @@ def _restoreProperties(
                                 traceback.print_exc()
                                 print("\n * Error: '{}'".format(e))
 
-                        if not (
-                            isinstance(status, dict) and status.get("success", False)
-                        ):
+                        if not (isinstance(status, dict) and status.get("success", False)):
                             outcome["items"].append(
                                 {
                                     "id": item.id,
                                     "title": item.title,
                                     "itemType": item.type,
-                                    "action": "restore layer '{}' properties".format(
-                                        layerName
-                                    ),
+                                    "action": "restore layer '{}' properties".format(layerName),
                                     "result": str(status),
                                 }
                             )
@@ -1000,18 +881,14 @@ def _restoreProperties(
                                         status,
                                         datetime.datetime.now() - start,
                                     ),
-                                    status.get("progressLength", 0)
-                                    if hasattr(status, "get")
-                                    else 0,
+                                    status.get("progressLength", 0) if hasattr(status, "get") else 0,
                                 )
                         elif verbose:
                             _prints(
                                 "\r - {} Details Restored! Elapsed Time: {}".format(
                                     defTitle, datetime.datetime.now() - start
                                 ),
-                                status.get("progressLength", 0)
-                                if hasattr(status, "get")
-                                else 0,
+                                status.get("progressLength", 0) if hasattr(status, "get") else 0,
                             )
 
                     # Report if no changes made
@@ -1026,22 +903,14 @@ def _restoreProperties(
                 if str(managerValue) == str(backupValue):
                     del serviceProperties[key]
                 else:
-                    changes.append(
-                        "    Key: '{}'\n   From: '{}'\n     To: '{}'".format(
-                            key, managerValue, backupValue
-                        )
-                    )
+                    changes.append("    Key: '{}'\n   From: '{}'\n     To: '{}'".format(key, managerValue, backupValue))
 
             # Create Dictionary of remaining key:value pairs in Service
             serviceProperties = dict(serviceProperties.values())
 
             # Restoring Service properties that may have been lost during Overwrite!
             if verbose:
-                print(
-                    "\nRestoring Service Properties"
-                    if serviceProperties
-                    else "\nTouching Service Properties"
-                )
+                print("\nRestoring Service Properties" if serviceProperties else "\nTouching Service Properties")
 
             if dryRun:
                 if verbose:
@@ -1056,26 +925,15 @@ def _restoreProperties(
                     {
                         "f": "json",
                         "async": True,
-                        "updateDefinition": json.dumps(
-                            obj=serviceProperties, separators=(",", ":")
-                        ),
+                        "updateDefinition": json.dumps(obj=serviceProperties, separators=(",", ":")),
                     },
                     verbose=True if maxVerbose else (None if verbose else False),
                 )
-            if not (
-                status
-                and isinstance(status, dict)
-                and "success" in status
-                and status["success"]
-            ):
+            if not (status and isinstance(status, dict) and "success" in status and status["success"]):
                 if verbose:
                     _prints(
-                        "\r * Failed to Restore Service Properties, Status: {}".format(
-                            status
-                        ),
-                        status.get("progressLength", 0)
-                        if hasattr(status, "get")
-                        else 0,
+                        "\r * Failed to Restore Service Properties, Status: {}".format(status),
+                        status.get("progressLength", 0) if hasattr(status, "get") else 0,
                     )
                 outcome["items"].append(
                     {
@@ -1090,31 +948,19 @@ def _restoreProperties(
             elif verbose:
                 if changes:
                     _prints(
-                        "\r - Properties Restored, Elapsed Time: {}".format(
-                            datetime.datetime.now() - start
-                        ),
-                        status.get("progressLength", 0)
-                        if hasattr(status, "get")
-                        else 0,
+                        "\r - Properties Restored, Elapsed Time: {}".format(datetime.datetime.now() - start),
+                        status.get("progressLength", 0) if hasattr(status, "get") else 0,
                     )
                     print("\n".join(changes))
                 else:
                     _prints(
-                        "\r - Success! Elapsed Time: {}".format(
-                            datetime.datetime.now() - start
-                        ),
-                        status.get("progressLength", 0)
-                        if hasattr(status, "get")
-                        else 0,
+                        "\r - Success! Elapsed Time: {}".format(datetime.datetime.now() - start),
+                        status.get("progressLength", 0) if hasattr(status, "get") else 0,
                     )
                 #
                 # Service Restoration Complete!
                 #
-                print(
-                    "\nService Properties Restored, Elapsed Time: {}".format(
-                        datetime.datetime.now() - startRestore
-                    )
-                )
+                print("\nService Properties Restored, Elapsed Time: {}".format(datetime.datetime.now() - startRestore))
 
         # Strip unchanged Item properties
         start = datetime.datetime.now()
@@ -1130,11 +976,7 @@ def _restoreProperties(
             if str(itemValue) == str(backupValue):
                 del itemProperties[key]
             else:
-                changes.append(
-                    "    Key: '{}'\n   From: '{}'\n     To: '{}'".format(
-                        key, itemValue, backupValue
-                    )
-                )
+                changes.append("    Key: '{}'\n   From: '{}'\n     To: '{}'".format(key, itemValue, backupValue))
 
         # Create Dictionary from remaining key:value pairs in Item
         # itemProperties = dict( itemProperties.values())
@@ -1143,9 +985,7 @@ def _restoreProperties(
 
         # Check for changes to Item Data
         itemDataStr = json.dumps(itemData)
-        if (
-            json.dumps(item.get_data()) == itemDataStr
-        ):  # Compare current data value to backup
+        if json.dumps(item.get_data()) == itemDataStr:  # Compare current data value to backup
             itemDataStr = ""  # Clear backup if equal, no updates required!
 
         # Restoring Item properties that may have been lost during Overwrite!
@@ -1182,11 +1022,7 @@ def _restoreProperties(
 
             if not (status is True):
                 if verbose:
-                    print(
-                        " * Failed to Restore Item Properties, Status: {}".format(
-                            status
-                        )
-                    )
+                    print(" * Failed to Restore Item Properties, Status: {}".format(status))
                 outcome["items"].append(
                     {
                         "id": item.id,
@@ -1198,25 +1034,16 @@ def _restoreProperties(
                 )
                 outcome["success"] = False  # Set as error
             elif verbose:
-                print(
-                    " - {} Restored, Elapsed Time: {}".format(
-                        post, datetime.datetime.now() - start
-                    )
-                )
+                print(" - {} Restored, Elapsed Time: {}".format(post, datetime.datetime.now() - start))
                 print("\n".join(changes))
 
         # Restoring Item Thumbnail if lost during Overwrite
         item_thumbnail = item.thumbnail
-        if (
-            itemThumbnail.get("file_name")
-            and not itemThumbnail.get("file_name", "") == item_thumbnail
-        ):
+        if itemThumbnail.get("file_name") and not itemThumbnail.get("file_name", "") == item_thumbnail:
             status = item.update_thumbnail(**itemThumbnail)
             if not (status is True):
                 if verbose:
-                    print(
-                        " * Failed to Restore Item Thumbnail, Status: {}".format(status)
-                    )
+                    print(" * Failed to Restore Item Thumbnail, Status: {}".format(status))
                 outcome["items"].append(
                     {
                         "id": item.id,
@@ -1237,17 +1064,12 @@ def _restoreProperties(
     # Second Restore Related items attempt for Views
     if setRelated or (
         relatedItems
-        and not len(relatedItems)
-        == len(
-            [relItem.id for relItem in item.related_items("Service2Service", "reverse")]
-        )
+        and not len(relatedItems) == len([relItem.id for relItem in item.related_items("Service2Service", "reverse")])
     ):
         if verbose:
             print("\n * Relationship count mismatch, updating!")
         outcomeCount = len(outcome["items"])
-        updateRelationships(
-            item, relatedItems, verbose=verbose, outcome=outcome, dryRun=dryRun
-        )
+        updateRelationships(item, relatedItems, verbose=verbose, outcome=outcome, dryRun=dryRun)
         if not outcomeCount == len(outcome["items"]):
             # Error detected, set condition, saving backup file!
             if not noProps:
@@ -1261,9 +1083,7 @@ def _restoreProperties(
                 print(
                     " - Dropping Backup{1} File: '{0}'".format(
                         backupFile,
-                        ", Property Preservation DISABLED,"
-                        if not preserveProps
-                        else "",
+                        ", Property Preservation DISABLED," if not preserveProps else "",
                     )
                 )
             os.remove(backupFile)
@@ -1279,9 +1099,7 @@ def _restoreProperties(
         if not noProps:
             print(
                 "\n{} Property Restoration! Total Elapsed Time: {}".format(
-                    "Successfully Completed"
-                    if not outcome["success"] is False
-                    else " * Failed to Complete",
+                    "Successfully Completed" if not outcome["success"] is False else " * Failed to Complete",
                     datetime.datetime.now() - startRestore,
                 )
             )
@@ -1289,9 +1107,7 @@ def _restoreProperties(
     return item
 
 
-def _checkView(
-    view, verbose=None, outcome=None, hadError=False, dryRun=False, outPath=""
-):
+def _checkView(view, verbose=None, outcome=None, hadError=False, dryRun=False, outPath=""):
     """Internal Function: _checkView( <view item>, verbose=True, dryRun=False)
 
     Check View for issues, fix/repair as needed."""
@@ -1302,9 +1118,7 @@ def _checkView(
         tempfile.gettempdir() if not outPath else outPath,
         "{}_addLayers.json".format(view.id),
     )
-    relatedItems = (
-        view.backupRelationships if hasattr(view, "backupRelationships") else []
-    )
+    relatedItems = view.backupRelationships if hasattr(view, "backupRelationships") else []
 
     # Double check Layer/Table count!
     viewDetails = view._gis._con.post(view.url, {"f": "json"})
@@ -1317,11 +1131,7 @@ def _checkView(
         addLayers = json.load(open(addLayersFile, "r"))
         viewManager = _getManager(view, verbose=verbose, outcome=outcome)
 
-        if (
-            isinstance(addLayers, dict)
-            and "layers" in addLayers
-            and addLayers["layers"]
-        ):
+        if isinstance(addLayers, dict) and "layers" in addLayers and addLayers["layers"]:
             if verbose:
                 print("\n * View is missing its Layers, restoring!")
             start = datetime.datetime.now()
@@ -1335,13 +1145,9 @@ def _checkView(
                     data = {
                         "f": "json",
                         "async": False,
-                        "addToDefinition": json.dumps(
-                            obj=addLayers, separators=(",", ":")
-                        ),
+                        "addToDefinition": json.dumps(obj=addLayers, separators=(",", ":")),
                     }
-                    status = viewManager._gis._con.post(
-                        viewManager.url + "/" + "addToDefinition", data
-                    )
+                    status = viewManager._gis._con.post(viewManager.url + "/" + "addToDefinition", data)
 
             except Exception as e:
                 status = e
@@ -1349,18 +1155,9 @@ def _checkView(
                     traceback.print_exc()
                     print("\n * Error: '{}'".format(e))
 
-            if (
-                status
-                and isinstance(status, dict)
-                and "success" in status
-                and status["success"]
-            ):
+            if status and isinstance(status, dict) and "success" in status and status["success"]:
                 if verbose:
-                    print(
-                        " - Success! Elapsed Time: {}".format(
-                            datetime.datetime.now() - start
-                        )
-                    )
+                    print(" - Success! Elapsed Time: {}".format(datetime.datetime.now() - start))
             else:
                 outcome["items"].append(
                     {
@@ -1379,18 +1176,14 @@ def _checkView(
 
     # Check for missing Relationships, Views only
     if relatedItems:
-        relatedServices = [
-            relItem.id for relItem in view.related_items("Service2Service", "reverse")
-        ]
+        relatedServices = [relItem.id for relItem in view.related_items("Service2Service", "reverse")]
         if len(relatedItems) > len(relatedServices):
             if verbose:
                 print("\n * View is missing one or more Related Services, restoring!")
             updateRelationships(view, relatedItems, verbose=verbose, dryRun=dryRun)
         elif set(relatedItems) != set(relatedServices):
             if verbose:
-                print(
-                    "\n * Updating related service ids in backup, a change was detected on View!"
-                )
+                print("\n * Updating related service ids in backup, a change was detected on View!")
             view.backupRelationships = relatedServices
 
     return hadError
@@ -1419,21 +1212,15 @@ def _importConverter(moduleName):
             raise Exception("Module is missing 'convert' function")
 
         if not mod.convert.__code__.co_argcount:
-            raise Exception(
-                "Function 'convert' has NO parameters, minimum of 1 is required"
-            )
+            raise Exception("Function 'convert' has NO parameters, minimum of 1 is required")
 
     except Exception as e:
-        raise Exception(
-            "Failed to import module '{}', Error: '{}'".format(moduleName, e)
-        )
+        raise Exception("Failed to import module '{}', Error: '{}'".format(moduleName, e))
 
     return mod
 
 
-def updateRelationships(
-    view, relateIds=[], unRelate=False, verbose=None, outcome=None, dryRun=False
-):
+def updateRelationships(view, relateIds=[], unRelate=False, verbose=None, outcome=None, dryRun=False):
     """Function: updateRelationships( <view>[, <relateIds>[, <unRelate>[, <verbose>[, <outcome>[, <dryRun>]]]]])
 
         Set or Remove Relationships between one or more Feature Services and a Feature View. Leveraged by A/B
@@ -1498,31 +1285,21 @@ def updateRelationships(
                 if item in removed:
                     # If Initial removal fails, trap and report issue!
                     if verbose:
-                        print(
-                            " * Failed to Remove Relationship to Item: {}, '{}'".format(
-                                item.id, item.title
-                            )
-                        )
+                        print(" * Failed to Remove Relationship to Item: {}, '{}'".format(item.id, item.title))
                     outcome["items"].append(
                         {
                             "id": view.id,
                             "title": view.title,
                             "itemType": view.type,
                             "action": "remove relationship",
-                            "result": "Failed to Remove Relationship to Item: {}, '{}'".format(
-                                item.id, item.title
-                            ),
+                            "result": "Failed to Remove Relationship to Item: {}, '{}'".format(item.id, item.title),
                         }
                     )
                     related = False
                     break
 
                 if verbose:
-                    print(
-                        " - Removing Relationship to item: {}, '{}'".format(
-                            item.id, item.title
-                        )
-                    )
+                    print(" - Removing Relationship to item: {}, '{}'".format(item.id, item.title))
 
                 status = "Unknown"
                 if direction == "reverse":
@@ -1532,9 +1309,7 @@ def updateRelationships(
                                 print(" * Dry Run * No Change!")
                             status = True
                         else:
-                            status = item.delete_relationship(
-                                view, unRelate
-                            )  # Delete Relationship of View in Item
+                            status = item.delete_relationship(view, unRelate)  # Delete Relationship of View in Item
                     except Exception as e:
                         status = str(e)
                 else:
@@ -1544,9 +1319,7 @@ def updateRelationships(
                                 print(" * Dry Run * No Change!")
                             status = True
                         else:
-                            status = view.delete_relationship(
-                                item, unRelate
-                            )  # Delete Relationship of Item in View
+                            status = view.delete_relationship(item, unRelate)  # Delete Relationship of Item in View
                     except Exception as e:
                         status = str(e)
 
@@ -1580,15 +1353,9 @@ def updateRelationships(
 
     elif relateIds:
         # Add or Remove related Items from View
-        children = [
-            item.id for item in view.related_items("Service2Service", "forward")
-        ]  # Create Child Lookup
-        parents = [
-            item.id for item in view.related_items("Service2Service", "reverse")
-        ]  # Create Parent Lookup
-        data = [
-            item.id for item in view.related_items("Service2Data", "forward")
-        ]  # Create Data Lookup
+        children = [item.id for item in view.related_items("Service2Service", "forward")]  # Create Child Lookup
+        parents = [item.id for item in view.related_items("Service2Service", "reverse")]  # Create Parent Lookup
+        data = [item.id for item in view.related_items("Service2Data", "forward")]  # Create Data Lookup
         related = children + parents
         # Service2Data types:
         # dataTypes = ['GeoJson', 'Feature Collection', 'Microsoft Excel', 'File Geodatabase', 'Shapefile', 'CSV', 'Service Definition']
@@ -1626,11 +1393,7 @@ def updateRelationships(
                 # Remove relationship
                 if itemId in children:
                     if verbose:
-                        print(
-                            " - Removing Child Relationship to Item: {}, '{}'".format(
-                                item.id, item.title
-                            )
-                        )
+                        print(" - Removing Child Relationship to Item: {}, '{}'".format(item.id, item.title))
 
                     try:
                         if dryRun:
@@ -1664,11 +1427,7 @@ def updateRelationships(
 
                 if itemId in parents:
                     if verbose:
-                        print(
-                            " - Removing Parent Relationship to Item: {}, '{}'".format(
-                                item.id, item.title
-                            )
-                        )
+                        print(" - Removing Parent Relationship to Item: {}, '{}'".format(item.id, item.title))
 
                     try:
                         if dryRun:
@@ -1707,25 +1466,15 @@ def updateRelationships(
                     else ("Service2Service", children, "forward")
                 )
                 # Add relationship
-                if addRelationship == "Service2Data" and (
-                    data or item.related_items("Service2Data", "reverse")
-                ):
+                if addRelationship == "Service2Data" and (data or item.related_items("Service2Data", "reverse")):
                     if verbose:
                         if data:
-                            print(
-                                " * Ignored * Add Relationship, Service already Related to a Data Item!"
-                            )
+                            print(" * Ignored * Add Relationship, Service already Related to a Data Item!")
                         else:
-                            print(
-                                " * Ignored * Add Relationship, Data Item already Related to a Service!"
-                            )
+                            print(" * Ignored * Add Relationship, Data Item already Related to a Service!")
                 elif itemId not in addLookup:
                     if verbose:
-                        print(
-                            " - Adding Relationship to Item: {}, '{}'".format(
-                                item.id, item.title
-                            )
-                        )
+                        print(" - Adding Relationship to Item: {}, '{}'".format(item.id, item.title))
 
                     try:
                         if dryRun:
@@ -1830,9 +1579,7 @@ def updateRelationships(
     return outcome
 
 
-def getFeatureServiceTarget(
-    view, verbose=None, outcome=None, ignoreDataItemCheck=False
-):
+def getFeatureServiceTarget(view, verbose=None, outcome=None, ignoreDataItemCheck=False):
     """Function: getFeatureServiceTarget( <view>[, <verbose>[, <outcome>[, <ignoreDataItemCheck>]]])
 
         Identifies Idle Service Item target for Multi-Service enabled Views, supporting Swap Layers workflow.
@@ -2003,62 +1750,40 @@ def getFeatureServiceTarget(
                     )
                     outcome["success"] = False  # Set as error
                 else:
-                    currentService = (
-                        "* Unknown or NOT Set - Targeting First Available *"
-                    )
+                    currentService = "* Unknown or NOT Set - Targeting First Available *"
 
                     try:
                         # Do we have a current service?
                         layer = viewManager.properties.layers[0]
                         currentService = (
-                            "/"
-                            + layer.adminLayerInfo.viewLayerDefinition.sourceServiceName
-                            + "/FeatureServer"
+                            "/" + layer.adminLayerInfo.viewLayerDefinition.sourceServiceName + "/FeatureServer"
                         )
 
                         # Grab Last Edit Date, save to view
-                        serviceLastModified = layer.get("editingInfo", {}).get(
-                            "lastEditDate", 0
-                        )
+                        serviceLastModified = layer.get("editingInfo", {}).get("lastEditDate", 0)
                         serviceLastModified = (
                             0
                             if not serviceLastModified
-                            else datetime.datetime.utcfromtimestamp(
-                                int(serviceLastModified / 1000)
-                            )
+                            else datetime.datetime.utcfromtimestamp(int(serviceLastModified / 1000))
                         )
                         setattr(view, "serviceLastModified", serviceLastModified)
                     except:
                         try:
                             # Try using Related Data Service
                             relatedItem = view.related_items("Service2Data")[0]
-                            currentService = "/".join(
-                                [""] + relatedItem.url.split("/")[-2:]
-                            )
+                            currentService = "/".join([""] + relatedItem.url.split("/")[-2:])
                         except:
                             pass
 
                     if verbose:
-                        print(
-                            " -         Current Feature Service: {}".format(
-                                currentService
-                            )
-                        )
+                        print(" -         Current Feature Service: {}".format(currentService))
 
                     for target in targets:
                         # Grab first target that does not match the current!
                         if not target["service"].url.endswith(currentService):
                             if verbose:
-                                print(
-                                    " -  Target Feature Service Item Id: {}".format(
-                                        target["service"].id
-                                    )
-                                )
-                                print(
-                                    " -    Target Feature Service Title: '{}'".format(
-                                        target["service"].title
-                                    )
-                                )
+                                print(" -  Target Feature Service Item Id: {}".format(target["service"].id))
+                                print(" -    Target Feature Service Title: '{}'".format(target["service"].title))
                                 print(
                                     " - Target Feature Service Filename: '{}' ({})".format(
                                         target["filename"], target["fileType"]
@@ -2195,11 +1920,7 @@ def swapFeatureViewLayers(
         outcome = {"success": None, "items": []}
 
     if verbose:
-        print(
-            "\nInvoking Feature View Layer Swap Workflow{}...".format(
-                " (Target update ONLY!)" if noSwap else ""
-            )
-        )
+        print("\nInvoking Feature View Layer Swap Workflow{}...".format(" (Target update ONLY!)" if noSwap else ""))
 
     # Verify Properties
     if preserveProps and noProps:
@@ -2224,9 +1945,7 @@ def swapFeatureViewLayers(
                     "title": item.title,
                     "itemType": item.type,
                     "action": "verify",
-                    "result": "Unable to locate specified output path: '{}'!".format(
-                        outPath
-                    ),
+                    "result": "Unable to locate specified output path: '{}'!".format(outPath),
                 }
             )
             outcome["success"] = False  # Set as error
@@ -2240,9 +1959,7 @@ def swapFeatureViewLayers(
                     "title": item.title,
                     "itemType": item.type,
                     "action": "verify",
-                    "result": "Specified output path: '{}', is NOT a Folder!".format(
-                        outPath
-                    ),
+                    "result": "Specified output path: '{}', is NOT a Folder!".format(outPath),
                 }
             )
             outcome["success"] = False  # Set as error
@@ -2261,9 +1978,7 @@ def swapFeatureViewLayers(
 
                 # Validate Arguments, all come in as strings
                 argCount = converter[0].convert.__code__.co_argcount
-                argNames = converter[0].convert.__code__.co_varnames[
-                    1:argCount
-                ]  # excluding download filename
+                argNames = converter[0].convert.__code__.co_varnames[1:argCount]  # excluding download filename
 
                 if len(converter) > argCount:
                     if argCount > 1:
@@ -2273,11 +1988,7 @@ def swapFeatureViewLayers(
                             )
                         )
                     else:
-                        raise Exception(
-                            "No Parameters required, {} specified".format(
-                                len(converter) - 1
-                            )
-                        )
+                        raise Exception("No Parameters required, {} specified".format(len(converter) - 1))
 
                 for index, value in enumerate(converter[1:]):
                     try:
@@ -2286,11 +1997,7 @@ def swapFeatureViewLayers(
                         converter[index + 1] = eval(str(value))
 
                     except Exception as e:
-                        raise Exception(
-                            "Failed to evaluate Parameter '{}', Error: '{}'".format(
-                                argNames[index], e
-                            )
-                        )
+                        raise Exception("Failed to evaluate Parameter '{}', Error: '{}'".format(argNames[index], e))
 
             except Exception as e:
                 outcome["items"].append(
@@ -2299,9 +2006,7 @@ def swapFeatureViewLayers(
                         "title": view.title,
                         "itemType": view.type,
                         "action": "verify",
-                        "result": "Loading Converter '{}' Failed, Error: '{}'!".format(
-                            converter[0], e
-                        ),
+                        "result": "Loading Converter '{}' Failed, Error: '{}'!".format(converter[0], e),
                     }
                 )
                 outcome["success"] = False  # Set as error
@@ -2352,9 +2057,7 @@ def swapFeatureViewLayers(
     _backupProperties(view, verbose=verbose, outcome=outcome, outPath=outPath)
 
     # Check status of View's Layers
-    hadError = _checkView(
-        view, verbose=verbose, outcome=outcome, dryRun=dryRun, outPath=outPath
-    )
+    hadError = _checkView(view, verbose=verbose, outcome=outcome, dryRun=dryRun, outPath=outPath)
 
     #
     # Get Target Feature Service Details
@@ -2367,19 +2070,13 @@ def swapFeatureViewLayers(
     )
 
     if "service" in target:
-        viewIsService = (
-            target["view"] == target["service"]
-        )  # Is the Target View a Service?
+        viewIsService = target["view"] == target["service"]  # Is the Target View a Service?
 
         if updateFile:
             if os.path.isdir(updateFile):
                 updateFile = os.path.join(updateFile, target["filename"])
 
-            serviceLastModified = (
-                0
-                if not hasattr(view, "serviceLastModified")
-                else view.serviceLastModified
-            )
+            serviceLastModified = 0 if not hasattr(view, "serviceLastModified") else view.serviceLastModified
             setattr(
                 target["service"], "returnUpdatedItem", True
             )  # Tell overwriteFeatureService function to return the updated item object instead of the status
@@ -2406,14 +2103,10 @@ def swapFeatureViewLayers(
 
         if noSwap and updateFile:
             if verbose:
-                print(
-                    "\n * Target Service Update with No Layer Swap requested, ignoring Swap!"
-                )
+                print("\n * Target Service Update with No Layer Swap requested, ignoring Swap!")
 
         # If Successful Update or no update and no errors
-        elif (updateFile and outcome["success"] is True) or not (
-            updateFile or outcome["success"] is False
-        ):
+        elif (updateFile and outcome["success"] is True) or not (updateFile or outcome["success"] is False):
             if verbose:
                 print("\nCollecting Feature View Details for Swap...")
 
@@ -2421,15 +2114,11 @@ def swapFeatureViewLayers(
             # Swap Layers of Main View to match Layers of Target View
             #
             targetLayers = {}  # Admin detail for each Layer in Target View
-            targetManager = _getManager(
-                target["view"], verbose=verbose, outcome=outcome
-            )
+            targetManager = _getManager(target["view"], verbose=verbose, outcome=outcome)
             if outcome["success"] is False:
                 return outcome
 
-            viewLayers = {
-                "layers": []
-            }  # Updated Layer details for Main View, used to Swap View Layers!
+            viewLayers = {"layers": []}  # Updated Layer details for Main View, used to Swap View Layers!
             viewManager = _getManager(view, verbose=verbose, outcome=outcome)
             if outcome["success"] is False:
                 return outcome
@@ -2438,9 +2127,7 @@ def swapFeatureViewLayers(
             altLayers = {"layers": []}
             dropLayers = {"layers": []}
             serviceHasLayer = True
-            fallbackLayers = {
-                "layers": eval(viewManager.properties.get("layers", []).__repr__())
-            }
+            fallbackLayers = {"layers": eval(viewManager.properties.get("layers", []).__repr__())}
 
             # Collect Administrative details for All availble Layers
             for layer in targetManager.properties.get("layers", []):
@@ -2449,39 +2136,29 @@ def swapFeatureViewLayers(
                     targetId = str(layer["id"])
                     targetLayers[targetId] = {
                         "viewLayerDefinition": {
-                            "sourceServiceName": targetManager.properties[
-                                "adminServiceInfo"
-                            ]["name"],
+                            "sourceServiceName": targetManager.properties["adminServiceInfo"]["name"],
                             "sourceLayerId": layer["id"],
                             "sourceLayerFields": "*",
                         }
                     }
                 else:
                     # From Feature View
-                    adminId = layer["adminLayerInfo"]["viewLayerDefinition"][
-                        "sourceLayerId"
-                    ]
+                    adminId = layer["adminLayerInfo"]["viewLayerDefinition"]["sourceLayerId"]
                     # targetLayers[ str( adminId)] = layer[ "adminLayerInfo"].copy()
 
                     targetId = str(adminId)
                     targetLayers[targetId] = {
                         "viewLayerDefinition": {
-                            "sourceServiceName": layer["adminLayerInfo"][
-                                "viewLayerDefinition"
-                            ]["sourceServiceName"],
+                            "sourceServiceName": layer["adminLayerInfo"]["viewLayerDefinition"]["sourceServiceName"],
                             "sourceLayerId": adminId,
-                            "sourceLayerFields": layer["adminLayerInfo"][
-                                "viewLayerDefinition"
-                            ]["sourceLayerFields"],
+                            "sourceLayerFields": layer["adminLayerInfo"]["viewLayerDefinition"]["sourceLayerFields"],
                         }
                     }
 
                 # Add common properties to Target Layer
                 for property in ["geometryField", "xssTrustedFields"]:
                     if property in layer["adminLayerInfo"]:
-                        targetLayers[targetId][property] = layer["adminLayerInfo"][
-                            property
-                        ]
+                        targetLayers[targetId][property] = layer["adminLayerInfo"][property]
 
                 # Add to Alternate add layers list
                 altLayers["layers"].append(
@@ -2510,15 +2187,9 @@ def swapFeatureViewLayers(
 
             # Cycle through Main View layer list, extract and update Admin details for Layer Swap
             for layer in layers:
-                adminId = str(
-                    layer["adminLayerInfo"]["viewLayerDefinition"]["sourceLayerId"]
-                )
-                dropLayers["layers"].append(
-                    {"id": layer["id"]}
-                )  # Add Layer to drop list
-                viewLayers["layers"].append(
-                    eval(layer.__repr__())
-                )  # Save Layer details
+                adminId = str(layer["adminLayerInfo"]["viewLayerDefinition"]["sourceLayerId"])
+                dropLayers["layers"].append({"id": layer["id"]})  # Add Layer to drop list
+                viewLayers["layers"].append(eval(layer.__repr__()))  # Save Layer details
 
                 if adminId in targetLayers:
                     # Update Layer's Admin details to point to Target Layer
@@ -2588,9 +2259,7 @@ def swapFeatureViewLayers(
                         data = {
                             "f": "json",
                             "async": asyncCall,
-                            "deleteFromDefinition": json.dumps(
-                                obj=dropLayers, separators=(",", ":")
-                            ),
+                            "deleteFromDefinition": json.dumps(obj=dropLayers, separators=(",", ":")),
                         }
 
                         if asyncCall:
@@ -2598,9 +2267,7 @@ def swapFeatureViewLayers(
                                 viewManager,
                                 "deleteFromDefinition",
                                 data,
-                                verbose=True
-                                if maxVerbose
-                                else (None if verbose else False),
+                                verbose=True if maxVerbose else (None if verbose else False),
                             )
                         else:
                             try:
@@ -2619,12 +2286,7 @@ def swapFeatureViewLayers(
                         print(" * Nothing to drop, Layers list is empty!")
                     status = {"success": True}
 
-                if not (
-                    status
-                    and isinstance(status, dict)
-                    and "success" in status
-                    and status["success"]
-                ):
+                if not (status and isinstance(status, dict) and "success" in status and status["success"]):
                     outcome["items"].append(
                         {
                             "id": view.id,
@@ -2638,12 +2300,8 @@ def swapFeatureViewLayers(
                 else:
                     if verbose and serviceHasLayer:
                         _prints(
-                            "\r   - Success! Elapsed Time: {}".format(
-                                datetime.datetime.now() - start
-                            ),
-                            status.get("progressLength", 0)
-                            if hasattr(status, "get")
-                            else 0,
+                            "\r   - Success! Elapsed Time: {}".format(datetime.datetime.now() - start),
+                            status.get("progressLength", 0) if hasattr(status, "get") else 0,
                         )
 
                     # Remove View Item's Data relationship to Feature Service (View will auto-update with correct Data relationship)
@@ -2674,9 +2332,7 @@ def swapFeatureViewLayers(
                                 data = {
                                     "f": "json",
                                     "async": asyncCall,
-                                    "addToDefinition": json.dumps(
-                                        obj=applyLayers, separators=(",", ":")
-                                    ),
+                                    "addToDefinition": json.dumps(obj=applyLayers, separators=(",", ":")),
                                 }
 
                                 if asyncCall:
@@ -2684,14 +2340,10 @@ def swapFeatureViewLayers(
                                         viewManager,
                                         "addToDefinition",
                                         data,
-                                        verbose=True
-                                        if maxVerbose
-                                        else (None if verbose else False),
+                                        verbose=True if maxVerbose else (None if verbose else False),
                                     )
                                 else:
-                                    status = viewManager._gis._con.post(
-                                        viewManager.url + "/" + "addToDefinition", data
-                                    )
+                                    status = viewManager._gis._con.post(viewManager.url + "/" + "addToDefinition", data)
 
                                 _refreshManager(viewManager)
 
@@ -2701,20 +2353,11 @@ def swapFeatureViewLayers(
                                 traceback.print_exc()
                                 print("\n * Error: '{}'".format(e))
 
-                        if (
-                            status
-                            and isinstance(status, dict)
-                            and "success" in status
-                            and status["success"]
-                        ):
+                        if status and isinstance(status, dict) and "success" in status and status["success"]:
                             if verbose:
                                 _prints(
-                                    "\r   - Success! Elapsed Time: {}".format(
-                                        datetime.datetime.now() - start
-                                    ),
-                                    status.get("progressLength", 0)
-                                    if hasattr(status, "get")
-                                    else 0,
+                                    "\r   - Success! Elapsed Time: {}".format(datetime.datetime.now() - start),
+                                    status.get("progressLength", 0) if hasattr(status, "get") else 0,
                                 )
 
                             if verbose:
@@ -2743,18 +2386,9 @@ def swapFeatureViewLayers(
                             )
                             hadError = True
                             if verbose:
-                                print(
-                                    "\n * Failed {} Layers, error: '{}'\n".format(
-                                        applyGroup, status
-                                    )
-                                )
+                                print("\n * Failed {} Layers, error: '{}'\n".format(applyGroup, status))
 
-                    if not (
-                        status
-                        and isinstance(status, dict)
-                        and "success" in status
-                        and status["success"]
-                    ):
+                    if not (status and isinstance(status, dict) and "success" in status and status["success"]):
                         outcome["items"].append(
                             {
                                 "id": view.id,
@@ -2787,9 +2421,7 @@ def swapFeatureViewLayers(
 
                         try:
                             start = datetime.datetime.now()
-                            serviceDetails = viewManager._gis._con.post(
-                                viewManager.url, {"f": "json"}
-                            )
+                            serviceDetails = viewManager._gis._con.post(viewManager.url, {"f": "json"})
 
                             if "layers" in serviceDetails:
                                 # Save Layers to backup file
@@ -2819,11 +2451,11 @@ def swapFeatureViewLayers(
                 if verbose:
                     print(
                         "\nFeature View Layer Swap {} Overall Elapsed Time: {}".format(
-                            "* Failed!"
-                            if outcome["success"] is False
-                            else "was Successful,"
-                            if not hadError
-                            else "had Issues",
+                            (
+                                "* Failed!"
+                                if outcome["success"] is False
+                                else "was Successful," if not hadError else "had Issues"
+                            ),
                             datetime.datetime.now() - swapStart,
                         )
                     )
@@ -2976,17 +2608,9 @@ def overwriteFeatureService(
 
         except Exception as e:
             if verbose:
-                print(
-                    " * Failed to Touch details for Item Id: '{}', Outcome: '{}'".format(
-                        item.id, e
-                    )
-                )
+                print(" * Failed to Touch details for Item Id: '{}', Outcome: '{}'".format(item.id, e))
             status = "Failed, Outcome: '{}'".format(e)
-            status = (
-                status
-                if "error code" not in status.lower()
-                else status.replace("\n", " ")
-            )
+            status = status if "error code" not in status.lower() else status.replace("\n", " ")
 
         outcome["items"].append(
             {
@@ -3038,9 +2662,7 @@ def overwriteFeatureService(
                         data = {
                             "f": "json",
                             "async": asyncCall,
-                            "updateDefinition": json.dumps(
-                                obj=definition, separators=(",", ":")
-                            ),
+                            "updateDefinition": json.dumps(obj=definition, separators=(",", ":")),
                         }
                         if asyncCall:
                             status = _asyncJob(
@@ -3050,9 +2672,7 @@ def overwriteFeatureService(
                                 verbose=None if verbose else False,
                             )
                         else:
-                            status = layer._gis._con.post(
-                                layer.url + "/" + "updateDefinition", data
-                            )
+                            status = layer._gis._con.post(layer.url + "/" + "updateDefinition", data)
 
                     if not (isinstance(status, dict) and status.get("success", False)):
                         raise Exception(status)
@@ -3060,9 +2680,7 @@ def overwriteFeatureService(
                     if verbose:
                         _prints(
                             "\r - Success!",
-                            status.get("progressLength", 0)
-                            if hasattr(status, "get")
-                            else 0,
+                            status.get("progressLength", 0) if hasattr(status, "get") else 0,
                         )
                     status = "Success"
 
@@ -3086,9 +2704,7 @@ def overwriteFeatureService(
                             verbose=None if verbose else False,
                         )
                     else:
-                        status = layer._gis._con.post(
-                            manager.url + "/" + "updateDefinition", data
-                        )
+                        status = layer._gis._con.post(manager.url + "/" + "updateDefinition", data)
 
                 if not (isinstance(status, dict) and status.get("success", False)):
                     raise Exception(status)
@@ -3096,9 +2712,7 @@ def overwriteFeatureService(
                 if verbose:
                     _prints(
                         "\r - Success!",
-                        status.get("progressLength", 0)
-                        if hasattr(status, "get")
-                        else 0,
+                        status.get("progressLength", 0) if hasattr(status, "get") else 0,
                     )
                 status = "Success"
 
@@ -3113,11 +2727,7 @@ def overwriteFeatureService(
                     )
                 )
             status = "Failed, Outcome: '{}'".format(e)
-            status = (
-                status
-                if "error code" not in status.lower()
-                else status.replace("\n", " ")
-            )
+            status = status if "error code" not in status.lower() else status.replace("\n", " ")
 
         outcome["items"].append(
             {
@@ -3144,11 +2754,7 @@ def overwriteFeatureService(
         outcome = {"success": None, "items": []}
 
     if verbose and updateFile:
-        print(
-            "\nInvoking Overwrite {}...".format(
-                "File Item" if isFileItem else "Feature Service"
-            )
-        )
+        print("\nInvoking Overwrite {}...".format("File Item" if isFileItem else "Feature Service"))
 
     # Verify Properties
     if (preserveProps and noProps) and not isFileItem:
@@ -3173,9 +2779,7 @@ def overwriteFeatureService(
                     "title": item.title,
                     "itemType": item.type,
                     "action": "verify",
-                    "result": "Unable to locate specified output path: '{}'!".format(
-                        outPath
-                    ),
+                    "result": "Unable to locate specified output path: '{}'!".format(outPath),
                 }
             )
             outcome["success"] = False  # Set as error
@@ -3189,9 +2793,7 @@ def overwriteFeatureService(
                     "title": item.title,
                     "itemType": item.type,
                     "action": "verify",
-                    "result": "Specified output path: '{}', is NOT a Folder!".format(
-                        outPath
-                    ),
+                    "result": "Specified output path: '{}', is NOT a Folder!".format(outPath),
                 }
             )
             outcome["success"] = False  # Set as error
@@ -3210,9 +2812,7 @@ def overwriteFeatureService(
 
                 # Validate Arguments, all come in as strings
                 argCount = converter[0].convert.__code__.co_argcount
-                argNames = converter[0].convert.__code__.co_varnames[
-                    1:argCount
-                ]  # excluding download filename
+                argNames = converter[0].convert.__code__.co_varnames[1:argCount]  # excluding download filename
 
                 if len(converter) > argCount:
                     if argCount > 1:
@@ -3222,11 +2822,7 @@ def overwriteFeatureService(
                             )
                         )
                     else:
-                        raise Exception(
-                            "No Parameters required, {} specified".format(
-                                len(converter) - 1
-                            )
-                        )
+                        raise Exception("No Parameters required, {} specified".format(len(converter) - 1))
 
                 for index, value in enumerate(converter[1:]):
                     try:
@@ -3235,11 +2831,7 @@ def overwriteFeatureService(
                         converter[index + 1] = eval(str(value))
 
                     except Exception as e:
-                        raise Exception(
-                            "Failed to evaluate Parameter '{}', Error: '{}'".format(
-                                argNames[index], e
-                            )
-                        )
+                        raise Exception("Failed to evaluate Parameter '{}', Error: '{}'".format(argNames[index], e))
 
             except Exception as e:
                 outcome["items"].append(
@@ -3248,9 +2840,7 @@ def overwriteFeatureService(
                         "title": item.title,
                         "itemType": item.type,
                         "action": "verify",
-                        "result": "Loading Converter '{}' Failed, Error: '{}'!".format(
-                            converter[0], e
-                        ),
+                        "result": "Loading Converter '{}' Failed, Error: '{}'!".format(converter[0], e),
                     }
                 )
                 outcome["success"] = False  # Set as error
@@ -3261,9 +2851,7 @@ def overwriteFeatureService(
         # Make it a list
         ignoreItems = [str(ignoreItems)]
 
-    returnItem = (
-        hasattr(item, "returnUpdatedItem") and item.returnUpdatedItem
-    )  # Used by Sizzle logic!
+    returnItem = hasattr(item, "returnUpdatedItem") and item.returnUpdatedItem  # Used by Sizzle logic!
 
     #
     # Verify Item
@@ -3283,11 +2871,7 @@ def overwriteFeatureService(
         #
         # Get Feature Layer Manager for item
         #
-        manager = (
-            _getManager(item, verbose=verbose, outcome=outcome)
-            if not isFileItem
-            else None
-        )
+        manager = _getManager(item, verbose=verbose, outcome=outcome) if not isFileItem else None
         if outcome["success"] is False:
             return outcome
 
@@ -3311,9 +2895,7 @@ def overwriteFeatureService(
                 return outcome
 
             # Check status of View's Layers
-            _checkView(
-                item, verbose=verbose, outcome=outcome, dryRun=dryRun, outPath=outPath
-            )
+            _checkView(item, verbose=verbose, outcome=outcome, dryRun=dryRun, outPath=outPath)
 
         #
         # Verify Feature Service is NOT actively in a Publishing state
@@ -3350,9 +2932,7 @@ def overwriteFeatureService(
             # Check that Service Overwrite is allowed
             #
             hasChangeTrackingOnView = (
-                manager.properties.get("hasChangeTrackingEnabledViews", False)
-                if not isFileItem
-                else False
+                manager.properties.get("hasChangeTrackingEnabledViews", False) if not isFileItem else False
             )
 
             if hasChangeTrackingOnView:
@@ -3399,56 +2979,36 @@ def overwriteFeatureService(
                     if "multiScaleGeometryInfo" in layer.properties:
                         wasOptimized = True
                         if verbose:
-                            print(
-                                " - Detected Optimization on Layer Id: {}".format(
-                                    layer.properties.get("id", "")
-                                )
-                            )
+                            print(" - Detected Optimization on Layer Id: {}".format(layer.properties.get("id", "")))
 
             # Get Last Modified details, use provided 'view' value if available!
             if not serviceLastModified:
-                serviceLastModified = (
-                    0
-                    if not layers
-                    else layers[0].get("editingInfo", {}).get("lastEditDate", 0)
-                )
+                serviceLastModified = 0 if not layers else layers[0].get("editingInfo", {}).get("lastEditDate", 0)
                 serviceLastModified = (
                     0
                     if not serviceLastModified
-                    else datetime.datetime.utcfromtimestamp(
-                        int(serviceLastModified / 1000)
-                    )
+                    else datetime.datetime.utcfromtimestamp(int(serviceLastModified / 1000))
                 )
 
             if verbose and serviceLastModified:
-                print(
-                    " - Service Last Modified: {}".format(
-                        serviceLastModified.strftime("%a, %d %b %Y %H:%M:%S GMT")
-                    )
-                )
+                print(" - Service Last Modified: {}".format(serviceLastModified.strftime("%a, %d %b %Y %H:%M:%S GMT")))
 
             #
             # Download Web data for update!
             #
             lastFile = {}
             if updateFile.split(":")[0].lower() in ["ftp", "http", "https"]:
-                outputFile = os.path.join(
-                    tempfile.gettempdir() if not outPath else outPath, outputFile
-                )
+                outputFile = os.path.join(tempfile.gettempdir() if not outPath else outPath, outputFile)
 
                 # Get Last Modified details
                 fileLastModified = (
                     0
                     if not os.path.exists(outputFile)
-                    else datetime.datetime.utcfromtimestamp(
-                        int(os.stat(outputFile).st_mtime)
-                    )
+                    else datetime.datetime.utcfromtimestamp(int(os.stat(outputFile).st_mtime))
                 )
 
                 # Set lastModified to file lastModified if Service details are not available!
-                lastModified = (
-                    serviceLastModified if serviceLastModified else fileLastModified
-                )
+                lastModified = serviceLastModified if serviceLastModified else fileLastModified
 
                 try:
                     authHandlers = []
@@ -3456,34 +3016,24 @@ def overwriteFeatureService(
                     # Add Hander(s)
                     authHandlers.append(
                         urllib.request.HTTPSHandler(
-                            context=urllib.request.ssl.SSLContext(
-                                urllib.request.ssl.PROTOCOL_SSLv23
-                            )
+                            context=urllib.request.ssl.SSLContext(urllib.request.ssl.PROTOCOL_SSLv23)
                         )
                     )
 
                     # Install Handler(s)
                     if verbose:
                         print("\nAccessing URL...")
-                    urllib.request.install_opener(
-                        urllib.request.build_opener(*authHandlers)
-                    )
+                    urllib.request.install_opener(urllib.request.build_opener(*authHandlers))
 
                     headers = {
                         "Accept": "*/*",
                         "Accept-Encoding": "*",
-                        "User-Agent": "Python/v{} OverwriteFS.py/{}".format(
-                            platform.python_version(), version
-                        ),
+                        "User-Agent": "Python/v{} OverwriteFS.py/{}".format(platform.python_version(), version),
                     }
 
-                    request = urllib.request.urlopen(
-                        urllib.request.Request(updateFile, headers=headers)
-                    )
+                    request = urllib.request.urlopen(urllib.request.Request(updateFile, headers=headers))
                     headers = (
-                        dict(request.info()._headers)
-                        if hasattr(request, "info")
-                        else {}
+                        dict(request.info()._headers) if hasattr(request, "info") else {}
                     )  # Get Header 'Tuple' list and convert to dictionary
 
                     # Adjust Headers
@@ -3496,9 +3046,7 @@ def overwriteFeatureService(
                         print(" -   Download to: '{}'".format(outputFile))
                         print(
                             " - Last Modified: {} (Local Download)".format(
-                                fileLastModified.strftime("%a, %d %b %Y %H:%M:%S GMT")
-                                if fileLastModified
-                                else "N/A"
+                                fileLastModified.strftime("%a, %d %b %Y %H:%M:%S GMT") if fileLastModified else "N/A"
                             )
                         )
                         print(
@@ -3521,9 +3069,7 @@ def overwriteFeatureService(
                             lastModified
                             and "Last-Modified" in headers
                             and lastModified
-                            >= datetime.datetime.strptime(
-                                headers["Last-Modified"], "%a, %d %b %Y %H:%M:%S GMT"
-                            )
+                            >= datetime.datetime.strptime(headers["Last-Modified"], "%a, %d %b %Y %H:%M:%S GMT")
                         ):
                             status = "No Change in URL Data"
                             if verbose:
@@ -3542,9 +3088,7 @@ def overwriteFeatureService(
                                     ):  # Select only Views that rely on this Service
                                         touchItem(
                                             view,
-                                            "\nTouching details on related View: '{}'".format(
-                                                view.title
-                                            ),
+                                            "\nTouching details on related View: '{}'".format(view.title),
                                             outcome,
                                         )
 
@@ -3581,9 +3125,7 @@ def overwriteFeatureService(
                     except Exception as e:
                         if verbose:
                             print(
-                                " * Issue Ignored * But, unable to compare 'Last-Modified' Dates, Error: '{}'".format(
-                                    e
-                                )
+                                " * Issue Ignored * But, unable to compare 'Last-Modified' Dates, Error: '{}'".format(e)
                             )
 
                     # Download file!
@@ -3650,9 +3192,7 @@ def overwriteFeatureService(
                         "title": item.title,
                         "itemType": item.type,
                         "action": "verify",
-                        "result": "Update Filename '{}' does NOT Exist".format(
-                            updateFile
-                        ),
+                        "result": "Update Filename '{}' does NOT Exist".format(updateFile),
                     }
                 )
                 outcome["success"] = False  # Set as error
@@ -3666,9 +3206,7 @@ def overwriteFeatureService(
                         "title": item.title,
                         "itemType": item.type,
                         "action": "verify",
-                        "result": "Update Filename '{}' is NOT a File".format(
-                            updateFile
-                        ),
+                        "result": "Update Filename '{}' is NOT a File".format(updateFile),
                     }
                 )
                 outcome["success"] = False  # Set as error
@@ -3682,9 +3220,7 @@ def overwriteFeatureService(
                 args = converter[1:]  # Get the Converter argument values
                 keyargs = {}  # Define Keyword Arguments
                 converter = converter[0]  # Get the Converter Module
-                fileTimestamp = os.stat(
-                    updateFile
-                ).st_mtime  # Save current File Timestamp, in case we need to re-apply
+                fileTimestamp = os.stat(updateFile).st_mtime  # Save current File Timestamp, in case we need to re-apply
                 updatePath, updateFilename = os.path.split(
                     os.path.realpath(outputFile)
                 )  # updateFile))  # Extract Path and Filename
@@ -3695,25 +3231,23 @@ def overwriteFeatureService(
                         print(
                             "\n - Converting Data using Module: '{}'{}".format(
                                 converter.__name__,
-                                ", Version: '{}'".format(converter.__version__)
-                                if hasattr(converter, "__version__")
-                                else "",
+                                (
+                                    ", Version: '{}'".format(converter.__version__)
+                                    if hasattr(converter, "__version__")
+                                    else ""
+                                ),
                             )
                         )
 
                     argCount = converter.convert.__code__.co_argcount
-                    argNames = converter.convert.__code__.co_varnames[
-                        1:argCount
-                    ]  # excluding download filename
+                    argNames = converter.convert.__code__.co_varnames[1:argCount]  # excluding download filename
 
                     if "verbose" in argNames and (argNames.index("verbose") + 1) > len(
                         args
                     ):  # If 'verbose' available and not in arguments provided, add it!
                         keyargs["verbose"] = True if verbose else False
 
-                    if "checkPublication" in argNames and (
-                        argNames.index("checkPublication") + 1
-                    ) > len(
+                    if "checkPublication" in argNames and (argNames.index("checkPublication") + 1) > len(
                         args
                     ):  # If 'checkPublication' available and not in arguments provided, add it!
                         if ignoreAge:
@@ -3739,9 +3273,7 @@ def overwriteFeatureService(
                             ):  # Select only Views that rely on this Service
                                 touchItem(
                                     view,
-                                    "\nTouching details on related View: '{}'".format(
-                                        view.title
-                                    ),
+                                    "\nTouching details on related View: '{}'".format(view.title),
                                     outcome,
                                 )
 
@@ -3845,9 +3377,7 @@ def overwriteFeatureService(
                                 ):  # Select only Views that rely on this Service
                                     touchItem(
                                         view,
-                                        "\nTouching details on related View: '{}'".format(
-                                            view.title
-                                        ),
+                                        "\nTouching details on related View: '{}'".format(view.title),
                                         outcome,
                                     )
 
@@ -3896,17 +3426,9 @@ def overwriteFeatureService(
                     except Exception as e:
                         if verbose:
                             traceback.print_exc()
-                            print(
-                                " * Failed to Update Item, Id: '{}', Outcome: '{}'".format(
-                                    item.id, e
-                                )
-                            )
+                            print(" * Failed to Update Item, Id: '{}', Outcome: '{}'".format(item.id, e))
                         status = "Failed, Outcome: '{}'".format(e)
-                        status = (
-                            status
-                            if "error code" not in status.lower()
-                            else status.replace("\n", " ")
-                        )
+                        status = status if "error code" not in status.lower() else status.replace("\n", " ")
 
                 outcome["items"].append(
                     {
@@ -3932,22 +3454,12 @@ def overwriteFeatureService(
             #
             # Setup Delete Layers json if needed
             #
-            layerProperties = (
-                item.backupLayerProperties
-                if hasattr(item, "backupLayerProperties")
-                else []
-            )
-            tableProperties = (
-                item.backupTableProperties
-                if hasattr(item, "backupTableProperties")
-                else []
-            )
+            layerProperties = item.backupLayerProperties if hasattr(item, "backupLayerProperties") else []
+            tableProperties = item.backupTableProperties if hasattr(item, "backupTableProperties") else []
             dropLayers = {"layers": []}
 
             for layer in layerProperties + tableProperties:
-                dropLayers["layers"].append(
-                    {"id": layer["id"]}
-                )  # Add Layer to drop list
+                dropLayers["layers"].append({"id": layer["id"]})  # Add Layer to drop list
 
             #
             # Perform Overwrite or Update!
@@ -3980,19 +3492,13 @@ def overwriteFeatureService(
                                 print(" * Dry Run * No Change!")
                             status = {"success": True}
                         else:
-                            if (
-                                createInfo
-                                and dataItem
-                                and not dataItem.type == "Service Definition"
-                            ):
+                            if createInfo and dataItem and not dataItem.type == "Service Definition":
                                 # Create missing infoFile for service File item
                                 createInfo = None
 
                                 try:
                                     if verbose:
-                                        print(
-                                            "\n - Missing Info File, Updating Service Item Info!"
-                                        )
+                                        print("\n - Missing Info File, Updating Service Item Info!")
 
                                     tempFile = os.path.sep.join(
                                         [
@@ -4011,33 +3517,17 @@ def overwriteFeatureService(
                                         ]
                                     )
                                     infoData = {
-                                        "name": manager.properties["adminServiceInfo"][
-                                            "name"
-                                        ],
-                                        "maxRecordCount": manager.properties[
-                                            "maxRecordCount"
-                                        ],
-                                        "hasStaticData": manager.properties[
-                                            "hasStaticData"
-                                        ],
-                                        "layerInfo": {
-                                            "capabilities": manager.properties[
-                                                "capabilities"
-                                            ]
-                                        },
+                                        "name": manager.properties["adminServiceInfo"]["name"],
+                                        "maxRecordCount": manager.properties["maxRecordCount"],
+                                        "hasStaticData": manager.properties["hasStaticData"],
+                                        "layerInfo": {"capabilities": manager.properties["capabilities"]},
                                     }
                                     json.dump(infoData, open(tempFile, "w"))
                                     status = item._gis._con.post(
                                         updateInfo,
-                                        files=[
-                                            ["file", tempFile, "publishParameters.json"]
-                                        ],
+                                        files=[["file", tempFile, "publishParameters.json"]],
                                     )
-                                    if not (
-                                        status
-                                        and isinstance(status, dict)
-                                        and status.get("success", False)
-                                    ):
+                                    if not (status and isinstance(status, dict) and status.get("success", False)):
                                         raise Exception(status)
 
                                     if verbose:
@@ -4055,34 +3545,22 @@ def overwriteFeatureService(
                             if dataItem and dataItem.type == "GeoPackage":
                                 # Handle Overwrite of GeoPackage item type!
                                 if verbose:
-                                    print(
-                                        " - Updating File Item, Type: '{}'...".format(
-                                            dataItem.type
-                                        )
-                                    )
+                                    print(" - Updating File Item, Type: '{}'...".format(dataItem.type))
                                 status = dataItem.update(data=updateFile)
                                 if status:
                                     if verbose:
                                         print(" - Updating Service...")
-                                    status = dataItem.publish(
-                                        overwrite=True, file_type=dataItem.type
-                                    )
+                                    status = dataItem.publish(overwrite=True, file_type=dataItem.type)
                                     if isinstance(status, arcgis.gis.Item):
                                         status = {"success": True}
                                 else:
-                                    raise Exception(
-                                        "data item update failed '{}'".format(status)
-                                    )
+                                    raise Exception("data item update failed '{}'".format(status))
                             else:
                                 status = manager.overwrite(updateFile)
 
                             _refreshManager(manager)
 
-                        if not (
-                            status
-                            and isinstance(status, dict)
-                            and status.get("success", False)
-                        ):
+                        if not (status and isinstance(status, dict) and status.get("success", False)):
                             outstandingIssue = True
                             raise Exception(status)
 
@@ -4092,10 +3570,7 @@ def overwriteFeatureService(
                     except Exception as e:
                         trace = traceback.format_exc()
                         postText = ""
-                        if (
-                            "item info file does not exist" in str(e).lower()
-                            and createInfo is not None
-                        ):
+                        if "item info file does not exist" in str(e).lower() and createInfo is not None:
                             createInfo = True
 
                         if "related_data_item.update(" in trace:
@@ -4104,16 +3579,9 @@ def overwriteFeatureService(
                         if verbose:
                             if not createInfo:
                                 traceback.print_exc()
-                            print(
-                                " * Failed to Update Item, Id: '{}', Outcome: '{}'{}".format(
-                                    item.id, e, postText
-                                )
-                            )
+                            print(" * Failed to Update Item, Id: '{}', Outcome: '{}'{}".format(item.id, e, postText))
 
-                        if (
-                            "in _add_by_part" in trace
-                            and "can only concatenate" in trace
-                        ):
+                        if "in _add_by_part" in trace and "can only concatenate" in trace:
                             # Detect update of Item located in user defined folder. Python API issue!
                             postText = "Suggest relocating Service FILE Item to user's root folder and retrying update"
                             print("\n * {}! *\n".format(postText))
@@ -4128,25 +3596,19 @@ def overwriteFeatureService(
                                 data = {
                                     "f": "json",
                                     "async": asyncCall,
-                                    "deleteFromDefinition": json.dumps(
-                                        obj=dropLayers, separators=(",", ":")
-                                    ),
+                                    "deleteFromDefinition": json.dumps(obj=dropLayers, separators=(",", ":")),
                                 }
 
                                 try:
                                     if verbose:
-                                        print(
-                                            "\n - Attempting to drop existing Layers before retrying Overwrite..."
-                                        )
+                                        print("\n - Attempting to drop existing Layers before retrying Overwrite...")
 
                                     if asyncCall:
                                         delStatus = _asyncJob(
                                             manager,
                                             "deleteFromDefinition",
                                             data,
-                                            verbose=True
-                                            if maxVerbose
-                                            else (None if verbose else False),
+                                            verbose=True if maxVerbose else (None if verbose else False),
                                             indent="  ",
                                         )
                                     else:
@@ -4163,11 +3625,7 @@ def overwriteFeatureService(
                                 except Exception as e:
                                     if verbose:
                                         traceback.print_exc()
-                                        print(
-                                            "\n * Error: '{}'\n    Data: '{}'".format(
-                                                e, data
-                                            )
-                                        )
+                                        print("\n * Error: '{}'\n    Data: '{}'".format(e, data))
 
                             if verbose:
                                 print("\n * Retrying!")
@@ -4193,11 +3651,7 @@ def overwriteFeatureService(
                     )
 
                 if verbose:
-                    print(
-                        " - Success! Elapsed Time: {}".format(
-                            datetime.datetime.now() - start
-                        )
-                    )
+                    print(" - Success! Elapsed Time: {}".format(datetime.datetime.now() - start))
 
                 #
                 # Cancel Automatic Layer Optimizations if needed
@@ -4206,15 +3660,12 @@ def overwriteFeatureService(
                     try:
                         curDetails = manager._gis._con.post(manager.url, {"f": "json"})
                         wait = (
-                            globals().get("deoptimizewait")
-                            if globals().get("deoptimizewait")
-                            else 60
+                            globals().get("deoptimizewait") if globals().get("deoptimizewait") else 60
                         )  # Seconds to wait before attempting to cancel Auto-Optimize!
                         timeout = 120
                         for layer in curDetails["layers"]:
                             if (
-                                layer["geometryType"]
-                                in ["esriGeometryPolyline", "esriGeometryPolygon"]
+                                layer["geometryType"] in ["esriGeometryPolyline", "esriGeometryPolygon"]
                                 and "multiScaleGeometryStatus" in layer
                             ):
                                 while wait:
@@ -4251,9 +3702,7 @@ def overwriteFeatureService(
                                                         "async": True,
                                                         "updateDefinition": '{"multiScaleGeometryInfo":null}',
                                                     },
-                                                    verbose=True
-                                                    if maxVerbose
-                                                    else (None if verbose else False),
+                                                    verbose=True if maxVerbose else (None if verbose else False),
                                                     indent="    ",
                                                     noWait=noWait,
                                                     timeout=timeout * mult,
@@ -4265,39 +3714,24 @@ def overwriteFeatureService(
                                                 if retries and verbose:
                                                     print("   * Retrying!")
                                             else:
-                                                raise Exception(
-                                                    "Retry Timeout Exceeded"
-                                                )
+                                                raise Exception("Retry Timeout Exceeded")
 
-                                        if not (
-                                            isinstance(status, dict)
-                                            and status.get("success", False)
-                                        ):
+                                        if not (isinstance(status, dict) and status.get("success", False)):
                                             if verbose:
-                                                print(
-                                                    "\n * Failed! Error: {}".format(
-                                                        status
-                                                    )
-                                                )
+                                                print("\n * Failed! Error: {}".format(status))
                                         elif verbose:
                                             _prints(
                                                 "\r   - Optimization Canceled! Elapsed Time: {}    ".format(
                                                     datetime.datetime.now() - start
                                                 ),
-                                                status.get("progressLength", 0)
-                                                if hasattr(status, "get")
-                                                else 0,
+                                                status.get("progressLength", 0) if hasattr(status, "get") else 0,
                                             )
 
                                         break
 
                     except Exception as e:
                         if verbose:
-                            print(
-                                "\n * Failed to Check/Cancel Optimization, Error: {}".format(
-                                    e
-                                )
-                            )
+                            print("\n * Failed to Check/Cancel Optimization, Error: {}".format(e))
 
                 #
                 # Restore Service and Item properties from Backup
@@ -4326,17 +3760,9 @@ def overwriteFeatureService(
 
                 if verbose:
                     traceback.print_exc()
-                    print(
-                        " * Failed to Update Item, Id: '{}', Outcome: '{}'{}".format(
-                            item.id, e, postText
-                        )
-                    )
+                    print(" * Failed to Update Item, Id: '{}', Outcome: '{}'{}".format(item.id, e, postText))
                 status = "Failed, Outcome: '{}'{}".format(e, postText)
-                status = (
-                    status
-                    if "error code" not in status.lower()
-                    else status.replace("\n", " ")
-                )
+                status = status if "error code" not in status.lower() else status.replace("\n", " ")
 
             outcome["items"].append(
                 {
@@ -4354,9 +3780,7 @@ def overwriteFeatureService(
             # No Data Updates Made
             #
             if touchItem:
-                outcome["success"] = touchItem(
-                    item, "\nTouching Item details...", outcome
-                )
+                outcome["success"] = touchItem(item, "\nTouching Item details...", outcome)
         else:
             outcome["items"].append(
                 {
@@ -4373,14 +3797,10 @@ def overwriteFeatureService(
     #
     if (touchItems or touchTimeSeries) and outcome["success"] is True:
         # for view in item.related_items( "Service2Service"):
-        for view in item.related_items(
-            "Service2Data", "reverse"
-        ):  # Select only Views that rely on this Service
+        for view in item.related_items("Service2Data", "reverse"):  # Select only Views that rely on this Service
             if view.id in ignoreItems:
                 if verbose:
-                    print(
-                        "\n * Ignoring 'touch' on related View: '{}'".format(view.title)
-                    )
+                    print("\n * Ignoring 'touch' on related View: '{}'".format(view.title))
                 continue
 
             if touchItems:
@@ -4397,9 +3817,7 @@ def overwriteFeatureService(
             elif touchTimeSeries and updateFile:
                 touchTimeInfo(
                     view,
-                    "\nTouching Time Series Layers on related View: '{}'".format(
-                        view.title
-                    ),
+                    "\nTouching Time Series Layers on related View: '{}'".format(view.title),
                     outcome,
                 )
 
@@ -4422,24 +3840,14 @@ if __name__ == "__main__":
                 version, __file__
             )
         )
-        print(
-            "\n             -h: (optional) Action Switch that triggers 'usage' display and exit."
-        )
-        print(
-            "\n      <profile>: (required) Stored Python API user Profile to connect with."
-        )  #
+        print("\n             -h: (optional) Action Switch that triggers 'usage' display and exit.")
+        print("\n      <profile>: (required) Stored Python API user Profile to connect with.")  #
         print(
             "                            Specify 'Pro' to leverage active ArcGIS Pro connection, also requires Arcpy!"
         )
-        print(
-            "\n         <item>: (required) Item Id of Feature Service or Feature View to act on."
-        )
-        print(
-            "\n        <title>: (required) Title of <item>, to verify item Id matches correct item."
-        )
-        print(
-            "\n     <filename>: (optional) File path/name, or URL containing Service data to update Service with."
-        )
+        print("\n         <item>: (required) Item Id of Feature Service or Feature View to act on.")
+        print("\n        <title>: (required) Title of <item>, to verify item Id matches correct item.")
+        print("\n     <filename>: (optional) File path/name, or URL containing Service data to update Service with.")
         print(
             "        or <url>            If 'path' only, script will search path for original filename used to publish Service."
         )
@@ -4449,9 +3857,7 @@ if __name__ == "__main__":
         print(
             "\n       -OutPath: (optional) Option Switch setting output file Path used to store <url> download data during run."
         )
-        print(
-            "                            * Note * Ignored when specified <filename> is used!"
-        )
+        print("                            * Note * Ignored when specified <filename> is used!")
         print("                            Default: User's Temporary folder.")
         print("\n<output folder>: (optional, but required when using -OutPath option.")
         print(
@@ -4464,15 +3870,11 @@ if __name__ == "__main__":
         print(
             "\n     -NoIndexes: (optional) Option Switch instructing function not to recreate missing Layer Indexes on Service."
         )
-        print(
-            "                            Default: Recreate indexes if they are missing after an Overwrite action."
-        )
+        print("                            Default: Recreate indexes if they are missing after an Overwrite action.")
         print(
             "\n       -NoTouch: (optional) Option Switch instructing function not to update the 'lastUpdated' item property for the"
         )
-        print(
-            "                            Service or related Views unless an update has been made to them."
-        )
+        print("                            Service or related Views unless an update has been made to them.")
         print(
             "                            Default: Update, or 'touch', the 'lastUpdate' property on the Service item and Views, even"
         )
@@ -4491,9 +3893,7 @@ if __name__ == "__main__":
         print(
             "                            Default: Function will wait for properties like Layer Optimization to be re-applied before"
         )
-        print(
-            "                                     proceeding to the next processing 'step' in the update workflow."
-        )
+        print("                                     proceeding to the next processing 'step' in the update workflow.")
         print(
             "\n       -NoProps: (optional) Option Switch instructing function NOT to Re-Apply Service or View properties following"
         )
@@ -4506,18 +3906,14 @@ if __name__ == "__main__":
         print(
             "\n  -PersistProps: (optional) Option Switch instructing function to retain Service or View property Backup File"
         )
-        print(
-            "                            after a successful Overwrite and property restoration."
-        )
+        print("                            after a successful Overwrite and property restoration.")
         print(
             "                            Default: Re-Apply properties and do not persist Backup file beyond successful update."
         )
         print(
             "\n        -DryRun: (optional) Option Switch instructing function to step through process WITHOUT updating the Service."
         )
-        print(
-            "                            Default: Update or Touch the Service and Item."
-        )
+        print("                            Default: Update or Touch the Service and Item.")
         print(
             "\n     -IgnoreAge: (optional) Option Switch instructing function to ignore <url> download age checks, and update Service."
         )
@@ -4533,9 +3929,7 @@ if __name__ == "__main__":
         print(
             "                            View is Related to Two Feature Services, allowing the View's Layers to be swapped out,"
         )
-        print(
-            "                            pointing them to the matching Layers of the newly updated Feature Service."
-        )
+        print("                            pointing them to the matching Layers of the newly updated Feature Service.")
         print(
             "                            Default: Overwrite action when <filename> specified and no other Action Switches included."
         )
@@ -4557,9 +3951,7 @@ if __name__ == "__main__":
         print(
             "                            This invokes the -SwapLayers workflow, but only updates the Target Service, allowing"
         )
-        print(
-            "                            manual QA/QC before a Production Layer Swap."
-        )
+        print("                            manual QA/QC before a Production Layer Swap.")
         print(
             "                            Default: Overwrite action when <filename> specified and no other Action Switches included."
         )
@@ -4596,33 +3988,23 @@ if __name__ == "__main__":
         print(
             "\n    <Item A id>: (optional, but at least one is required when using -AddRelated or -RemoveRelated Action Switch)"
         )
-        print(
-            " or <Item B id>             The unique Item Identifier for the Content Item managing the Service."
-        )
+        print(" or <Item B id>             The unique Item Identifier for the Content Item managing the Service.")
         print(
             "                            Ex: Id for 'Active Hurricanes, Cyclones, and Typhoons' is: 248e7b5827a34b248647afb012c58787"
         )
         print(
             "\n       -Convert: (optional) Action Switch instructing function to import specified Python Module and use it to"
         )
-        print(
-            "                            transform the source data before updating the Hosted Feature Service."
-        )
-        print(
-            "                            * Note * Only available during a Overwrite action."
-        )
-        print(
-            "                            Default: No conversion of the input data will take place."
-        )
+        print("                            transform the source data before updating the Hosted Feature Service.")
+        print("                            * Note * Only available during a Overwrite action.")
+        print("                            Default: No conversion of the input data will take place.")
         print(
             "\n       <module>: (optional, but required when using -Convert Action Switch) A Case-Sensitive Python Module (or script)"
         )
         print(
             "                            name to leverage for data conversion prior to updating Service. Supports Python 'Dot'"
         )
-        print(
-            "                            notation for Folder/Module/Class path access to 'convert' Function."
-        )
+        print("                            notation for Folder/Module/Class path access to 'convert' Function.")
         print(
             "                            * Note * Path is RELATIVE to 'Converters' folder in OverwriteFS.py script location!"
         )
@@ -4630,33 +4012,23 @@ if __name__ == "__main__":
         print(
             "\n   <call param>: (optional) Additional call parameters to pass to '-Convert' Module function. Only need to include"
         )
-        print(
-            "                            parameters that follow the download file specifier in 'convert' Function."
-        )
+        print("                            parameters that follow the download file specifier in 'convert' Function.")
         print(
             "\n -AllowPWprompt: (optional) Option Switch instructing function to Allow use of an undefined user account password"
         )
-        print(
-            "                            in the Profile, allowing Python API to prompt for user entry."
-        )
-        print(
-            "                            * Note * Not recommended for use during Unattended execution!"
-        )
+        print("                            in the Profile, allowing Python API to prompt for user entry.")
+        print("                            * Note * Not recommended for use during Unattended execution!")
         print(
             "                            Default: If Profile Password is not defined, function will report the condition and Exit."
         )
         print(
             "\n    -LessDetail: (optional) Option Switch instructing function to only Display major steps and error responses."
         )
-        print(
-            "                            Default: Display step by step processing detail, or -MoreDetail if set."
-        )
+        print("                            Default: Display step by step processing detail, or -MoreDetail if set.")
         print(
             "\n    -MoreDetail: (optional) Option Switch instructing function to Display maximum Diagnostic detail and error response."
         )
-        print(
-            "                            Default: Display step by step processing detail, or -LessDetail if set."
-        )
+        print("                            Default: Display step by step processing detail, or -LessDetail if set.")
         print(
             "\n      -Password: (optional) Option Parameter instructing function to overwride the stored Profile password with this"
         )
@@ -4726,23 +4098,15 @@ if __name__ == "__main__":
             try:
                 localVars[lastSwitch] = int(arg)
             except:
-                exit(
-                    "\n\a * Integer Switch '{}' is invalid, bad value '{}'!".format(
-                        sys.argv[4:][index - 1], arg
-                    )
-                )
+                exit("\n\a * Integer Switch '{}' is invalid, bad value '{}'!".format(sys.argv[4:][index - 1], arg))
         else:
             if os.path.exists(arg):
                 updateFile = arg
                 if os.path.isfile(arg):
                     # Is a File
                     updateExists = True
-                    fileLastModified = datetime.datetime.utcfromtimestamp(
-                        int(os.stat(updateFile).st_mtime)
-                    )
-                    updateStatus = ", Last Modified: {}".format(
-                        fileLastModified.strftime("%a, %d %b %Y %H:%M:%S GMT")
-                    )
+                    fileLastModified = datetime.datetime.utcfromtimestamp(int(os.stat(updateFile).st_mtime))
+                    updateStatus = ", Last Modified: {}".format(fileLastModified.strftime("%a, %d %b %Y %H:%M:%S GMT"))
                 else:
                     # Is a Directory
                     updateExists = None
@@ -4763,11 +4127,7 @@ if __name__ == "__main__":
                 exit("\nReview help '-h' if needed and try again!")
 
     print("\n           Running: {}, {}".format(__file__, version))
-    print(
-        "Python API Profile: {}{}".format(
-            profile, " (using active ArcGIS Pro connection)" if usingPro else ""
-        )
-    )
+    print("Python API Profile: {}{}".format(profile, " (using active ArcGIS Pro connection)" if usingPro else ""))
     print("           Item Id: {}".format(itemId))
     print("        Item Title: '{}' (for verification)".format(itemTitle))
     print("   Upload Filename: '{}'{}".format(updateFile, updateStatus))
@@ -4775,9 +4135,7 @@ if __name__ == "__main__":
         "          Switches: {}".format(
             ", ".join(
                 [
-                    "{}={}".format(
-                        key, "*****" if key == "Password" else localVars[key.lower()]
-                    )
+                    "{}={}".format(key, "*****" if key == "Password" else localVars[key.lower()])
                     for key, init in validSwitches
                     if not localVars[key.lower()] is None
                 ]
@@ -4786,11 +4144,7 @@ if __name__ == "__main__":
     )
 
     if updateFile and updateExists is False:
-        exit(
-            "\n\a * ERROR * Unable to locate Update File or Folder '{}' *".format(
-                updateFile
-            )
-        )
+        exit("\n\a * ERROR * Unable to locate Update File or Folder '{}' *".format(updateFile))
 
     # Report Update action
     if updateFile and (gettarget or listrelated or addrelated or removerelated):
@@ -4800,11 +4154,7 @@ if __name__ == "__main__":
     if not socket.getdefaulttimeout():
         socket.setdefaulttimeout(300.0)  # 5 minutes!
 
-    verbose = (
-        "Max"
-        if localVars["moredetail"]
-        else (None if localVars["lessdetail"] else True)
-    )
+    verbose = "Max" if localVars["moredetail"] else (None if localVars["lessdetail"] else True)
 
     #
     # Verify Login
@@ -4823,9 +4173,7 @@ if __name__ == "__main__":
                 getPassword = arcgis.GIS()._securely_get_password
             elif hasattr(arcgis.gis, "_impl") and hasattr(arcgis.gis._impl, "_profile"):
                 # Get password function from Profile Manager for Python API v1.7.0+?
-                getPassword = (
-                    arcgis.gis._impl._profile.ProfileManager()._securely_get_password
-                )
+                getPassword = arcgis.gis._impl._profile.ProfileManager()._securely_get_password
             else:
                 print(
                     " - Cannot check password for Python API v{}, unable to securely get password!".format(
@@ -4840,11 +4188,7 @@ if __name__ == "__main__":
                     # Load config, get username form Profile
                     gisConfig = configparser.ConfigParser()
                     gisConfig.read(gis_cfg_file_path)
-                    username = (
-                        gisConfig[profile]["username"]
-                        if gisConfig.has_option(profile, "username")
-                        else None
-                    )
+                    username = gisConfig[profile]["username"] if gisConfig.has_option(profile, "username") else None
 
                     # Verify we have a password for username, to avoid password prompt!
                     if username is not None and username:
@@ -4858,9 +4202,7 @@ if __name__ == "__main__":
 
         print("Accessing ArcGIS Online/Enterprise...")
         if password:
-            gis = arcgis.GIS(
-                profile=profile, password=password
-            )  # Be sure your Profile exists!
+            gis = arcgis.GIS(profile=profile, password=password)  # Be sure your Profile exists!
         else:
             gis = arcgis.GIS(profile=profile)  # Be sure your Profile exists!
 
@@ -4869,11 +4211,7 @@ if __name__ == "__main__":
     else:
         print("Accessing ArcGIS Online/Enterprise using Pro...")
         gis = arcgis.GIS("pro")  # Be sure your Profile exists!
-        print(
-            " - Logged in with user: '{} ({})'".format(
-                gis.users.me.username, gis.users.me.fullName
-            )
-        )
+        print(" - Logged in with user: '{} ({})'".format(gis.users.me.username, gis.users.me.fullName))
 
     #
     # Verify Item
@@ -4899,9 +4237,7 @@ if __name__ == "__main__":
     start = datetime.datetime.now()
     if gettarget:
         # Get Target Feature Service Details
-        getFeatureServiceTarget(
-            item, outcome=outcome, verbose=verbose, ignoreDataItemCheck=True
-        )
+        getFeatureServiceTarget(item, outcome=outcome, verbose=verbose, ignoreDataItemCheck=True)
 
     elif swaplayers or updatetarget:
         # Kickoff Swap Layers process
@@ -4978,11 +4314,7 @@ if __name__ == "__main__":
             dryRun=dryrun,
             ignoreAge=ignoreage,
         )
-        print(
-            "\nElapsed Time for Overwrite Process: {}".format(
-                datetime.datetime.now() - start
-            )
-        )
+        print("\nElapsed Time for Overwrite Process: {}".format(datetime.datetime.now() - start))
 
     if outcome["success"] is False:
         # Exit Errorlevel 1, Failure encountered!

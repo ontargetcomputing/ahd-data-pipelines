@@ -27,12 +27,8 @@ from arcgis.geometry import Point, Geometry
 
 
 class GreenDataUpdate(Pipeline):
-    def __init__(
-        self, dbutils=None, conf=None, stage="DEV", development=False, log4j_logger=None
-    ):
-        super(GreenDataUpdate, self).__init__(
-            dbutils=dbutils, stage=stage, log4j_logger=log4j_logger
-        )
+    def __init__(self, dbutils=None, conf=None, stage="DEV", development=False, log4j_logger=None):
+        super(GreenDataUpdate, self).__init__(dbutils=dbutils, stage=stage, log4j_logger=log4j_logger)
 
         self.conf = {
             "environment": "dev",
@@ -308,9 +304,7 @@ class GreenDataUpdate(Pipeline):
                 }
             }
 
-            response = requests.post(
-                jira_api_url, headers=headers, data=json.dumps(notify_data)
-            )
+            response = requests.post(jira_api_url, headers=headers, data=json.dumps(notify_data))
 
             if response.reason == "Created":
                 response_json = json.loads(response.text)
@@ -531,11 +525,7 @@ class GreenDataUpdate(Pipeline):
                         data["df"] = remove_rows(data["df"], remove)
                         data["df"] = data["df"][data["df"]["SHAPE"].notnull()]
                         print("Geometry type: {0}".format(geo_type))
-                        print(
-                            "{0} records found with invalid geometries and removed".format(
-                                len(remove)
-                            )
-                        )
+                        print("{0} records found with invalid geometries and removed".format(len(remove)))
                         Log_Warnings.append(
                             {
                                 "message": "{0} records removed from dashboard data calculations due to missing geometry data in {1}.".format(
@@ -575,34 +565,24 @@ class GreenDataUpdate(Pipeline):
         def calculate_events_data(psps_df, fire_df, earthquake_df, evacuation_df, oid):
             """PSPS"""
             if psps_df.size > 0:
-                psps_df = psps_df.rename(
-                    columns=Events_Field_Map.psps.value, inplace=False
-                )
+                psps_df = psps_df.rename(columns=Events_Field_Map.psps.value, inplace=False)
                 # psps_df["event_type"] = calculate_psps_event_type(event=psps_df["event_type"])
-                psps_df["event_name"] = (
-                    psps_df["event_name"] + " - " + psps_df["OutageID"]
-                )
+                psps_df["event_name"] = psps_df["event_name"] + " - " + psps_df["OutageID"]
                 del psps_df["OutageID"]
                 print("PSPS events found.")
             else:
-                psps_df = psps_df.rename(
-                    columns=Events_Field_Map.psps.value, inplace=False
-                )
+                psps_df = psps_df.rename(columns=Events_Field_Map.psps.value, inplace=False)
                 print("No PSPS events found.")
             psps_df = psps_df.filter(["event_id", "event_name", "event_type", "SHAPE"])
 
             """Fire"""
             if fire_df.size > 0:
                 fire_df["event_type"] = "Fire"
-                fire_df = fire_df.rename(
-                    columns=Events_Field_Map.fire.value, inplace=False
-                )
+                fire_df = fire_df.rename(columns=Events_Field_Map.fire.value, inplace=False)
                 print("Fire events found.")
             else:
                 fire_df["event_type"] = "Fire"
-                fire_df = fire_df.rename(
-                    columns=Events_Field_Map.fire.value, inplace=False
-                )
+                fire_df = fire_df.rename(columns=Events_Field_Map.fire.value, inplace=False)
                 print("No Fire events found.")
             fire_df = fire_df.filter(["event_id", "event_name", "event_type", "SHAPE"])
 
@@ -612,59 +592,45 @@ class GreenDataUpdate(Pipeline):
 
             if earthquake_df.size > 0:
                 earthquake_df["event_type"] = "Earthquake"
-                earthquake_df = earthquake_df.rename(
-                    columns=Events_Field_Map.earthquake.value, inplace=False
-                )
+                earthquake_df = earthquake_df.rename(columns=Events_Field_Map.earthquake.value, inplace=False)
                 earthquake_df["event_name"] = earthquake_df["event_id"]
                 print("Earthquake events found.")
             else:
                 earthquake_df["event_type"] = "Earthquake"
-                earthquake_df = earthquake_df.rename(
-                    columns=Events_Field_Map.earthquake.value, inplace=False
-                )
+                earthquake_df = earthquake_df.rename(columns=Events_Field_Map.earthquake.value, inplace=False)
                 print("No Earthquake events found.")
-            earthquake_df = earthquake_df.filter(
-                ["event_id", "event_name", "event_type", "SHAPE"]
-            )
+            earthquake_df = earthquake_df.filter(["event_id", "event_name", "event_type", "SHAPE"])
 
             """Evacuation"""
             if evacuation_df.size > 0:
-                evacuation_df = evacuation_df.rename(
-                    columns=Events_Field_Map.evacuation.value, inplace=False
-                )
+                evacuation_df = evacuation_df.rename(columns=Events_Field_Map.evacuation.value, inplace=False)
                 # evacuation_df['event_type'] = calculate_evacuation_event_type(event=evacuation_df['event_type'])
                 evacuation_df["event_name"] = [
-                    evacuation_df.iloc[row[0]]["event_name"]
-                    if evacuation_df.iloc[row[0]]["event_name"] != "None"
-                    and evacuation_df.iloc[row[0]]["event_name"] != ""
-                    and evacuation_df.iloc[row[0]]["event_name"] is not None
-                    else evacuation_df.iloc[row[0]]["zone_id"]
-                    if evacuation_df.iloc[row[0]]["zone_id"] != "None"
-                    and evacuation_df.iloc[row[0]]["zone_id"] != ""
-                    and evacuation_df.iloc[row[0]]["zone_id"] is not None
-                    else evacuation_df.iloc[row[0]]["county"]
+                    (
+                        evacuation_df.iloc[row[0]]["event_name"]
+                        if evacuation_df.iloc[row[0]]["event_name"] != "None"
+                        and evacuation_df.iloc[row[0]]["event_name"] != ""
+                        and evacuation_df.iloc[row[0]]["event_name"] is not None
+                        else (
+                            evacuation_df.iloc[row[0]]["zone_id"]
+                            if evacuation_df.iloc[row[0]]["zone_id"] != "None"
+                            and evacuation_df.iloc[row[0]]["zone_id"] != ""
+                            and evacuation_df.iloc[row[0]]["zone_id"] is not None
+                            else evacuation_df.iloc[row[0]]["county"]
+                        )
+                    )
                     for row in evacuation_df.itertuples()
                 ]
                 evacuation_df["event_id"] = (
-                    evacuation_df["event_id"].map(str)
-                    + "-"
-                    + evacuation_df["event_type"].map(str)
+                    evacuation_df["event_id"].map(str) + "-" + evacuation_df["event_type"].map(str)
                 )
                 print("Evacuation events found.")
             else:
-                evacuation_df = evacuation_df.rename(
-                    columns=Events_Field_Map.evacuation.value, inplace=False
-                )
+                evacuation_df = evacuation_df.rename(columns=Events_Field_Map.evacuation.value, inplace=False)
                 print("No Evacuation events found.")
-            evacuation_df = evacuation_df.filter(
-                ["event_id", "event_name", "event_type", "SHAPE"]
-            )
+            evacuation_df = evacuation_df.filter(["event_id", "event_name", "event_type", "SHAPE"])
 
-            non_empty = [
-                df
-                for df in [psps_df, fire_df, earthquake_df, evacuation_df]
-                if len(df) > 0
-            ]
+            non_empty = [df for df in [psps_df, fire_df, earthquake_df, evacuation_df] if len(df) > 0]
 
             if len(non_empty) == 0:
                 all_events_polygons_df = psps_df
@@ -700,36 +666,22 @@ class GreenDataUpdate(Pipeline):
             """
 
             results["PSPS_Active_Impacted"] = results[group_by_key].apply(
-                lambda key: "YES"
-                if (
-                    "De-Energized"
-                    in list(join_df[join_df[group_by_key] == key]["Status"])
-                )
-                else ""
+                lambda key: "YES" if ("De-Energized" in list(join_df[join_df[group_by_key] == key]["Status"])) else ""
             )
 
             results["PSPS_Potential_Impacted"] = results[group_by_key].apply(
-                lambda key: "YES"
-                if (
-                    (
-                        "Monitoring"
-                        in list(join_df[join_df[group_by_key] == key]["Status"])
+                lambda key: (
+                    "YES"
+                    if (
+                        ("Monitoring" in list(join_df[join_df[group_by_key] == key]["Status"]))
+                        | ("Downstream" in list(join_df[join_df[group_by_key] == key]["Status"]))
                     )
-                    | (
-                        "Downstream"
-                        in list(join_df[join_df[group_by_key] == key]["Status"])
-                    )
+                    else ""
                 )
-                else ""
             )
 
             results["PSPS_Reenergized"] = results[group_by_key].apply(
-                lambda key: "YES"
-                if (
-                    "Re-Energized"
-                    in list(join_df[join_df[group_by_key] == key]["Status"])
-                )
-                else ""
+                lambda key: "YES" if ("Re-Energized" in list(join_df[join_df[group_by_key] == key]["Status"])) else ""
             )
 
             return results
@@ -759,18 +711,14 @@ class GreenDataUpdate(Pipeline):
 
                 """ This will check if the fire is 0, 1, or 5 miles away using the joined df's above """
                 results["Fire_Buffer_Distance"] = results[oid].apply(
-                    lambda key: 0
-                    if len(join_df_0[join_df_0[oid] == key]) > 0
-                    else np.NaN
+                    lambda key: 0 if len(join_df_0[join_df_0[oid] == key]) > 0 else np.NaN
                 )
 
             except Exception as e:
                 results["Fire_Buffer_Distance"] = None
                 print("Error calculating fire buffers.")
                 print(e)
-                Log_Errors.append(
-                    {"message": "Error calculating fire buffers. {0}.".format(e)}
-                )
+                Log_Errors.append({"message": "Error calculating fire buffers. {0}.".format(e)})
 
             return results
 
@@ -820,43 +768,33 @@ class GreenDataUpdate(Pipeline):
 
             print("Calculating evacuation fields")
 
-            join_df = local_join_df(
-                left_df=source_df, right_df=evacuation_df, join_type="left"
-            )
+            join_df = local_join_df(left_df=source_df, right_df=evacuation_df, join_type="left")
 
             results["Evacuation_Order"] = results[group_by_key].apply(
-                lambda key: "YES"
-                if (
-                    "Evacuation Order"
-                    in list(join_df[join_df[group_by_key] == key]["STATUS"])
+                lambda key: (
+                    "YES"
+                    if ("Evacuation Order" in list(join_df[join_df[group_by_key] == key]["STATUS"]))
+                    | ("Order" in list(join_df[join_df[group_by_key] == key]["STATUS"]))
+                    else ""
                 )
-                | ("Order" in list(join_df[join_df[group_by_key] == key]["STATUS"]))
-                else ""
             )
             results["Evacuation_Warning"] = results[group_by_key].apply(
-                lambda key: "YES"
-                if (
-                    "Evacuation Warning"
-                    in list(join_df[join_df[group_by_key] == key]["STATUS"])
+                lambda key: (
+                    "YES"
+                    if ("Evacuation Warning" in list(join_df[join_df[group_by_key] == key]["STATUS"]))
+                    | ("Warning" in list(join_df[join_df[group_by_key] == key]["STATUS"]))
+                    else ""
                 )
-                | ("Warning" in list(join_df[join_df[group_by_key] == key]["STATUS"]))
-                else ""
             )
             results["Shelter_in_Place"] = results[group_by_key].apply(
-                lambda key: "YES"
-                if (
-                    "Shelter In Place"
-                    in list(join_df[join_df[group_by_key] == key]["STATUS"])
+                lambda key: (
+                    "YES" if ("Shelter In Place" in list(join_df[join_df[group_by_key] == key]["STATUS"])) else ""
                 )
-                else ""
             )
             results["Clear_to_Repopulate"] = results[group_by_key].apply(
-                lambda key: "YES"
-                if (
-                    "Clear to Repopulate"
-                    in list(join_df[join_df[group_by_key] == key]["STATUS"])
+                lambda key: (
+                    "YES" if ("Clear to Repopulate" in list(join_df[join_df[group_by_key] == key]["STATUS"])) else ""
                 )
-                else ""
             )
 
             return results
@@ -872,17 +810,13 @@ class GreenDataUpdate(Pipeline):
             left_df = remove_columns(left_df, ["index_left", "index_right"])
             right_df = remove_columns(right_df, ["index_left", "index_right"])
 
-            join_df = left_df.spatial.join(
-                right_df=right_df, how=join_type, op="intersects"
-            )
+            join_df = left_df.spatial.join(right_df=right_df, how=join_type, op="intersects")
 
             join_df = remove_columns(join_df, ["index_left", "index_right"])
 
             return join_df
 
-        def spatial_join_features(
-            target_sdf, join_features_sdf, how, op, drop_dups=False, record_id=None
-        ):
+        def spatial_join_features(target_sdf, join_features_sdf, how, op, drop_dups=False, record_id=None):
 
             # If one of the dataframe inputs is empty then a dataframe is returned dependent on the how parameter (to prevent error in spatial.join)
             if len(target_sdf.index) == 0 or len(join_features_sdf.index) == 0:
@@ -918,17 +852,13 @@ class GreenDataUpdate(Pipeline):
                 data_layers[key]["f_set"] = result["f_set"]
                 data_layers[key]["df"] = result["f_layer_df"]
                 data_layers[key]["count"] = result["record_count"]
-                data_layers[key]["object_id_field_name"] = result[
-                    "object_id_field_name"
-                ]
+                data_layers[key]["object_id_field_name"] = result["object_id_field_name"]
 
                 print("Received {0} records".format(data_layers[key]["count"]))
                 remove_invalid_geometries(data)
 
             except Exception as e:
-                print(
-                    "An error occured during data request. Sleeping and retrying. View error message below."
-                )
+                print("An error occured during data request. Sleeping and retrying. View error message below.")
                 print(e)
                 time.sleep(2)
 
@@ -942,9 +872,7 @@ class GreenDataUpdate(Pipeline):
                     data_layers[key]["f_set"] = result["f_set"]
                     data_layers[key]["df"] = result["f_layer_df"]
                     data_layers[key]["count"] = result["record_count"]
-                    data_layers[key]["object_id_field_name"] = result[
-                        "object_id_field_name"
-                    ]
+                    data_layers[key]["object_id_field_name"] = result["object_id_field_name"]
 
                     print("Received {0} records".format(data_layers[key]["count"]))
                     remove_invalid_geometries(data)
@@ -999,9 +927,7 @@ class GreenDataUpdate(Pipeline):
                 evacuation_data = data_layers[Events_Type.evacuation.value]["df"].copy()
 
                 """The name of the oid field is chosen arbitrarily as this is an intermediate product"""
-                all_events_oid = data_layers[Events_Type.evacuation.value][
-                    "object_id_field_name"
-                ]
+                all_events_oid = data_layers[Events_Type.evacuation.value]["object_id_field_name"]
 
                 all_events_df = calculate_events_data(
                     psps_df=psps_data,
@@ -1125,26 +1051,14 @@ class GreenDataUpdate(Pipeline):
 
                 calculated[layer_population]["data"] = result_df
 
-                print(
-                    "ADE population data count: {0}".format(
-                        data_layers[layer_population]["count"]
-                    )
-                )
-                print(
-                    "Population zipcode join data count: {0}".format(
-                        len(calculated[layer_population]["data"].index)
-                    )
-                )
+                print("ADE population data count: {0}".format(data_layers[layer_population]["count"]))
+                print("Population zipcode join data count: {0}".format(len(calculated[layer_population]["data"].index)))
 
             except Exception as e:
                 print("Error: view message below.")
                 print(e)
-                Log_Errors.append(
-                    {"message": "Error processing {0} data.".format(layer_population)}
-                )
-                Layer_Errors[layer_population] = {
-                    "message": "Error processing {0} data.".format(layer_population)
-                }
+                Log_Errors.append({"message": "Error processing {0} data.".format(layer_population)})
+                Layer_Errors[layer_population] = {"message": "Error processing {0} data.".format(layer_population)}
 
         # TODO: Parameterize all fields
         def impactedFacilities(facility):
@@ -1152,10 +1066,7 @@ class GreenDataUpdate(Pipeline):
                 facility["PSPS_Active_Impacted"] == "YES"
                 or facility["Evacuation_Order"] == "YES"
                 or facility["Fire_Buffer_Distance"] == 0
-                or (
-                    math.isnan(facility["grid_code"]) is False
-                    and facility["grid_code"] >= 5
-                )
+                or (math.isnan(facility["grid_code"]) is False and facility["grid_code"] >= 5)
             )
 
             return impacted
@@ -1190,16 +1101,12 @@ class GreenDataUpdate(Pipeline):
                 return ""
 
         def calculateFacilitiesFields(facilities_df):
-            facilities_df["ade_source_facility_type"] = facilities_df.apply(
-                lambda x: calculateFacilityType(x), axis=1
-            )
+            facilities_df["ade_source_facility_type"] = facilities_df.apply(lambda x: calculateFacilityType(x), axis=1)
             facilities_df["facility_impacted"] = facilities_df.apply(
                 lambda x: 1 if impactedFacilities(x) is True else 0, axis=1
             )
             facilities_df["licensed_capacity_impacted"] = facilities_df.apply(
-                lambda x: x["licensed_capacity"]
-                if impactedFacilities(x) is True
-                else 0,
+                lambda x: x["licensed_capacity"] if impactedFacilities(x) is True else 0,
                 axis=1,
             )
 
@@ -1226,65 +1133,43 @@ class GreenDataUpdate(Pipeline):
                     validate="one_to_many",
                 )
 
-                impacted_facilities_sdf[
-                    "operational_int"
-                ] = impacted_facilities_sdf.apply(
+                impacted_facilities_sdf["operational_int"] = impacted_facilities_sdf.apply(
                     lambda x: 1 if x["op_status"] == "Operational" else 0, axis=1
                 )
-                impacted_facilities_sdf[
-                    "nonoperational_short_term_int"
-                ] = impacted_facilities_sdf.apply(
-                    lambda x: 1
-                    if x["op_status"] == "Non-Operational Short Term"
-                    else 0,
+                impacted_facilities_sdf["nonoperational_short_term_int"] = impacted_facilities_sdf.apply(
+                    lambda x: 1 if x["op_status"] == "Non-Operational Short Term" else 0,
                     axis=1,
                 )
-                impacted_facilities_sdf[
-                    "nonoperational_long_term_int"
-                ] = impacted_facilities_sdf.apply(
+                impacted_facilities_sdf["nonoperational_long_term_int"] = impacted_facilities_sdf.apply(
                     lambda x: 1 if x["op_status"] == "Non-Operational Long Term" else 0,
                     axis=1,
                 )
-                impacted_facilities_sdf[
-                    "operational_with_impacts_int"
-                ] = impacted_facilities_sdf.apply(
+                impacted_facilities_sdf["operational_with_impacts_int"] = impacted_facilities_sdf.apply(
                     lambda x: 1 if x["op_status"] == "Operational With Impacts" else 0,
                     axis=1,
                 )
 
-                impacted_facilities_sdf[
-                    "fully_evacuated_int"
-                ] = impacted_facilities_sdf.apply(
+                impacted_facilities_sdf["fully_evacuated_int"] = impacted_facilities_sdf.apply(
                     lambda x: 1 if x["evac_status"] == "Fully Evacuated" else 0, axis=1
                 )
-                impacted_facilities_sdf[
-                    "partially_evacuated_int"
-                ] = impacted_facilities_sdf.apply(
+                impacted_facilities_sdf["partially_evacuated_int"] = impacted_facilities_sdf.apply(
                     lambda x: 1 if x["evac_status"] == "Partially Evacuated" else 0,
                     axis=1,
                 )
-                impacted_facilities_sdf[
-                    "repopulating_int"
-                ] = impacted_facilities_sdf.apply(
+                impacted_facilities_sdf["repopulating_int"] = impacted_facilities_sdf.apply(
                     lambda x: 1 if x["evac_status"] == "Repopulating" else 0, axis=1
                 )
 
                 impacted_facilities_sdf["fire_int"] = impacted_facilities_sdf.apply(
                     lambda x: 1 if x["Fire_Buffer_Distance"] >= 0 else 0, axis=1
                 )
-                impacted_facilities_sdf[
-                    "earthquake_int"
-                ] = impacted_facilities_sdf.apply(
+                impacted_facilities_sdf["earthquake_int"] = impacted_facilities_sdf.apply(
                     lambda x: 1 if x["grid_code"] >= 5 else 0, axis=1
                 )
-                impacted_facilities_sdf[
-                    "active_psps_int"
-                ] = impacted_facilities_sdf.apply(
+                impacted_facilities_sdf["active_psps_int"] = impacted_facilities_sdf.apply(
                     lambda x: 1 if x["PSPS_Active_Impacted"] == "YES" else 0, axis=1
                 )
-                impacted_facilities_sdf[
-                    "evac_area_int"
-                ] = impacted_facilities_sdf.apply(
+                impacted_facilities_sdf["evac_area_int"] = impacted_facilities_sdf.apply(
                     lambda x: 1 if x["Evacuation_Order"] == "YES" else 0, axis=1
                 )
 
@@ -1350,9 +1235,7 @@ class GreenDataUpdate(Pipeline):
                     "L0_cdds_clients",
                 ].sum()
                 print("Flattening Results")
-                result_df = pd.merge(
-                    events_df, sum_sdf, on=["objectid_join"], how="left"
-                )
+                result_df = pd.merge(events_df, sum_sdf, on=["objectid_join"], how="left")
 
                 result_df = remove_columns(result_df, remove)
                 result_df = result_df.rename(columns=field_map)
@@ -1360,12 +1243,8 @@ class GreenDataUpdate(Pipeline):
             except Exception as e:
                 print("Error joining data.")
                 print(e)
-                Log_Errors.append(
-                    {"message": "Error joining population data to events data."}
-                )
-                Layer_Errors[layer_events_pop_join] = {
-                    "message": "Error joining population data to events data."
-                }
+                Log_Errors.append({"message": "Error joining population data to events data."})
+                Layer_Errors[layer_events_pop_join] = {"message": "Error joining population data to events data."}
 
             return result_df
 
@@ -1414,12 +1293,8 @@ class GreenDataUpdate(Pipeline):
             except Exception as e:
                 print("Error: view message below.")
                 print(e)
-                Log_Errors.append(
-                    {"message': 'Error processing {0} data.".format(layer_facilities)}
-                )
-                Layer_Errors[layer_facilities] = {
-                    "message": "Error processing {0} data.".format(layer_facilities)
-                }
+                Log_Errors.append({"message': 'Error processing {0} data.".format(layer_facilities)})
+                Layer_Errors[layer_facilities] = {"message": "Error processing {0} data.".format(layer_facilities)}
 
         field_map = {
             "L0_cdss_calfresh_recpts": "cdss_calfresh_recpts",
@@ -1448,9 +1323,7 @@ class GreenDataUpdate(Pipeline):
                 events_df = all_events_df.copy()
                 population = calculated[layer_population]["data"].copy()
 
-                result_df = Calculate_AllEventsPopJoin(
-                    events_df, calculated[layer_population]["data"]
-                )
+                result_df = Calculate_AllEventsPopJoin(events_df, calculated[layer_population]["data"])
 
                 if events_df.empty is True or population_df.empty is True:
                     result_df = events_df
@@ -1474,9 +1347,7 @@ class GreenDataUpdate(Pipeline):
                             "L0_dhcs_medi_cal_dme",
                             "L0_cdds_clients",
                         ].sum()
-                        result_df = pd.merge(
-                            events_df, sum_sdf, on=["objectid_join"], how="left"
-                        )
+                        result_df = pd.merge(events_df, sum_sdf, on=["objectid_join"], how="left")
 
                         result_df = remove_columns(result_df, remove)
                         result_df = result_df.rename(columns=field_map)
@@ -1484,9 +1355,7 @@ class GreenDataUpdate(Pipeline):
                     except Exception as e:
                         print("Error joining data.")
                         print(e)
-                        Log_Errors.append(
-                            {"message": "Error joining population data to events data."}
-                        )
+                        Log_Errors.append({"message": "Error joining population data to events data."})
                         Layer_Errors[layer_events_pop_join] = {
                             "message": "Error joining population data to events data."
                         }
@@ -1496,17 +1365,9 @@ class GreenDataUpdate(Pipeline):
             except Exception as e:
                 print("Error: view message below.")
                 print(e)
-                Log_Errors.append(
-                    {
-                        "message": "Error processing {0} data.".format(
-                            layer_events_pop_join
-                        )
-                    }
-                )
+                Log_Errors.append({"message": "Error processing {0} data.".format(layer_events_pop_join)})
                 Layer_Errors[layer_events_pop_join] = {
-                    "message": "Error processing {0} data.".format(
-                        layer_events_pop_join
-                    )
+                    "message": "Error processing {0} data.".format(layer_events_pop_join)
                 }
 
         calculated[layer_facilities_events_join] = {"data": None}
@@ -1525,13 +1386,9 @@ class GreenDataUpdate(Pipeline):
                         right_df=all_events_df_copy,
                         join_type="left",
                     )
-                    result_oid = result_fields[layer_facilities_events_join][
-                        "object_id_field_name"
-                    ]
+                    result_oid = result_fields[layer_facilities_events_join]["object_id_field_name"]
 
-                    result_df = remove_columns(
-                        result_df, ["OBJECTID_left", "OBJECTID_right"]
-                    )
+                    result_df = remove_columns(result_df, ["OBJECTID_left", "OBJECTID_right"])
                     result_df.index = range(0, len(result_df))
                     result_df[result_oid] = result_df.index
                     result_df["ROW"] = result_df.index
@@ -1542,17 +1399,9 @@ class GreenDataUpdate(Pipeline):
             except Exception as e:
                 print("Error: view message below.")
                 print(e)
-                Log_Errors.append(
-                    {
-                        "message": "Error processing {0} data.".format(
-                            layer_facilities_events_join
-                        )
-                    }
-                )
+                Log_Errors.append({"message": "Error processing {0} data.".format(layer_facilities_events_join)})
                 Layer_Errors[layer_facilities_events_join] = {
-                    "message": "Error processing {0} data.".format(
-                        layer_facilities_events_join
-                    )
+                    "message": "Error processing {0} data.".format(layer_facilities_events_join)
                 }
 
         """
@@ -1567,9 +1416,9 @@ class GreenDataUpdate(Pipeline):
                 dummy_df = calculated[layer_facilities_events_join]["data"].copy()
 
                 if all_events_df.empty is True:
-                    dummy_rows = pd.DataFrame(
-                        data=None, columns=dummy_df.columns, index=dummy_df.index
-                    ).drop(dummy_df.index)
+                    dummy_rows = pd.DataFrame(data=None, columns=dummy_df.columns, index=dummy_df.index).drop(
+                        dummy_df.index
+                    )
 
                 else:
                     """Filter on impacted counties"""
@@ -1598,9 +1447,9 @@ class GreenDataUpdate(Pipeline):
                         item = {"attribute": "event_type", "value": val}
                         update_list.append(item)
 
-                    dummy_rows = pd.DataFrame(
-                        data=None, columns=dummy_df.columns, index=dummy_df.index
-                    ).drop(dummy_df.index)
+                    dummy_rows = pd.DataFrame(data=None, columns=dummy_df.columns, index=dummy_df.index).drop(
+                        dummy_df.index
+                    )
                     for index, row in dummy_df.iterrows():
                         for update in update_list:
                             # Create a row and add it to a new dataframe
@@ -1615,50 +1464,40 @@ class GreenDataUpdate(Pipeline):
                 # dummy_rows = dummy_rows.fillna(0)
                 # dummy_rows['ade_facility_id'] = None
                 if not (dummy_rows.empty):
-                    calculated[layer_facilities_events_join]["data"] = calculated[
-                        layer_facilities_events_join
-                    ]["data"].append(dummy_rows, ignore_index=True)
+                    calculated[layer_facilities_events_join]["data"] = calculated[layer_facilities_events_join][
+                        "data"
+                    ].append(dummy_rows, ignore_index=True)
                     calculated[layer_facilities_events_join]["data"].index = range(
                         0, len(calculated[layer_facilities_events_join]["data"])
                     )
-                    calculated[layer_facilities_events_join]["data"][
-                        "OBJECTID"
-                    ] = calculated[layer_facilities_events_join]["data"].index
+                    calculated[layer_facilities_events_join]["data"]["OBJECTID"] = calculated[
+                        layer_facilities_events_join
+                    ]["data"].index
 
                 if not calculated[layer_facilities_events_join]["data"].empty:
-                    blank_series = calculated[layer_facilities_events_join][
-                        "data"
-                    ].iloc[0]
+                    blank_series = calculated[layer_facilities_events_join]["data"].iloc[0]
                     for index, value in blank_series.items():
                         if index == "SHAPE":
                             continue
                         elif index == "OBJECTID":
-                            blank_series[index] = len(
-                                calculated[layer_facilities_events_join]["data"].index
-                            )
+                            blank_series[index] = len(calculated[layer_facilities_events_join]["data"].index)
                         elif index == "ade_source":
                             blank_series[index] = "All"
                         else:
                             blank_series[index] = None
 
-                    calculated[layer_facilities_events_join]["data"] = calculated[
-                        layer_facilities_events_join
-                    ]["data"].append(blank_series)
+                    calculated[layer_facilities_events_join]["data"] = calculated[layer_facilities_events_join][
+                        "data"
+                    ].append(blank_series)
 
             except Exception as e:
                 print("Error: view message below.")
                 print(e)
                 Log_Errors.append(
-                    {
-                        "message": "Error processing {0} data dummy rows.".format(
-                            layer_facilities_events_join
-                        )
-                    }
+                    {"message": "Error processing {0} data dummy rows.".format(layer_facilities_events_join)}
                 )
                 Layer_Errors[layer_facilities_events_join] = {
-                    "message": "Error processing {0} data.".format(
-                        layer_facilities_events_join
-                    )
+                    "message": "Error processing {0} data.".format(layer_facilities_events_join)
                 }
 
         calculated[layer_counties_events_join] = {"data": None}
@@ -1677,9 +1516,7 @@ class GreenDataUpdate(Pipeline):
                         right_df=all_events_df_copy,
                         join_type="inner",
                     )
-                    result_oid = result_fields[layer_counties_events_join][
-                        "object_id_field_name"
-                    ]
+                    result_oid = result_fields[layer_counties_events_join]["object_id_field_name"]
 
                     result_df = remove_columns(result_df, ["OBJECTID_1", "objectid_12"])
                     result_df.index = range(0, len(result_df))
@@ -1691,13 +1528,7 @@ class GreenDataUpdate(Pipeline):
             except Exception as e:
                 print("Error: view message below.")
                 print(e)
-                Log_Errors.append(
-                    {
-                        "message": "Error processing {0} data.".format(
-                            layer_counties_events_join
-                        )
-                    }
-                )
+                Log_Errors.append({"message": "Error processing {0} data.".format(layer_counties_events_join)})
 
         calculated[layer_events_counties_join_points] = {"data": None}
         if no_errors(Log_Errors):
@@ -1716,9 +1547,7 @@ class GreenDataUpdate(Pipeline):
                         right_df=counties_df,
                         join_type="left",
                     )
-                    result_oid = result_fields[layer_events_counties_join_points][
-                        "object_id_field_name"
-                    ]
+                    result_oid = result_fields[layer_events_counties_join_points]["object_id_field_name"]
 
                     # Convert geometry
                     sr = result_df.spatial.sr
@@ -1752,17 +1581,9 @@ class GreenDataUpdate(Pipeline):
             except Exception as e:
                 print("Error: view message below.")
                 print(e)
-                Log_Errors.append(
-                    {
-                        "message": "Error processing {0} data.".format(
-                            layer_events_counties_join_points
-                        )
-                    }
-                )
+                Log_Errors.append({"message": "Error processing {0} data.".format(layer_events_counties_join_points)})
                 Layer_Errors[layer_events_counties_join_points] = {
-                    "message": "Error processing {0} data.".format(
-                        layer_events_counties_join_points
-                    )
+                    "message": "Error processing {0} data.".format(layer_events_counties_join_points)
                 }
 
         calculated[layer_psps_points] = {"data": None}
@@ -1783,9 +1604,7 @@ class GreenDataUpdate(Pipeline):
                             }
                         )
                     )
-                    result_df["geometry"] = result_df["SHAPE"].apply(
-                        lambda x: x.as_shapely if x is not None else None
-                    )
+                    result_df["geometry"] = result_df["SHAPE"].apply(lambda x: x.as_shapely if x is not None else None)
                 sdf_dic = result_df.to_dict("list")
                 result_gdf = gpd.GeoDataFrame(sdf_dic)
                 cwd = os.getcwd()
@@ -1793,9 +1612,7 @@ class GreenDataUpdate(Pipeline):
                 view_item = gis.content.get(target_update_view)
                 target = OverwriteFS.getFeatureServiceTarget(view_item, verbose=True)
 
-                if "success" in target and (
-                    not target["success"] or not target["items"]
-                ):
+                if "success" in target and (not target["success"] or not target["items"]):
                     # -AddRelated A/B services
                     print("No target found. Adding A/B related items.")
                     OverwriteFS.updateRelationships(
@@ -1803,9 +1620,7 @@ class GreenDataUpdate(Pipeline):
                         relateIds=[target_update_layer_A, target_update_layer_B],
                         verbose=True,
                     )
-                    target = OverwriteFS.getFeatureServiceTarget(
-                        view_item, verbose=True
-                    )
+                    target = OverwriteFS.getFeatureServiceTarget(view_item, verbose=True)
 
                 target_filename = target["filename"]
                 target_filepath = os.path.join(cwd, target_filename)
@@ -1817,12 +1632,8 @@ class GreenDataUpdate(Pipeline):
             except Exception as e:
                 print("Error: view message below.")
                 print(e)
-                Log_Errors.append(
-                    {"message": "Error processing {0} data.".format(layer_psps_points)}
-                )
-                Layer_Errors[layer_psps_points] = {
-                    "message": "Error processing {0} data.".format(layer_psps_points)
-                }
+                Log_Errors.append({"message": "Error processing {0} data.".format(layer_psps_points)})
+                Layer_Errors[layer_psps_points] = {"message": "Error processing {0} data.".format(layer_psps_points)}
 
         # Swap view
         response = False
@@ -1874,9 +1685,7 @@ class GreenDataUpdate(Pipeline):
         def normalize_zscore(row):
             rate = row[pop_sub_fieldname]
             # https://stackoverflow.com/questions/23451244/how-to-zscore-normalize-pandas-column-with-nans
-            z_score = (rate - pop_score_df[pop_sub_fieldname].mean()) / pop_score_df[
-                pop_sub_fieldname
-            ].std(ddof=0)
+            z_score = (rate - pop_score_df[pop_sub_fieldname].mean()) / pop_score_df[pop_sub_fieldname].std(ddof=0)
             return z_score
 
         def rate(row):
@@ -1921,23 +1730,15 @@ class GreenDataUpdate(Pipeline):
                 )
 
                 """ Calculate the zscore, normalized, and rate"""
-                pop_score_df = pop_score_df.rename(
-                    columns={pop_total_fieldname: pop_tot_fieldname}
-                )
-                pop_score_df[pop_zscore_fieldname] = pop_score_df.apply(
-                    normalize_zscore, axis=1
-                )
-                pop_score_df["normalized_pop"] = pop_score_df.apply(
-                    normalize_v1, axis=1
-                )
+                pop_score_df = pop_score_df.rename(columns={pop_total_fieldname: pop_tot_fieldname})
+                pop_score_df[pop_zscore_fieldname] = pop_score_df.apply(normalize_zscore, axis=1)
+                pop_score_df["normalized_pop"] = pop_score_df.apply(normalize_v1, axis=1)
                 pop_score_df["rate"] = pop_score_df.apply(rate, axis=1)
 
                 """ Join event data """
                 if not all_events_df.empty:
                     pop_score_df = local_join_df(pop_score_df, all_events_df, "left")
-                    pop_score_df = pop_score_df.rename(
-                        columns={"OBJECTID_left": "id", "OBJECTID_right": "OBJECTID"}
-                    )
+                    pop_score_df = pop_score_df.rename(columns={"OBJECTID_left": "id", "OBJECTID_right": "OBJECTID"})
 
                 """ Field mapping """
                 var_map_dict = {
@@ -1954,9 +1755,7 @@ class GreenDataUpdate(Pipeline):
                     "L0_cdds_clients": "CDDS Clients",
                     "total_pop": "Total Population",
                 }
-                pop_score_df["pop_type_alias"] = pop_score_df[pop_type_fieldname].map(
-                    var_map_dict
-                )
+                pop_score_df["pop_type_alias"] = pop_score_df[pop_type_fieldname].map(var_map_dict)
 
                 """ Add blank row with tot_zip_pop"""
                 blank = pop_score_df.copy()
@@ -1986,21 +1785,13 @@ class GreenDataUpdate(Pipeline):
             except Exception as e:
                 print("Error: view message below.")
                 print(e)
-                Log_Errors.append(
-                    {
-                        "message": "Error processing {0} data.".format(
-                            layer_population_score
-                        )
-                    }
-                )
+                Log_Errors.append({"message": "Error processing {0} data.".format(layer_population_score)})
 
         if no_errors(Log_Errors):
             try:
                 pop_df = calculated[layer_population]["data"].copy()
                 pop_county_df = (
-                    calculated[layer_population]["data"]
-                    .copy()
-                    .drop_duplicates(subset="L0_county", keep="first")
+                    calculated[layer_population]["data"].copy().drop_duplicates(subset="L0_county", keep="first")
                 )
                 print(
                     "Appending {} dummy records to {} with {} records.".format(
@@ -2042,23 +1833,13 @@ class GreenDataUpdate(Pipeline):
                 pop_dummy_df = pd.DataFrame(temp_series, columns=pop_county_df.columns)
                 pop_df = pop_df.append(pop_dummy_df, ignore_index=True)
 
-                print(
-                    "Records appended. Result record count: {}.".format(
-                        len(pop_df.index)
-                    )
-                )
+                print("Records appended. Result record count: {}.".format(len(pop_df.index)))
                 calculated[layer_population]["data"] = pop_df
 
             except Exception as e:
                 print("Error: view message below.")
                 print(e)
-                Log_Errors.append(
-                    {
-                        "message": "Error adding dummy rows to {0} data.".format(
-                            layer_population
-                        )
-                    }
-                )
+                Log_Errors.append({"message": "Error adding dummy rows to {0} data.".format(layer_population)})
 
         toc = time.perf_counter()
         print(f"Processed data in {toc - tic:0.4f} seconds")

@@ -6,9 +6,7 @@ import importlib
 class HTTPDatasource(ObjectDatasource):
     """ """
 
-    def __init__(
-        self, params: dict = None, spark: SparkSession = None, stage: str = "DEV"
-    ):
+    def __init__(self, params: dict = None, spark: SparkSession = None, stage: str = "DEV"):
         super(HTTPDatasource, self).__init__(params=params, spark=spark)
         self.http_processor = params["http_processor"]
 

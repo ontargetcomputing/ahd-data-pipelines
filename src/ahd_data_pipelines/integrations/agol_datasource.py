@@ -20,7 +20,17 @@ class AgolDatasource(Datasource):
         self.spark = spark
 
     def read_from_table(self):
-        raise NotImplementedError("read_from_table has not been implemented yet.")
+        datasetId = self.params["dataset_id"]
+        table_index = self.params["table_index"]
+        print(f'loadTable { { "source": datasetId, "table": table_index}}')
+        dataLayer = self.gis.content.get(datasetId)
+        table = Table(dataLayer.tables[table_index].url)
+        records = table.query()
+        data = [record.attributes for record in records.features]
+
+        # Convert the data to a Pandas DataFrame
+        df = pd.DataFrame(data)
+        return PandasHelper.pandas_to_pysparksql(pd_df=df, spark=self.spark)
 
     def read_from_feature_layer(self):
         datasetId = self.params["dataset_id"]
@@ -41,9 +51,7 @@ class AgolDatasource(Datasource):
 
             geom = transformed["geometry"]
 
-            gdf: gpd.GeoDataFrame = gpd.GeoDataFrame(
-                gdf, crs=f"EPSG:{original_crs}", geometry=geom
-            )
+            gdf: gpd.GeoDataFrame = gpd.GeoDataFrame(gdf, crs=f"EPSG:{original_crs}", geometry=geom)
             gdf = gdf.set_crs(f"EPSG:{original_crs}")
 
             if original_crs != new_crs:
@@ -140,9 +148,7 @@ class AgolDatasource(Datasource):
         datasetId = self.params["dataset_id"]
         layer = self.params["layer"]
         objectid = self.params.get("object_id", "OBJECTID")
-        print(
-            f'truncateFeatureLayer { { "source": datasetId, "layer": layer, "object_id": objectid}}'
-        )
+        print(f'truncateFeatureLayer { { "source": datasetId, "layer": layer, "object_id": objectid}}')
         dataLayer = self.gis.content.get(datasetId)
         featureLayer = FeatureLayer(dataLayer.layers[layer].url)
         # featureLayer.delete_features()
@@ -153,9 +159,7 @@ class AgolDatasource(Datasource):
         datasetId = self.params["dataset_id"]
         table_index = self.params["table_index"]
         objectid = self.params.get("object_id", "OBJECTID")
-        print(
-            f'truncateTable { { "source": datasetId, "table_index": table_index, "object_id": objectid}}'
-        )
+        print(f'truncateTable { { "source": datasetId, "table_index": table_index, "object_id": objectid}}')
         dataLayer = self.gis.content.get(datasetId)
         table = Table(dataLayer.tables[table_index].url)
 

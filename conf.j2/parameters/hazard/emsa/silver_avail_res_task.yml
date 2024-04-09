@@ -14,7 +14,7 @@ source_datasources:
         from chhs_emsa.bronze.cal_mat_emsa_raw_{{ env }} where esar_vhp != '' and CAST(esar_vhp as Double) != 0.0;
 destination_datasources:
   - type: databricks
-    table: chhs_emsa.silver.calmat_emsa_availabile_deployments_{{ env }}
+    table: chhs_emsa.silver.calmat_emsa_available_deployments_{{ env }}
     truncate_on_empty: false
     overwrite: true
     string_replace:

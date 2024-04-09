@@ -12,11 +12,7 @@ class FileDatasource(ObjectDatasource):
         spark: SparkSession = None,
         stage: str = "DEV",
     ):
-        super(FileDatasource, self).__init__(
-            params=params, dbutils=dbutils, spark=spark
-        )
+        super(FileDatasource, self).__init__(params=params, dbutils=dbutils, spark=spark)
 
     def get_object(self):
-        raise NotImplementedError(
-            '"file" datasource has not implemented get_object yet'
-        )
+        raise NotImplementedError('"file" datasource has not implemented get_object yet')

@@ -11,3 +11,5 @@ scratch/
 conf/
 .envrc
 databricks.yml
+
+.coverage

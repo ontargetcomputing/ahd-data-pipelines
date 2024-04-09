@@ -74,9 +74,7 @@ counties = {
 
 class FemaIHPValidRegistrationsGreenTask(MedallionETLTask):
     def __init__(self, spark: SparkSession = None, init_conf: dict = None):
-        super(FemaIHPValidRegistrationsGreenTask, self).__init__(
-            spark=spark, init_conf=init_conf
-        )
+        super(FemaIHPValidRegistrationsGreenTask, self).__init__(spark=spark, init_conf=init_conf)
 
     def custom_transform(self, dataFrames: array, params: dict = None) -> array:
         print("Doing custom transformation of FemaIHPValidRegistrationsGreenTask")
@@ -102,9 +100,7 @@ def entrypoint():  # pragma: no cover
     if "true" != os.environ.get("LOCAL"):
         init_conf = None
     else:
-        yaml_file_path = (
-            "./conf/tasks/hazard/fema/green_ihp_valid_registrations_aggregation.ci.yml"
-        )
+        yaml_file_path = "./conf/tasks/hazard/fema/green_ihp_valid_registrations_aggregation.ci.yml"
         init_conf = ETLTask.load_yaml(yaml_file_path=yaml_file_path)
         print("******************************")
         print("LOADED CONFIG FROM YAML FILE LOCALLY")
