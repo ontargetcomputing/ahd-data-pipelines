@@ -114,5 +114,5 @@ jobs:
           git add pyproject.toml src/ahd_data_pipelines/__init__.py
           git commit -m "Update version to $NEW_VERSION"
           git tag -a "$NEW_VERSION" -m "Version $NEW_VERSION"
-          git push origin main --tags
+          git push origin main --tags --force-with-lease
 
