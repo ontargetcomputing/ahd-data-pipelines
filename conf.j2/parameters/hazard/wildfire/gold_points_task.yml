@@ -12,10 +12,10 @@ source_datasources:
               points.oes_region,
               points.PooCounty,
               points.IncidentName,
-              perims.IncidentTypeCategory,
+              pointss.IncidentTypeCategory,
               points.FireDiscoveryDateTime,
-              perims.CalculatedAcres,
-              perims.DailyAcres,
+              points.CalculatedAcres,
+              points.DailyAcres,
               points.geometry
         from ahd_wildfires.silver.california_fires_points_{{ env }} as points
           join ahd_wildfires.gold.california_fires_perims_{{ env }} as perims on points.IRWINID = perims.IRWINID;
