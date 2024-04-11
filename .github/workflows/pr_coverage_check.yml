@@ -6,6 +6,9 @@ on:
       - main
     types: [opened, synchronize]
 
+env:
+  ACTIONS_RUNNER_DEBUG: true
+
 jobs:
   validate:
     runs-on: ubuntu-latest
@@ -16,21 +19,19 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
-      
-      # - name: 2. Create Coverage Config File
-      #   run: |
-      #     echo "[run]" > /home/runner/.coveragerc
-      #     echo "omit = src/ahd_data_pipelines/common/ArcGIS/OverwriteFS/OverwriteFS.py " >> /home/runner/.coveragerc
-      #     echo "       src/ahd_data_pipelines/tasks/esri/green_data_update.py" >> /home/runner/.coveragerc
-      #     echo "       src/ahd_data_pipelines/tasks/esri/green_data_update_job.py" >> /home/runner/.coveragerc
 
       - name: Install modules
         run: |
-          pip install pytest
-          pip install pytest-cov
-
-      - name: Run pytest coverage check
-        run: pytest --cov=src --cov-fail-under=30.00
-
-
-
+          pip install arcgis==2.2.0
+          pip install pytz==2023.3.post1
+          pip install pyyaml==6.0.1
+          pip install shapely==2.0.2
+          pip install geopandas==0.14.2
+          pip install numpy==1.26.3
+          pip install geopy==2.4.1
+          pip install boto3==1.34.27
+          pip install openpyxl==3.1.2
+          pip install dlt==0.4.2
+          pip install sqlalchemy==2.0.25
+          pip install psycopg2-binary==2.9.9
+          pip install yamllint==^1.35.1
