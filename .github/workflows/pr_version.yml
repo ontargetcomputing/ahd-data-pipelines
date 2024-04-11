@@ -4,7 +4,7 @@ on:
   pull_request:
     branches:
       - main
-    types: [closed]
+    types: [opened, synchronize, closed]
 
 jobs:
   update_version:
@@ -18,12 +18,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Actions Ecosystem Action Get Latest Tag
-        id: get-latest-tag
-        uses: actions-ecosystem/action-get-latest-tag@v1.6.0
+      - name: Output all tags
+        run: |
+          git fetch --tags
+          git tag
 
-      - name: Set latest tag as env variable
-        run: echo "LATEST_TAG=${{ steps.get-latest-tag.outputs.tag }}" >> $GITHUB_ENV
+      - name: Get Latest Tag
+        run: |
+          git fetch --tags
+          git tag
+          latest_tag=$(git tag | grep -E '[0-9]' | tail -1)
+          echo "LATEST_TAG=$latest_tag" >> $GITHUB_ENV
 
       - name: Output latest tag
         run: |

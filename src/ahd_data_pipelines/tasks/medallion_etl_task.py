@@ -126,6 +126,12 @@ class MedallionETLTask(ETLTask):
                 if left_pdf.count() == 0 or right_pdf.count() == 0:
                     print("We have an empty dataset, nothing to spatial join")
                 else:
+                    print("Columns in Left:")
+                    for col in left_pdf.columns:
+                        print(col)
+                    print("Columns in Right:")
+                    for col in right_pdf.columns:
+                        print(col)
                     left_df = PandasHelper.pysparksql_to_geopandas(left_pdf)
                     right_df = PandasHelper.pysparksql_to_geopandas(right_pdf)
 
@@ -206,7 +212,7 @@ def entrypoint():
     if "true" != os.environ.get("LOCAL"):
         init_conf = None
     else:
-        yaml_file_path = "./conf/parameters/shelter/bootstrap/bronze_shelter_sites_historical.yml"
+        yaml_file_path = "./conf/parameters/hazard/wildfire/bronze_perims_task.yml"
         init_conf = ETLTask.load_yaml(yaml_file_path=yaml_file_path)
         print("******************************")
         print("LOADED CONFIG FROM YAML FILE LOCALLY")

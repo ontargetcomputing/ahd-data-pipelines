@@ -1,7 +1,7 @@
 resources:
   jobs:
     county_language:
-      name: county_language
+      name: County Language Data
 
       email_notifications:
         on_failure:
