@@ -1,0 +1,35 @@
+name: Update Version
+
+on:
+  pull_request:
+    branches:
+      - main
+    types: [opened, synchronize, closed]
+
+jobs:
+  update_files:
+    runs-on: ubuntu-latest
+
+    env:
+      GITHUB_EVENT_PATH: ${{ github.event_path }}
+
+    steps:
+      - name: Get Token
+        id: get_workflow_token
+        uses: peter-murray/workflow-application-token-action@v2
+        with:
+          application_id: ${{ vars.GH_APPLICATION_ID }}
+          application_private_key: ${{ secrets.GH_APPLICATION_KEY }}
+
+      - name: Check Token
+        if: ${{ steps.get_workflow_token.outputs.token != '' }}
+        run: echo "Token successfully retrieved!"
+
+      # - name: Commit Changes
+      #   if: ${{ steps.get_workflow_token.outputs.token != '' }}
+      #   run: |
+      #     git config --global user.email "your_email@example.com"
+      #     git config --global user.name "Your Name"
+      #     git add .
+      #     git commit -m "Commit message"
+      #     git push
