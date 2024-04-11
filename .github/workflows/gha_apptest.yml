@@ -1,4 +1,4 @@
-name: Update Version
+name: GH App Testing
 
 on:
   pull_request:
@@ -25,12 +25,11 @@ jobs:
         if: ${{ steps.get_workflow_token.outputs.token != '' }}
         run: echo "Token successfully retrieved!"
 
-      # - name: Commit Changes
-      #   if: ${{ steps.get_workflow_token.outputs.token != '' }}
-      #   run: |
-      #     git config --global user.email "your_email@example.com"
-      #     git config --global user.name "Your Name"
-      #     git add .
-      #     git commit -m "Commit message"
-      #     git push
-      
+      - name: Commit Changes
+        if: ${{ steps.get_workflow_token.outputs.token != '' }}
+        run: |
+          git config --global user.email "your_email@example.com"
+          git config --global user.name "Your Name"
+          git add .
+          git commit -m "Commit message"
+          git push
