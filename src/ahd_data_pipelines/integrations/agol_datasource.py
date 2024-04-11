@@ -11,6 +11,7 @@ import pandas as pd
 from shapely import wkt
 from shapely.geometry import Polygon, MultiPolygon, shape
 
+
 class AgolDatasource(Datasource):
     """ """
 
@@ -36,25 +37,25 @@ class AgolDatasource(Datasource):
         gdf = featureSet.sdf
         if len(gdf) > 0:
             gjsonString = featureSet.to_geojson
-            gjsonDict = json.loads(gjsonString)                
+            gjsonDict = json.loads(gjsonString)
             features = gjsonDict["features"]
             data = []
             for feature in features:
-                geometry = feature['geometry']
-                if feature['geometry']['type'] == 'MultiPolygon':
-                    coords = geometry['coordinates']
+                geometry = feature["geometry"]
+                if feature["geometry"]["type"] == "MultiPolygon":
+                    coords = geometry["coordinates"]
                     polygons = []
                     for poly in coords:
                         points = []
                         for point in poly:
-                            points.append((point[0], point[1]))  
+                            points.append((point[0], point[1]))
                         polygons.append(Polygon(points))
                     shp = MultiPolygon(polygons)
                 else:
                     shp = shape(geometry)
 
-                props = feature['properties']
-                props['geometry'] = shp
+                props = feature["properties"]
+                props["geometry"] = shp
                 data.append(props)
 
             df = pd.DataFrame(data)
@@ -65,7 +66,7 @@ class AgolDatasource(Datasource):
             #     if column in df.columns:
             #         df.drop(columns=column, inplace=True)
 
-            transformed = gpd.GeoDataFrame(df, geometry='geometry')
+            transformed = gpd.GeoDataFrame(df, geometry="geometry")
 
             geom = transformed["geometry"]
 
@@ -125,7 +126,7 @@ class AgolDatasource(Datasource):
                         "rings": [[list(z) for z in zip(x, y)]],
                         "spatialReference": {"wkid": 4326},
                     }
-                elif the_type == 'MULTIPART_POLYGON':
+                elif the_type == "MULTIPART_POLYGON":
                     interiors = geometry.interiors
                     outerarray = []
                     for i in range(0, len(geometry.interiors)):
@@ -135,7 +136,7 @@ class AgolDatasource(Datasource):
                         y = list(y)
                         thearray = [list(z) for z in zip(x, y)]
                         outerarray.append(thearray)
-                    wrappedObj['geometry'] = {"rings": outerarray, "spatialReference": {"wkid": 4326}}
+                    wrappedObj["geometry"] = {"rings": outerarray, "spatialReference": {"wkid": 4326}}
                 else:
                     print(f"Unknown geometry type:{the_type}")
 
