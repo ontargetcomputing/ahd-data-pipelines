@@ -126,6 +126,12 @@ class MedallionETLTask(ETLTask):
                 if left_pdf.count() == 0 or right_pdf.count() == 0:
                     print("We have an empty dataset, nothing to spatial join")
                 else:
+                    print("Columns in Left:")
+                    for col in left_pdf.columns:
+                        print(col)
+                    print("Columns in Right:")
+                    for col in right_pdf.columns:
+                        print(col)                       
                     left_df = PandasHelper.pysparksql_to_geopandas(left_pdf)
                     right_df = PandasHelper.pysparksql_to_geopandas(right_pdf)
 
