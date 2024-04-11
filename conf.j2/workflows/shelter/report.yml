@@ -1,8 +1,7 @@
 resources:
   jobs:
     shelter_report:
-      name: shelter_report
-
+      name: Shelter Report
       email_notifications:
         on_failure:
           - ${var.notification_email}
