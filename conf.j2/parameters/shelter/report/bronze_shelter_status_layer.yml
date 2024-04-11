@@ -25,10 +25,6 @@ destination_datasources:
       type: string
     - column: i_backup_generator
       type: string
-    - column: shelter_id
-      type: string
-    - column: site_type
-      type: string
     - column: i_city
       type: string
     - column: i_submission_date
