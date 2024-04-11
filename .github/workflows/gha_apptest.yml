@@ -25,6 +25,9 @@ jobs:
         if: ${{ steps.get_workflow_token.outputs.token != '' }}
         run: echo "Token successfully retrieved!"
 
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Commit Changes
         if: ${{ steps.get_workflow_token.outputs.token != '' }}
         run: |
