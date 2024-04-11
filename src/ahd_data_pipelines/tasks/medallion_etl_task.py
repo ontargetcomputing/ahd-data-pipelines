@@ -131,7 +131,7 @@ class MedallionETLTask(ETLTask):
                         print(col)
                     print("Columns in Right:")
                     for col in right_pdf.columns:
-                        print(col)                       
+                        print(col)
                     left_df = PandasHelper.pysparksql_to_geopandas(left_pdf)
                     right_df = PandasHelper.pysparksql_to_geopandas(right_pdf)
 
