@@ -1,0 +1,121 @@
+name: Update Version
+
+on:
+  pull_request:
+    branches:
+      - main
+    types: [opened, synchronize, closed]
+
+jobs:
+  update_version:
+    runs-on: ubuntu-latest
+
+    env:
+      GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+      GITHUB_EVENT_PATH: ${{ github.event_path }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Output all tags
+        run: |
+          git fetch --tags
+          git tag
+
+      - name: Get Latest Tag
+        run: |
+          git fetch --tags
+          git tag
+          latest_tag=$(git tag | grep -E '[0-9]' | tail -1)
+          echo "LATEST_TAG=$latest_tag" >> $GITHUB_ENV
+
+      - name: Output latest tag
+        run: |
+          echo "Latest Tag: $LATEST_TAG"
+
+      - name: Extract PR labels on PR
+        run: |
+          PR_LABELS=$(jq --raw-output '.pull_request.labels[].name' "$GITHUB_EVENT_PATH" | paste -sd ',' - || echo "")
+          echo "PR_LABELS=$PR_LABELS" >> $GITHUB_ENV
+          echo "PR Labels: $PR_LABELS"
+
+      - name: Process PR labels
+        run: |
+          MINOR_LABEL=""
+          MAJOR_LABEL=""
+          PATCH_LABEL=""
+
+          if [[ ! -z "$PR_LABELS" ]]; then
+            if echo "$PR_LABELS" | grep -qi 'minor'; then
+              MINOR_LABEL="minor"
+            fi
+            if echo "$PR_LABELS" | grep -qi 'major'; then
+              MAJOR_LABEL="major"
+            fi
+            if echo "$PR_LABELS" | grep -qi 'patch'; then
+              PATCH_LABEL="patch"
+            fi
+          fi
+
+          echo "MINOR_LABEL=$MINOR_LABEL" >> $GITHUB_ENV
+          echo "MAJOR_LABEL=$MAJOR_LABEL" >> $GITHUB_ENV
+          echo "PATCH_LABEL=$PATCH_LABEL" >> $GITHUB_ENV
+
+          echo "Minor Label: $MINOR_LABEL"
+          echo "Major Label: $MAJOR_LABEL"
+          echo "Patch Label: $PATCH_LABEL"
+
+      - name: Check for multiple version labels
+        run: |
+          if [[ ! -z "$MINOR_LABEL" && \
+                ! -z "$MAJOR_LABEL" || \
+                ! -z "$MINOR_LABEL" && \
+                ! -z "$PATCH_LABEL" || \
+                ! -z "$MAJOR_LABEL" && \
+                ! -z "$PATCH_LABEL" ]]; then
+              echo "Error: More than one of the version labels (minor, major, patch) exist. Exiting..."
+              exit 1
+          fi
+
+      - name: Set New Version
+        run: |
+          OLD_VERSION="$LATEST_TAG"
+          IFS='.' read -ra VERSION_PARTS <<< "$OLD_VERSION"
+
+          if [[ -n "$MAJOR_LABEL" ]]; then
+            echo "Major label found"
+            NEW_VERSION="$((VERSION_PARTS[0] + 1)).0.0"
+          elif [[ -n "$MINOR_LABEL" ]]; then
+            echo "Minor label found"
+            NEW_VERSION="${VERSION_PARTS[0]}.$((${VERSION_PARTS[1]} + 1)).0"
+          elif [[ -n "$PATCH_LABEL" ]]; then
+            echo "Patch label found"
+            NEW_VERSION="${VERSION_PARTS[0]}.${VERSION_PARTS[1]}.$((${VERSION_PARTS[2]} + 1))"
+          else
+            echo "No version label found."
+          fi
+
+          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+          echo "New Version: $NEW_VERSION"
+
+      # Update to src/ahd_data_piplines/__init__.py and pyproject.toml
+      - name: Update Version
+        if: github.event.pull_request.merged == true
+        run: |
+          sed -i "s/version = \"[0-9].[0-9].[0-9]\"/version = \"$NEW_VERSION\"/" pyproject.toml
+          sed -i "s/__version__ = \"[0-9].[0-9].[0-9]\"/__version__ = \"$NEW_VERSION\"/" src/ahd_data_pipelines/__init__.py
+
+      # Commit and push
+      - name: Commit and Push Changes
+        if: github.event.pull_request.merged == true
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git config --global credential.helper 'store --file ~/.git-credentials'
+          echo "https://github.com:${GITHUB_TOKEN}@github.com" > ~/.git-credentials
+
+          git add pyproject.toml src/ahd_data_pipelines/__init__.py
+          git commit -m "Update version to $NEW_VERSION"
+          git tag -a "$NEW_VERSION" -m "Version $NEW_VERSION"
+          git push origin main --tags

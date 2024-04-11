@@ -113,8 +113,9 @@ workflows:
           dataset_id: b3f88f6f781044dabdc02e84d0bc073e
           layer: 0
 
-  hazard_calmat_emsa:
+  hazard_emsa:
     template: conf/workflows/hazard/emsa.yml
+
     bronze:
       source:
         bucket_name: chhs-datahub-emsa
@@ -122,6 +123,9 @@ workflows:
         aws_region: us-west-1
         file_name: upload/Shared with HHS ESRI.xlsx
         unamed_iteration: 13
+      agol_historical:
+        dataset_id: c9fdd8e28baa408cb80daa9588fb2d49
+        table_index: 0
     green:
       available:
         destination:
@@ -131,6 +135,9 @@ workflows:
         destination:
           dataset_id : 0cb0e757a6734a6d82bd940c6df89daf
           table_index: 0
+          historical:
+            dataset_id : c9fdd8e28baa408cb80daa9588fb2d49
+            table_index: 0
 
   facilities_cdph:
     template: conf/workflows/facilities/cdph.yml
@@ -141,3 +148,7 @@ workflows:
 
   census_language:
     template: conf/workflows/census/language.yml
+
+  hazard_weather:
+    template: conf/workflows/hazard/weather.yml
+    catalog: ahd_weather
