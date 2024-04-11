@@ -66,11 +66,11 @@ workflows:
   shelter_report:
     template: conf/workflows/shelter/report.yml
     catalog: shelter
-    element_suffix: _1639591244980
+    element_suffix: _1711552917216
     bronze:
       shelter_status_layer: 
         source:
-          dataset_id: fd06ecb9a65b4eab86c9863f21dbacef 
+          dataset_id: b53d55942bdc43928cb8069d2d0b24b9 
           layer: 0
 
       shelter_sites_historical: 
