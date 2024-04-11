@@ -7,7 +7,7 @@ source_datasources:
 
 destination_datasources:
   - type: databricks
-    table: {{ workflows['shelter_report'].catalog }}.bronze.shelter_status_layer_{{ env }}
+    table: {{ workflows['shelter_report'].catalog }}.bronze.cassi_join_layer_{{ env }}
     data_types:
     - column: GlobalID
       type: string
