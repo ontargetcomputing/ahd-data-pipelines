@@ -11,139 +11,93 @@ destination_datasources:
     data_types:
     - column: GlobalID
       type: string
-    - column: ade_site_id
-      type: int
-    - column: name
+    - column: i_name
       type: string
-    - column: address
+    - column: i_address
       type: string
-    - column: zipcode
+    - column: i_zipcode
       type: integer
-    - column: county
+    - column: i_county
       type: string
-    - column: oes_region
+    - column: i_oes_region
       type: string
-    - column: ada_accessible_site
+    - column: i_ada_accessible_site
       type: string
-    - column: backup_generator
+    - column: i_backup_generator
       type: string
     - column: shelter_id
       type: string
     - column: site_type
       type: string
-    - column: city
+    - column: i_city
       type: string
-    - column: submission_date
+    - column: i_submission_date
       type: date
-    - column: state
+    - column: i_state
       type: string
-    - column: county_other
+    - column: i_county_other
       type: string
-    - column: coord_x
+    - column: i_coord_x
       type: double
-    - column: coord_y
+    - column: i_coord_y
       type: double
-    - column: ade_site_id{{ workflows['shelter_report'].element_suffix|default("", true) }}
-      type: int
-    - column: site_status
+    - column: s_site_status
       type: string
-    - column: dr_name
+    - column: s_dr_name
       type: string
-    - column: dr_number
-      type: int
-    - column: disaster_type
+    - column: s_disaster_type
       type: string
-    - column: agency_id
-      type: int
-    - column: datasource
+    - column: s_site_type
       type: string
-    - column: site_type{{ workflows['shelter_report'].element_suffix|default("", true) }}
+    - column: s_poc_name_a
       type: string
-    - column: shelter_type
-      type: string
-    - column: shelter_manager
-      type: string
-    - column: poc_name
-      type: string
-    - column: shift
-      type: string
-    - column: overall_capacity
+    - column: s_overall_capacity
       type: int
-    - column: census
+    - column: s_census
       type: int
-    - column: estimated_census_outside
+    - column: s_estimated_census_outside
       type: int
-    - column: unmet_needs
-      type: int
-    - column: unmet_blankets
-      type: int
-    - column: unmet_showers
-      type: int
-    - column: unmet_food
-      type: int
-    - column: unmet_toilets
-      type: int
-    - column: unmet_functional
-      type: int
-    - column: unmet_ppe
-      type: int
-    - column: unmet_none
-      type: int
-    - column: open_date
+    - column: s_open_date
       type: date
-    - column: close_date
+    - column: s_close_date
       type: date
-    - column: count_date
-      type: int
     - column: parent_guid
       type: string
     - column: GlobalID{{ workflows['shelter_report'].element_suffix|default("", true) }}
       type: string
-    - column: disaster_other
+    - column: s_disaster_other
       type: string
-    - column: closure_reason
+    - column: s_closure_reason
       type: string
-    - column: closure_other
+    - column: s_closure_other
       type: string
-    - column: agency_type
+    - column: s_agency_type
       type: string
-    - column: county{{ workflows['shelter_report'].element_suffix|default("", true) }}
+    - column: s_county
       type: string
-    - column: midnight_count
+    - column: s_midnight_count
       type: int
-    - column: completed_by
+    - column: s_completed_by
       type: string
-    - column: rooms_occupied
+    - column: s_rooms_occupied
       type: int
-    - column: tep_status
-      type: string
-    - column: tep_poc
-      type: string
-    - column: submission_date{{ workflows['shelter_report'].element_suffix|default("", true) }}
+    - column: s_submission_date
       type: date
-    - column: unmet_other
-      type: string
-    - column: unmet_ada_showers
+    - column: s_poc_name_b
       type: int
-    - column: unmet_ada_toilets
-      type: int
-    - column: poc_name_b
-      type: int
-    - column: poc_number
+    - column: s_poc_number_a
       type: string
-    - column: poc_number_b
+    - column: s_poc_number_b
       type: string
-    - column: unmet_comfort_kits
-      type: int
-    - column: disaster_start_date_txt
+    - column: s_overall_status
       type: string
-    - column: overall_status
+    - column: s_noncon_status
       type: string
-    - column: noncon_status
+    - column: s_site_name
       type: string
-    - column: unmet_ada_showers
-      type: int
-    - column: site_name
+    - column: s_disaster_start_date
+      type: date
+    - column: s_tep_status
       type: string
     - column: ObjectId
       type: string
