@@ -37,7 +37,7 @@ jobs:
           pip install yamllint==1.35.1
 
           pip install pytest==8.0.2
-          pip install pytest-cov==^4.1.0
+          pip install pytest-cov==4.1.0
 
       - name: Run pytest coverage check
         run: pytest --cov=src
