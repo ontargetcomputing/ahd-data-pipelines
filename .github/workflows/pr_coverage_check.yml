@@ -22,7 +22,7 @@ jobs:
 
       - name: Install modules
         run: |
-          pip install arcgis==2.2.0
+# pip install arcgis==2.2.0
           pip install pytz==2023.3.post1
           pip install pyyaml==6.0.1
           pip install shapely==2.0.2
