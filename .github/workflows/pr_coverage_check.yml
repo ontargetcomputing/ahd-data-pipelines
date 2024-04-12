@@ -39,5 +39,8 @@ jobs:
           pip install pytest==8.0.2
           pip install pytest-cov==4.1.0
 
+          sudo apt-get install openjdk-8-jdk-headless -qq > /dev/null
+          pip install pyspark
+
       - name: Run pytest coverage check
         run: pytest --cov=src
