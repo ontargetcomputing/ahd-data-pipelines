@@ -116,9 +116,11 @@ jobs:
       - name: Update Version
         if: github.event.pull_request.merged == true
         run: |
-          sed -i "s/version = \"[0-9].[0-9].[0-9]\"/version = \"$NEW_VERSION\"/" pyproject.toml
+          sed "s#version = \"[0-9]*\.[0-9]*\.[0-9]*\"#version = \"$NEW_VERSION\"#" pyproject.toml > pyproject_tmp.toml
+          mv pyproject_tmp.toml pyproject.toml
           cat pyproject.toml
-          sed -i "s/__version__ = \"[0-9].[0-9].[0-9]\"/__version__ = \"$NEW_VERSION\"/" src/ahd_data_pipelines/__init__.py
+          sed "s#__version__ = \"[0-9]*\.[0-9]*\.[0-9]*\"#__version__ = \"$NEW_VERSION\"#" src/ahd_data_pipelines/__init__.py > init_tmp.py
+          mv init_tmp.py src/ahd_data_pipelines/__init__.py
           cat src/ahd_data_pipelines/__init__.py
 
       # Commit and push
