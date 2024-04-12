@@ -44,4 +44,4 @@ jobs:
           pip install pyspark==3.4.1
 
       - name: Run pytest coverage check
-        run: pytest --cov=src
+        run: pytest --cov=src --cov-report=term
