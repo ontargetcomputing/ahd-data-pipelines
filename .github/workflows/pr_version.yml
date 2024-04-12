@@ -126,6 +126,8 @@ jobs:
       # Commit and push
       - name: Commit and Push Changes
         if: github.event.pull_request.merged == true
+        with:
+          github-token: ${{ steps.get_workflow_token.outputs.token }}
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
@@ -135,5 +137,4 @@ jobs:
           git commit -m "Update version to $NEW_VERSION"
           git tag -a "$NEW_VERSION" -m "Version $NEW_VERSION"
           git push origin main --tags
-          
           
