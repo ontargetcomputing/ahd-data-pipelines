@@ -1,8 +1,8 @@
 source_datasources:
   - type: databricks
     query: >
-      select jl.name,
-              jl.address,
+      select jl.i_name as name,
+              jl.i_address as address,
                 CASE
                     WHEN ca_fips.county is null THEN "" 
                     ELSE ca_fips.county
@@ -11,21 +11,21 @@ source_datasources:
                     WHEN ca_fips.fips_long is null THEN "" 
                     ELSE ca_fips.fips_long
                 END as county_fips,
-              jl.city,
-              jl.state,
-              jl.zipcode,
+              jl.i_city as city,
+              jl.i_state as state,
+              jl.zipcode as zipcode,
                 CASE
                     WHEN oes_shape.caloes_region is null THEN "" 
                     ELSE oes_shape.caloes_region
                 END as oes_region,
-              jl.backup_generator,
-              jl.ada_accessible_site 
-        from {{ workflows['shelter_report'].catalog }}.silver.shelter_status_layer_{{ env }} jl 
-          left join datahub_common.gold.ca_county_oes_shape oes_shape on oes_shape.county = REPLACE(jl.county, ' County', '') 
-          left join datahub_common.gold.ca_fips ca_fips on ca_fips.county_long = jl.county
-          left join {{ workflows['shelter_report'].catalog }}.gold.site_information_{{ env }} si on lower(si.name) = lower(jl.name)
+              jl.i_backup_generator as backup_generator,
+              jl.i_ada_accessible_site as ada_accessible_site 
+        from {{ workflows['shelter_report'].catalog }}.silver.cassi_join_layer_{{ env }} jl 
+          left join datahub_common.gold.ca_county_oes_shape oes_shape on oes_shape.county = REPLACE(jl.i_county, ' County', '') 
+          left join datahub_common.gold.ca_fips ca_fips on ca_fips.county_long = jl.i_county
+          left join {{ workflows['shelter_report'].catalog }}.gold.site_information_{{ env }} si on lower(si.name) = lower(jl.i_name)
           where si.name is null;
- 
+
 destination_datasources:
   - type: databricks
     table: {{ workflows['shelter_report'].catalog }}.gold.site_information_{{ env }}
