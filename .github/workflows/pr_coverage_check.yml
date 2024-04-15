@@ -50,7 +50,8 @@ jobs:
         run: |
           pytest --cov=src --cov-report=xml > /dev/null
           line_rate=$(xmlstarlet sel -t -v "/coverage/@line-rate" coverage.xml)
-          coverage=$(echo "($line_rate * 100 + 0.5) / 1" | bc)
+          line_rate="${line_rate%\%}"
+          coverage=$(echo "($line_rate * 100) / 1" | bc)
           echo "COVERAGE_PERCENT=$coverage"
           echo "COVERAGE_PERCENT=$coverage" >> $GITHUB_ENV
         continue-on-error: true
