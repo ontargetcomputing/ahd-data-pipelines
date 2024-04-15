@@ -55,6 +55,8 @@ jobs:
         run: |
           COVERAGE_THRESHOLD=19
           coverage=$COVERAGE_PERCENT
+          echo "COVERAGE_PERCENT=$coverage"
+          echo "COVERAGE_THRESHOLD=$COVERAGE_THRESHOLD"
           if [ "$coverage" -lt "$COVERAGE_THRESHOLD" ]; then
               echo "Coverage is below threshold ($coverage% < $COVERAGE_THRESHOLD%)"
               exit 1
