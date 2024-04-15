@@ -43,6 +43,16 @@ jobs:
           sudo apt-get install openjdk-8-jdk-headless -qq > /dev/null
           pip install pyspark==3.4.1
 
-      - name: Run pytest coverage check
-        run: pytest --cov=src --cov-fail-under=19
+      - name: Run tests and coverage check
+        run: |
+          pytest
+          COVERAGE_THRESHOLD=19
+          coverage=$(pytest --cov=src --cov-report=xml | grep -oP 'coverage="(.*?)"' | grep -oP '\d+(?=%)')
+          if [ "$coverage" -lt "$COVERAGE_THRESHOLD" ]; then
+              echo "Coverage is below threshold ($coverage% < $COVERAGE_THRESHOLD%)"
+              exit 1
+          else
+              echo "Coverage is above threshold ($coverage% >= $COVERAGE_THRESHOLD%)"
+              exit 0
+          fi
 
