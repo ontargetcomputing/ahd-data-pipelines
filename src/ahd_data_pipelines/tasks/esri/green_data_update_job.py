@@ -1,5 +1,4 @@
 from ahd_data_pipelines.tasks.esri.green_data_update import GreenDataUpdate
-from ahd_data_pipelines.tasks.legacy.job import Job
 
 
 class GreenDataUpdateJob():

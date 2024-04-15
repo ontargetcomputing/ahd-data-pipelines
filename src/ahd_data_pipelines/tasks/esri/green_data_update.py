@@ -30,7 +30,6 @@ from arcgis.geometry import Geometry
 
 class GreenDataUpdate(Pipeline):
     def __init__(self, dbutils=None, conf=None, stage="DEV", development=False, log4j_logger=None):
-        #super(GreenDataUpdate, self).__init__(dbutils=dbutils, stage=stage, log4j_logger=log4j_logger)
         
         self.conf = {
             "environment": "dev",
