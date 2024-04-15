@@ -53,10 +53,17 @@ jobs:
           ./run_tests.sh
         continue-on-error: true
 
+      - name: Get coverage percentage
+        id: get_coverage
+        run: |
+          coverage=$(pytest --cov=my_module --cov-report=xml | grep -oP 'coverage="(.*?)"' | grep -oP '\d+(?=%)')
+          echo "COVERAGE_PERCENT=$coverage" >> $GITHUB_ENV
+        continue-on-error: true
+
       - name: Check coverage and fail if below threshold
         run: |
-          COVERAGE_THRESHOLD=19
-          coverage=$(pytest --cov=src --cov-report=xml | grep -oP 'coverage="(.*?)"' | grep -oP '\d+(?=%)')
+          COVERAGE_THRESHOLD=80
+          coverage=$COVERAGE_PERCENT
           if [ "$coverage" -lt "$COVERAGE_THRESHOLD" ]; then
               echo "Coverage is below threshold ($coverage% < $COVERAGE_THRESHOLD%)"
               exit 1
