@@ -4,10 +4,11 @@ on:
   pull_request:
     branches:
       - main
-    types: [opened, synchronize, closed]
+    types: [closed]
 
 jobs:
   update_version:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
 
     env:
@@ -127,7 +128,6 @@ jobs:
 
       # Commit and push
       - name: Commit and Push Changes
-        if: github.event.pull_request.merged == true
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
