@@ -46,7 +46,7 @@ jobs:
       - name: Get coverage percentage
         id: get_coverage
         run: |
-          coverage=$(pytest --cov=src --cov-report=xml | grep -oP 'coverage="(.*?)"' | grep -oP '\d+(?=%)')
+          coverage=$(pytest --cov=src --cov-report=xml | grep -o 'coverage="[0-9]*\.[0-9]*"' | grep -o '[0-9]*\.[0-9]*')
           echo "COVERAGE_PERCENT=$coverage"
           echo "COVERAGE_PERCENT=$coverage" >> $GITHUB_ENV
         continue-on-error: true
