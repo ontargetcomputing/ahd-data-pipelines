@@ -43,11 +43,14 @@ jobs:
           sudo apt-get install openjdk-8-jdk-headless -qq > /dev/null
           pip install pyspark==3.4.1
 
-      - name: Run pytest in the background
+      - name: Create and run tests script
         run: |
-          pytest > /dev/null 2>&1 &
-          pytest_pid=$!
-          wait $pytest_pid 
+          echo '#!/bin/bash' > run_tests.sh
+          echo 'pytest > /dev/null 2>&1 &' >> run_tests.sh
+          echo 'pytest_pid=$!' >> run_tests.sh
+          echo 'wait $pytest_pid' >> run_tests.sh
+          chmod +x run_tests.sh
+          ./run_tests.sh
 
       - name: Check coverage and fail if below threshold
         run: |
