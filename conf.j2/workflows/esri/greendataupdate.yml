@@ -11,11 +11,11 @@ resources:
           - Richard.Bach3@chhs.ca.gov
 
       tasks:
-        - task_key: "pulse"
+        - task_key: "green_data_update"
           existing_cluster_id: ${var.ahd_cluster_id}
           python_wheel_task:
             package_name: ${bundle.name}
-            entry_point: green_data_update
+            entry_point: green_data_update_task
             parameters: [ "--stage", "${bundle.target}"]
           libraries:
             - whl: /dist/*.whl
