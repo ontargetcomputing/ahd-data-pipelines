@@ -43,23 +43,16 @@ jobs:
           sudo apt-get install openjdk-8-jdk-headless -qq > /dev/null
           pip install pyspark==3.4.1
 
-          sudo apt-get install xmlstarlet
-
       - name: Get coverage percentage
-        id: get_coverage
-        run: |
-          pytest --cov=src --cov-report=xml > /dev/null
-          line_rate=$(xmlstarlet sel -t -v "/coverage/@line-rate" coverage.xml)
-          echo $line_rate
-          coverage=$(echo "($line_rate * 100) / 1" | bc)
-          echo $coverage
-          echo "COVERAGE_PERCENT=$coverage"
-          echo "COVERAGE_PERCENT=$coverage" >> $GITHUB_ENV
         continue-on-error: true
+        run: |
+          COVERAGE_PERCENT=$(pytest --cov=src | grep -o '[0-9]*%' | tail -n 1 | sed 's/%//')
+          echo "COVERAGE_PERCENT=$COVERAGE_PERCENT"
+          echo "COVERAGE_PERCENT=$COVERAGE_PERCENT" >> $GITHUB_ENV
 
       - name: Check coverage and fail if below threshold
         run: |
-          COVERAGE_THRESHOLD=19
+          COVERAGE_THRESHOLD=20
           coverage=$COVERAGE_PERCENT
           echo "COVERAGE_PERCENT=$coverage"
           echo "COVERAGE_THRESHOLD=$COVERAGE_THRESHOLD"
