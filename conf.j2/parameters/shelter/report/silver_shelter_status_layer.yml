@@ -47,14 +47,14 @@ source_datasources:
           s_overall_status,
           s_noncon_status,
           s_site_name,
-          s_disaster_start_date
+          s_disaster_start_date,
           s_tep_status,
           geometry,
           ade_date_submitted
       from shelter.bronze.cassi_join_layer_{{ env }};
 destination_datasources:
   - type: databricks
-    table: {{ workflows['shelter_report'].catalog }}.silver.shelter_status_layer_{{ env }}
+    table: {{ workflows['shelter_report'].catalog }}.silver.cassi_join_layer_{{ env }}
     data_types:
       - column: GlobalID
         type: string

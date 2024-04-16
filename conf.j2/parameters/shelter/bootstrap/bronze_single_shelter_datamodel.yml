@@ -13,7 +13,7 @@ source_datasources:
 
 destination_datasources:
   - type: databricks
-    table: {{ workflows['shelter_bootstrap'].catalog }}.bronze.shelter_status_with_deltas_{{ env }}
+    table: {{ workflows['shelter_bootstrap'].catalog }}.bronze.cassi_join_layer_with_deltas_{{ env }}
     data_types:
     - column: datahub_site_id
       type: int

@@ -40,7 +40,7 @@ source_datasources:
           report_date, 
           submission_date,
           geometry
-      from {{ workflows['shelter_report'].catalog }}.gold.shelter_status_with_deltas_{{ env }}
+      from {{ workflows['shelter_report'].catalog }}.gold.cassi_join_layer_with_{{ env }}
       where datahub_site_id is not null and (site_status != 'Closed'
               or ( site_status = 'Closed' and DATEDIFF(current_date(), close_date) = 1));
 

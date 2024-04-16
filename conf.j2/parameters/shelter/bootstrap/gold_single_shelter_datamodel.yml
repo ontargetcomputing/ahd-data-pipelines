@@ -1,9 +1,9 @@
 source_datasources:
   - type: databricks
-    table: {{ workflows['shelter_bootstrap'].catalog }}.silver.shelter_status_with_deltas_{{ env }}
+    table: {{ workflows['shelter_bootstrap'].catalog }}.silver.cassi_join_layer_with_deltas_{{ env }}
 destination_datasources:
   - type: databricks
-    table: {{ workflows['shelter_bootstrap'].catalog }}.gold.shelter_status_with_deltas_{{ env }}
+    table: {{ workflows['shelter_bootstrap'].catalog }}.gold.cassi_join_layer_with_deltas_{{ env }}
     data_types:
     - column: datahub_site_id
       type: int

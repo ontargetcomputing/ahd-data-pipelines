@@ -3,97 +3,95 @@ source_datasources:
     query: >
       select 
             si.datahub_site_id,
-            jl.name,
-            jl.address,
+            jl.i_name as name,
+            jl.i_address as address,
             cafips.fips_long as county_fips,
-            jl.county,
-            jl.city,
-            jl.state,
+            jl.i_county as county,
+            jl.i_city as city,
+            jl.i_state as state,
             jl.zipcode,
             si.oes_region,
-            jl.backup_generator,
-            jl.ada_accessible_site,
-            jl.datasource,
-            jl.dr_name,
+            jl.i_backup_generator as backup_generator,
+            jl.i_ada_accessible_site as ada_accessible_site,
+            jl.s_dr_name as dr_name,
             CASE
-                WHEN jl.disaster_type = "Other" THEN jl.disaster_other
-                ELSE jl.disaster_type
+                WHEN jl.s_disaster_type = "Other" THEN jl.s_disaster_other
+                ELSE jl.s_disaster_type
             END as disaster_type,
-            jl.disaster_start_date_txt as disaster_start_date,
-            jl.overall_capacity,
+            jl.s_disaster_start_date as disaster_start_date,
+            jl.s_overall_capacity,
             CASE
-                WHEN ssdm.overall_capacity is null THEN jl.overall_capacity
-                WHEN ssdm.overall_capacity <= 0 THEN jl.overall_capacity  
-                WHEN jl.overall_capacity is null THEN 0 
-                ELSE jl.overall_capacity - ssdm.overall_capacity
+                WHEN ssdm.s_overall_capacity is null THEN jl.s_overall_capacity
+                WHEN ssdm.s_overall_capacity <= 0 THEN jl.s_overall_capacity  
+                WHEN jl.s_overall_capacity is null THEN 0 
+                ELSE jl.s_overall_capacity - ssdm.s_overall_capacity
             END as overall_capacity_delta,
-            jl.agency_type,
+            jl.s_agency_type as agency_type,
             CASE
-                WHEN jl.site_status is null THEN ssdm.previous_day_status
-                ELSE jl.site_status
+                WHEN jl.s_site_status is null THEN ssdm.previous_day_status
+                ELSE jl.s_site_status
             END as site_status,
-            jl.site_type{{ workflows['shelter_report'].element_suffix|default("", true) }} as site_type,
-            jl.poc_name as shift_a_poc_name,
-            jl.poc_number as shift_a_poc_number,
-            jl.poc_name_b as shift_b_poc_name,
-            jl.poc_number_b as shift_b_poc_number,
-            jl.open_date,
-            jl.close_date,
+            jl.s_site_type as site_type,
+            jl.s_poc_name_a as shift_a_poc_name,
+            jl.s_poc_number_a as shift_a_poc_number,
+            jl.s_poc_name_b as shift_b_poc_name,
+            jl.s_poc_number_b as shift_b_poc_number,
+            jl.s_open_date as open_date,
+            jl.s_close_date as close_date,
             CASE
-                WHEN jl.closure_reason = "Other" THEN jl.closure_other
-                ELSE jl.closure_reason
+                WHEN jl.s_closure_reason = "Other" THEN jl.s_closure_other
+                ELSE jl.s_closure_reason
             END as closure_reason,
-            jl.estimated_census_outside,
+            jl.s_estimated_census_outside as estimated_census_outside,
             CASE
-                WHEN ssdm.estimated_census_outside is null THEN jl.estimated_census_outside
-                WHEN ssdm.estimated_census_outside <= 0 THEN jl.estimated_census_outside  
-                WHEN jl.estimated_census_outside is null THEN 0
-                ELSE jl.estimated_census_outside - ssdm.estimated_census_outside
+                WHEN ssdm.estimated_census_outside is null THEN jl.s_estimated_census_outside
+                WHEN ssdm.estimated_census_outside <= 0 THEN jl.s_estimated_census_outside  
+                WHEN jl.s_estimated_census_outside is null THEN 0
+                ELSE jl.s_estimated_census_outside - ssdm.estimated_census_outside
             END as est_census_outside_delta,
-            jl.rooms_occupied,
+            jl.s_rooms_occupied as rooms_occupied,
             CASE
-                WHEN ssdm.rooms_occupied is null THEN jl.rooms_occupied
-                WHEN ssdm.rooms_occupied <= 0 THEN jl.rooms_occupied  
-                WHEN jl.rooms_occupied is null THEN 0
-                ELSE jl.rooms_occupied - ssdm.rooms_occupied
+                WHEN ssdm.rooms_occupied is null THEN jl.s_rooms_occupied
+                WHEN ssdm.rooms_occupied <= 0 THEN jl.s_rooms_occupied  
+                WHEN jl.s_rooms_occupied is null THEN 0
+                ELSE jl.s_rooms_occupied - ssdm.rooms_occupied
             END as rooms_occupied_delta,
-            jl.census,
+            jl.s_census as census,
             CASE
-                WHEN jl.site_type{{ workflows['shelter_report'].element_suffix|default("", true) }} = "Non Congregate" THEN
+                WHEN jl.s_site_type = "Non Congregate" THEN
                   CASE
-                    WHEN ssdm.census is null THEN jl.census
-                    WHEN ssdm.census <= 0 THEN jl.census  
-                    WHEN jl.census is null THEN 0
-                    ELSE jl.census - ssdm.census
+                    WHEN ssdm.census is null THEN jl.s_census
+                    WHEN ssdm.census <= 0 THEN jl.s_census  
+                    WHEN jl.s_census is null THEN 0
+                    ELSE jl.s_census - ssdm.census
                   END
                 ELSE
                   CASE
-                    WHEN ssdm.census is null THEN jl.midnight_count
-                    WHEN ssdm.census <= 0 THEN jl.midnight_count  
-                    WHEN jl.midnight_count is null THEN 0 
-                    ELSE jl.midnight_count - ssdm.census
+                    WHEN ssdm.s_census is null THEN jl.s_midnight_count
+                    WHEN ssdm.s_census <= 0 THEN jl.s_midnight_count  
+                    WHEN jl.s_midnight_count is null THEN 0 
+                    ELSE jl.s_midnight_count - ssdm.census
                   END
             END as census_delta,   
             current_timestamp() AS report_date,
-            jl.completed_by,
+            jl.s_completed_by as completed_by,
             CASE
                 WHEN ssdm.site_status is null THEN ''
                 ELSE ssdm.site_status
             END as previous_day_status,
-            jl.submission_date,
+            jl.s_submission_date as submission_date,
             CASE
-                WHEN ssdm.submission_date = jl.submission_date{{ workflows['shelter_report'].element_suffix|default("", true) }} THEN 'Yes'
+                WHEN ssdm.submission_date = jl.s_submission_date THEN 'Yes'
                 ELSE 'No'
             END as outdated_report, 
-            CONCAT('POINT (', jl.coord_x, ' ', jl.coord_y, ')') as geometry
-        from {{ workflows['shelter_report'].catalog }}.silver.shelter_status_layer_{{ env }} as jl
-          join {{ workflows['shelter_report'].catalog }}.gold.site_information_{{ env }} as si on si.name = jl.name  
-          left join {{ workflows['shelter_report'].catalog }}.gold.shelter_status_with_deltas_{{ env }} ssdm on ssdm.name = jl.name and ssdm.dr_name = jl.dr_name
-          left join datahub_common.gold.ca_fips cafips on cafips.county_long = jl.county;
-
+            CONCAT('POINT (', jl.i_coord_x, ' ', jl.i_coord_y, ')') as geometry
+        from shelter.silver.cassi_join_layer_{{ env }} as jl
+          join shelter.gold.site_information_{{ env }} as si on si.name = jl.i_name  
+          left join shelter.gold.cassi_join_layer_with_deltas_{{ env }} as ssdm on ssdm.i_name = jl.i_name and ssdm.s_dr_name = jl.s_dr_name
+          left join datahub_common.gold.ca_fips cafips on cafips.county_long = jl.i_county;
 destination_datasources:
   - type: databricks
-    table: {{ workflows['shelter_report'].catalog }}.gold.shelter_status_with_deltas_{{ env }}
+    table: {{ workflows['shelter_report'].catalog }}.gold.cassi_join_layer_with_deltas_{{ env }}
     method: overwrite
     data_types:
     - column: datahub_site_id
@@ -118,8 +116,6 @@ destination_datasources:
       type: string
     - column: ada_accessible_site
       type: string
-    - column: datasource
-      type: string
     - column: dr_name
       type: string
     - column: disaster_type
@@ -130,8 +126,6 @@ destination_datasources:
       type: int
     - column: overall_capacity_delta
       type: int
-    - column: agency_type
-      type: string
     - column: site_status
       type: string
     - column: shift_a_poc_name
