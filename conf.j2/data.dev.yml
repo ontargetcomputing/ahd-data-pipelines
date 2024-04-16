@@ -61,7 +61,7 @@ workflows:
     gold:
       site_information:
         source:
-          identity_start_with: 254
+          identity_start_with: 48
 
   shelter_report:
     template: conf/workflows/shelter/report.yml
