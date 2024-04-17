@@ -44,7 +44,6 @@ workflows:
           host: atlastest1-instance-1.ccagqiw5cjwr.us-west-2.rds.amazonaws.com
           port: 30001
           database: org_chhs_datahub
-          query: atlastest1-instance-1.ccagqiw5cjwr.us-west-2.rds.amazonaws.com
 
       single_shelter_datamodel_hfl_historical:
         source:
@@ -52,7 +51,6 @@ workflows:
           host: atlastest1-instance-1.ccagqiw5cjwr.us-west-2.rds.amazonaws.com
           port: 30001
           database: org_chhs_datahub
-          query: atlastest1-instance-1.ccagqiw5cjwr.us-west-2.rds.amazonaws.com
 
     gold:
       site_information:
