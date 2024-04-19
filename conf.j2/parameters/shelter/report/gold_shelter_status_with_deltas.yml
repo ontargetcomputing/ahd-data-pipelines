@@ -21,10 +21,10 @@ source_datasources:
             jl.s_disaster_start_date as disaster_start_date,
             jl.s_overall_capacity,
             CASE
-                WHEN ssdm.s_overall_capacity is null THEN jl.s_overall_capacity
-                WHEN ssdm.s_overall_capacity <= 0 THEN jl.s_overall_capacity  
+                WHEN ssdm.overall_capacity is null THEN jl.s_overall_capacity
+                WHEN ssdm.overall_capacity <= 0 THEN jl.s_overall_capacity  
                 WHEN jl.s_overall_capacity is null THEN 0 
-                ELSE jl.s_overall_capacity - ssdm.s_overall_capacity
+                ELSE jl.s_overall_capacity - ssdm.overall_capacity
             END as overall_capacity_delta,
             jl.s_agency_type as agency_type,
             CASE
@@ -67,8 +67,8 @@ source_datasources:
                   END
                 ELSE
                   CASE
-                    WHEN ssdm.s_census is null THEN jl.s_midnight_count
-                    WHEN ssdm.s_census <= 0 THEN jl.s_midnight_count  
+                    WHEN ssdm.census is null THEN jl.s_midnight_count
+                    WHEN ssdm.census <= 0 THEN jl.s_midnight_count  
                     WHEN jl.s_midnight_count is null THEN 0 
                     ELSE jl.s_midnight_count - ssdm.census
                   END
@@ -87,7 +87,7 @@ source_datasources:
             CONCAT('POINT (', jl.i_coord_x, ' ', jl.i_coord_y, ')') as geometry
         from shelter.silver.cassi_join_layer_{{ env }} as jl
           join shelter.gold.site_information_{{ env }} as si on si.name = jl.i_name  
-          left join shelter.gold.cassi_join_layer_with_deltas_{{ env }} as ssdm on ssdm.i_name = jl.i_name and ssdm.s_dr_name = jl.s_dr_name
+          left join shelter.gold.cassi_join_layer_with_deltas_{{ env }} as ssdm on ssdm.name = jl.i_name and ssdm.dr_name = jl.s_dr_name
           left join datahub_common.gold.ca_fips cafips on cafips.county_long = jl.i_county;
 destination_datasources:
   - type: databricks
