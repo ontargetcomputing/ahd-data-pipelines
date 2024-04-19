@@ -3,7 +3,7 @@ from ahd_data_pipelines.tasks.esri.green_data_update import GreenDataUpdate
 
 class GreenDataUpdateJob():
     def launch(self):
-        self.logger.info("Launching Green Data Update job")
+        print("Launching Green Data Update job")
         self.pipeline = GreenDataUpdate(
             conf=None,
             dbutils=None,
@@ -13,7 +13,7 @@ class GreenDataUpdateJob():
         )
 
         self.pipeline.run()
-        self.logger.info("Green Data Update finished!")
+        print("Green Data Update finished!")
 
 
 def entrypoint():
