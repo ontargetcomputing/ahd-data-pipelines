@@ -7,7 +7,7 @@ source_datasources:
       * from {{ workflows['shelter_report'].catalog }}.green.shelters_open_or_recently_closed_{{ env }};
 destination_datasources:
   - type: databricks
-    table: {{ workflows['shelter_report'].catalog }}.gold.shelter_sites_historical_additions_{{ env }}
+    table: {{ workflows['shelter_report'].catalog }}.green.shelter_sites_historical_additions_{{ env }}
     method: overwrite
     data_types:
     - column: OBJECTID

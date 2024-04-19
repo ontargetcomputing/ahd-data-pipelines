@@ -40,7 +40,7 @@ source_datasources:
                 submission_date,
                 outdated_report,
                 geometry
-        from {{ workflows['shelter_report'].catalog }}.gold.cassi_join_layer_with_{{ env }}
+        from {{ workflows['shelter_report'].catalog }}.gold.cassi_join_layer_with_deltas_{{ env }}
         where report_date not in (select distinct report_date from {{ workflows['shelter_report'].catalog }}.gold.shelter_status_aggregate_{{ env }})
 destination_datasources:
   - type: databricks
