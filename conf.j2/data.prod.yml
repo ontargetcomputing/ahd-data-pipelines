@@ -152,3 +152,6 @@ workflows:
   hazard_weather:
     template: conf/workflows/hazard/weather.yml
     catalog: ahd_weather
+
+  esri_greendataupdate:
+    template: conf/workflows/esri/greendataupdate.yml

@@ -1,16 +1,15 @@
 from ahd_data_pipelines.tasks.esri.green_data_update import GreenDataUpdate
-from ahd_data_pipelines.tasks.legacy.job import Job
 
 
-class GreenDataUpdateJob(Job):
+class GreenDataUpdateJob():
     def launch(self):
         self.logger.info("Launching Green Data Update job")
         self.pipeline = GreenDataUpdate(
-            conf=self.conf,
-            dbutils=self.dbutils,
-            development=self._is_development(),
-            log4j_logger=self.log4j_logger,
-            stage=self.stage,
+            conf=None,
+            dbutils=None,
+            development=True,
+            log4j_logger=None,
+            stage='dev',
         )
 
         self.pipeline.run()
