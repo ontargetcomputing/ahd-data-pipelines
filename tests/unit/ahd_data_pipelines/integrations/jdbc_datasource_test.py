@@ -53,5 +53,67 @@ class TestJdbcDatasource(unittest.TestCase):
         self.assertIsInstance(result, SparkDataFrame)
         self.assertEqual(result.count(), 0)
 
+    @patch('jdbc_datasource.gpd.read_postgis')
+    @patch('jdbc_datasource.PandasHelper')
+    @patch('pyspark.sql.DataFrame')
+    @patch('sqlalchemy.create_engine')
+    def test_read_with_postgis(self, mock_pandas_helper, mock_read_postgis):
+        # Mocking parameters and SparkSession
+        params = {
+            "driver": "mock_driver",
+            "username": "mock_username",
+            "password": "mock_password",
+            "host": "mock_host",
+            "port": "mock_port",
+            "database": "mock_database",
+            "query": "SELECT * FROM mock_table",
+            "postgis": {
+                "column": "mock_geometry_column",
+                "crs": 4326
+            }
+        }
+        spark_session_mock = MagicMock(spec=SparkSession)
+
+        # Mocking Datasource instance
+        datasource = MagicMock(spec=Datasource)
+        datasource.params = params
+        datasource.spark = spark_session_mock
+
+        # Mocking read_postgis return value
+        mock_data_frame = MagicMock(spec=gpd.GeoDataFrame)
+        mock_read_postgis.return_value = mock_data_frame
+
+        # Mocking PandasHelper.to_pysparksql return value
+        mock_spark_data_frame = MagicMock(spec=DataFrame)
+        mock_pandas_helper.to_pysparksql.return_value = mock_spark_data_frame
+
+        # Creating JdbcDatasource instance and calling read method
+        jdbc_datasource = JdbcDatasource(params=params, spark=spark_session_mock)
+        result = jdbc_datasource.read()
+
+        # Assertions
+        mock_read_postgis.assert_called_once_with(
+            sql=params["query"],
+            con=sq.create_engine.return_value,
+            geom_col=params["postgis"]["column"],
+            crs=params["postgis"]["crs"]
+        )
+        mock_pandas_helper.to_pysparksql.assert_called_once_with(pd_df=mock_data_frame, spark=spark_session_mock)
+        self.assertEqual(result, mock_spark_data_frame)
+
+    @patch('sqlalchemy.create_engine')
+    @patch('pyspark.sql.DataFrame')
+    def test_write_not_implemented(self, *args):
+        jdbc_datasource = JdbcDatasource(params=self.params, spark=self.spark)
+        with self.assertRaises(NotImplementedError):
+            jdbc_datasource.write(DataFrame())
+
+    @patch('sqlalchemy.create_engine')
+    @patch('pyspark.sql.DataFrame')
+    def test_truncate_not_implemented(self, *args):
+        jdbc_datasource = JdbcDatasource(params=self.params, spark=self.spark)
+        with self.assertRaises(NotImplementedError):
+            jdbc_datasource.truncate()
+
 if __name__ == '__main__':
     unittest.main()
