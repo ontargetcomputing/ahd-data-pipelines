@@ -28,8 +28,8 @@ source_datasources:
             END as overall_capacity_delta,
             jl.s_agency_type as agency_type,
             CASE
-                WHEN jl.s_site_status is null THEN ssdm.previous_day_status
-                ELSE jl.s_site_status
+                WHEN jl.s_overall_status is null THEN ssdm.previous_day_status
+                ELSE jl.s_overall_status
             END as site_status,
             jl.s_site_type as site_type,
             jl.s_poc_name_a as shift_a_poc_name,
