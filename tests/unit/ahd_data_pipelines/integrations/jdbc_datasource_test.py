@@ -7,7 +7,13 @@ spark = SparkSession.builder.getOrCreate()
 
 def test_write_raises_notimplementederror():
     params = {
-
+         'driver': 'my_driver',
+         'username': 'my_username',
+         'password': 'my_password',
+         'host': 'my_host',
+         'port': 'my_port',
+         'database': 'my_database',
+         'query': 'my_query'
     }
     with pytest.raises(NotImplementedError) as theerror:
        jdbcDatasource = JdbcDatasource(params=params, spark=spark)
@@ -17,7 +23,13 @@ def test_write_raises_notimplementederror():
 
 def test_truncate_raises_notimplementederror():
     params = {
-
+         'driver': 'my_driver',
+         'username': 'my_username',
+         'password': 'my_password',
+         'host': 'my_host',
+         'port': 'my_port',
+         'database': 'my_database',
+         'query': 'my_query'
     }
     with pytest.raises(NotImplementedError) as theerror:
        jdbcDatasource = JdbcDatasource(params=params, spark=spark)
