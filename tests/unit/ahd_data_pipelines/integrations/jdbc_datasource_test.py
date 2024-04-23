@@ -11,7 +11,7 @@ def test_write_raises_notimplementederror():
          'username': 'my_username',
          'password': 'my_password',
          'host': 'my_host',
-         'port': 'my_port',
+         'port': 9001,
          'database': 'my_database',
          'query': 'my_query'
     }
@@ -27,7 +27,7 @@ def test_truncate_raises_notimplementederror():
          'username': 'my_username',
          'password': 'my_password',
          'host': 'my_host',
-         'port': 'my_port',
+         'port': 9001,
          'database': 'my_database',
          'query': 'my_query'
     }
