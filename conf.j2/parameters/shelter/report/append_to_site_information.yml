@@ -52,3 +52,5 @@ destination_datasources:
       type: string
     - column: ada_accessible_site
       type: string
+    - column: ade_date_submitted
+      type: date
