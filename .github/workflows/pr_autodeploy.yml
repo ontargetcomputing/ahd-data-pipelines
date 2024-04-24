@@ -23,13 +23,5 @@ jobs:
       - name: Determine changes and deploy pipelines
         run: |
           if git diff --name-only HEAD^ HEAD | grep -q '^ahd-data-pipelines/conf\.j2/parameters/census/language/'; then
-
-          fi
-
-          if git diff --name-only HEAD^ HEAD | grep -q '^ahd-data-pipelines/conf\.j2/parameters/facilities/cdph/'; then
-
-          fi
-
-          if git diff --name-only HEAD^ HEAD | grep -q '^ahd-data-pipelines/conf\.j2/parameters/facilities/cdss/'; then
-
+            echo "Updating Language Pipeline"
           fi
