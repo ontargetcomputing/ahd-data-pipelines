@@ -19,7 +19,7 @@ source_datasources:
                 ELSE jl.s_disaster_type
             END as disaster_type,
             jl.s_disaster_start_date as disaster_start_date,
-            jl.s_overall_capacity,
+            jl.s_overall_capacity as overall_capacity,
             CASE
                 WHEN ssdm.overall_capacity is null THEN jl.s_overall_capacity
                 WHEN ssdm.overall_capacity <= 0 THEN jl.s_overall_capacity  
@@ -73,7 +73,7 @@ source_datasources:
                     ELSE jl.s_midnight_count - ssdm.census
                   END
             END as census_delta,   
-            current_timestamp() AS report_date,
+            TO_TIMESTAMP(CONCAT(CURRENT_DATE(), ' 07:00:00'), 'yyyy-MM-dd HH:mm:ss') AS report_date,
             jl.s_completed_by as completed_by,
             CASE
                 WHEN ssdm.site_status is null THEN ''
@@ -121,7 +121,7 @@ destination_datasources:
     - column: disaster_type
       type: string
     - column: disaster_start_date
-      type: string
+      type: timestamp_ntz
     - column: overall_capacity
       type: int
     - column: overall_capacity_delta
@@ -137,9 +137,9 @@ destination_datasources:
     - column: shift_b_poc_number
       type: string
     - column: open_date
-      type: date
+      type: timestamp_ntz
     - column: close_date
-      type: date
+      type: timestamp_ntz
     - column: closure_reason
       type: string
     - column: estimated_census_outside
@@ -155,13 +155,13 @@ destination_datasources:
     - column: census_delta
       type: int
     - column: report_date
-      type: date
+      type: timestamp_ntz
     - column: completed_by
       type: string
     - column: previous_day_status
       type: string
     - column: submission_date
-      type: date
+      type: timestamp_ntz
     - column: outdated_report
       type: string
     - column: geometry
