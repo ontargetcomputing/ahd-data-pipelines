@@ -13,12 +13,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
       
-      - name: Set up Databricks CLI
-        uses: databrickslabs/databricks-terraform@main
-        with:
-          cmd: init
-          token: ${{ secrets.DATABRICKS_TOKEN_DEV }}
-          url: ${{ secrets.DATABRICKS_URL_DEV }}
+      - name: Install Databricks CLI
+        run: |
+          pip install databricks-cli
+      
+      - name: Configure Databricks CLI
+        run: |
+          echo -e "${{ secrets.DATABRICKS_TOKEN_DEV }}\n${{ secrets.DATABRICKS_URL_DEV }}" | databricks configure --token
       
       - name: Determine changes and deploy pipelines
         run: |
