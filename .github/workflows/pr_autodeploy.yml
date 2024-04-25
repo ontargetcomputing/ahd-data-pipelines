@@ -24,7 +24,7 @@ jobs:
           if [[ ! $databricks_host =~ ^https:// ]]; then
             databricks_host="https://${databricks_host}"
           fi
-          echo -e "${{ secrets.DATABRICKS_TOKEN_DEV }}\n${databricks_host}" | databricks configure --token
+          echo -e "${databricks_host}\n${{ secrets.DATABRICKS_TOKEN_DEV }}" | databricks configure --token
 
       - name: Determine changes and deploy pipelines
         run: |
