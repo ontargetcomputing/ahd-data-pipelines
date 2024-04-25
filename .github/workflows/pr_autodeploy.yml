@@ -30,11 +30,15 @@ jobs:
         run: |
           databricks workspace ls
 
-      - name: Get list of changed files
+      - name: Get list of changed files (handle no changes)
         run: |
           CHANGED_FILES=$(git diff --name-only HEAD -- ahd-data-pipelines/conf.j2/)
-          echo "Changed files:"
-          echo "$CHANGED_FILES" | grep 'ahd-data-pipelines/conf\.j2/'
+          if [[ -z "$CHANGED_FILES" ]]; then
+            echo "No changed files found."
+          else
+            echo "Changed files:"
+            echo "$CHANGED_FILES" | grep 'ahd-data-pipelines/conf\.j2/'
+          fi
 
       - name: Determine changes and deploy pipelines
         run: |
