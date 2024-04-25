@@ -15,7 +15,7 @@ source_datasources:
           i_ada_accessible_site,
           i_backup_generator,
           i_city,
-          i_submission_date,
+          CONVERT_TIMEZONE('GMT', 'America/Los_Angeles', i_submission_date) as i_submission_date,
           i_state,
           i_county_other,
           i_coord_x,
@@ -28,8 +28,8 @@ source_datasources:
           s_overall_capacity,
           s_census,
           s_estimated_census_outside,
-          s_open_date,
-          s_close_date,
+          CONVERT_TIMEZONE('GMT', 'America/Los_Angeles', s_open_date) as s_open_date,
+          CONVERT_TIMEZONE('GMT', 'America/Los_Angeles', s_close_date) as s_close_date,
           parent_guid,
           GlobalID{{ workflows['shelter_report'].element_suffix|default("", true) }},
           s_disaster_other,
@@ -40,16 +40,17 @@ source_datasources:
           s_midnight_count,
           s_completed_by,
           s_rooms_occupied,
-          s_submission_date,
+          CONVERT_TIMEZONE('GMT', 'America/Los_Angeles', s_submission_date) as s_submission_date,
           s_poc_name_b,
           s_poc_number_a,
           s_poc_number_b,
           s_overall_status,
           s_noncon_status,
           s_site_name,
-          s_disaster_start_date,
+          CONVERT_TIMEZONE('GMT', 'America/Los_Angeles', s_disaster_start_date) as s_disaster_start_date,
           s_tep_status,
           geometry,
+          ObjectId,
           ade_date_submitted
       from shelter.bronze.cassi_join_layer_{{ env }};
 destination_datasources:
@@ -62,8 +63,8 @@ destination_datasources:
         type: string
       - column: i_address
         type: string
-      - column: i_zipcode
-        type: integer
+      - column: zipcode
+        type: string
       - column: i_county
         type: string
       - column: i_oes_region
@@ -75,7 +76,7 @@ destination_datasources:
       - column: i_city
         type: string
       - column: i_submission_date
-        type: date
+        type: timestamp_ntz
       - column: i_state
         type: string
       - column: i_county_other
@@ -101,9 +102,9 @@ destination_datasources:
       - column: s_estimated_census_outside
         type: int
       - column: s_open_date
-        type: date
+        type: timestamp_ntz
       - column: s_close_date
-        type: date
+        type: timestamp_ntz
       - column: parent_guid
         type: string
       - column: GlobalID{{ workflows['shelter_report'].element_suffix|default("", true) }}
@@ -125,9 +126,9 @@ destination_datasources:
       - column: s_rooms_occupied
         type: int
       - column: s_submission_date
-        type: date
+        type: timestamp_ntz
       - column: s_poc_name_b
-        type: int
+        type: string
       - column: s_poc_number_a
         type: string
       - column: s_poc_number_b
@@ -139,7 +140,7 @@ destination_datasources:
       - column: s_site_name
         type: string
       - column: s_disaster_start_date
-        type: date
+        type: timestamp_ntz
       - column: s_tep_status
         type: string
       - column: ObjectId

@@ -20,7 +20,7 @@ source_datasources:
             datasource,
             dr_name,
             disaster_type,
-            TO_DATE(disaster_start_date, 'MM/DD/yyyy') as disaster_start_date,
+            TO_TIMESTAMP(disaster_start_date, 'MM/dd/yyyy') as disaster_start_date,
             CAST(overall_capacity AS DOUBLE) AS overall_capacity,
             CAST(overall_capacity_delta AS DOUBLE) AS overall_capacity_delta,
             agency_type,
@@ -30,8 +30,8 @@ source_datasources:
             shift_a_poc_number,
             shift_b_poc_name,
             shift_b_poc_number,
-            open_date,
-            close_date,
+            CAST(open_date as timestamp_ntz) as open_date,
+            CAST(close_date as timestamp_ntz) as close_date,
             closure_reason,
             CAST(estimated_census_outside AS DOUBLE) AS estimated_census_outside,
             CAST(est_census_outside_delta AS DOUBLE) AS est_census_outside_delta,
@@ -39,10 +39,10 @@ source_datasources:
             CAST(rooms_occupied_delta AS DOUBLE) AS rooms_occupied_delta,
             CAST(census AS DOUBLE) AS census,
             CAST(census_delta AS DOUBLE) AS census_delta,
-            report_date,
+            DATEADD(HOUR, 7, report_date) as report_date,
             completed_by,
             previous_day_status,
-            submission_date,
+            CAST(submission_date as timestamp_ntz) as submission_date,
             outdated_report,
             geometry
         from {{ workflows['shelter_bootstrap'].catalog }}.bronze.cassi_join_layer_with_deltas_{{ env }};
@@ -80,7 +80,7 @@ destination_datasources:
     - column: disaster_type
       type: string
     - column: disaster_start_date
-      type: string
+      type: timestamp_ntz
     - column: overall_capacity
       type: double
     - column: overall_capacity_delta
@@ -98,9 +98,9 @@ destination_datasources:
     - column: shift_b_poc_number
       type: string
     - column: open_date
-      type: date
+      type: timestamp_ntz
     - column: close_date
-      type: date
+      type: timestamp_ntz
     - column: closure_reason
       type: string
     - column: estimated_census_outside
@@ -116,13 +116,13 @@ destination_datasources:
     - column: census_delta
       type: double
     - column: report_date
-      type: date
+      type: timestamp_ntz
     - column: completed_by
       type: string
     - column: previous_day_status
       type: string
     - column: submission_date
-      type: date
+      type: timestamp_ntz
     - column: outdated_report
       type: string
     - column: geometry
