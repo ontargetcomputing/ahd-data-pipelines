@@ -30,8 +30,14 @@ jobs:
         run: |
           databricks workspace ls
 
+      - name: Get list of changed files
+        run: |
+          CHANGED_FILES=$(git diff --name-only HEAD^ HEAD)
+          echo "Changed files:"
+          echo "$CHANGED_FILES" | grep 'ahd-data-pipelines/conf\.j2/'
+
       - name: Determine changes and deploy pipelines
         run: |
-          if git diff --name-only HEAD^ HEAD | grep -q '^ahd-data-pipelines/conf\.j2/parameters/census/language/'; then
+          if echo "$CHANGED_FILES" | grep -q 'ahd-data-pipelines/conf\.j2/parameters/census/language/'; then
             echo "Updating Language Pipeline"
           fi
