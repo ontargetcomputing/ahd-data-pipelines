@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - 'ahd-data-pipelines/conf.j2/**' # Watch for changes in any file under ahd-data-pipelines/conf.j2 directory
+  workflow_dispatch: # Allow manual triggering
 
 jobs:
   deploy:
