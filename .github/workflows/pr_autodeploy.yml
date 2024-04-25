@@ -32,7 +32,7 @@ jobs:
 
       - name: Get list of changed files
         run: |
-          CHANGED_FILES=$(git diff --name-only HEAD^ HEAD)
+          CHANGED_FILES=$(git diff --name-only HEAD -- ahd-data-pipelines/conf.j2/)
           echo "Changed files:"
           echo "$CHANGED_FILES" | grep 'ahd-data-pipelines/conf\.j2/'
 
