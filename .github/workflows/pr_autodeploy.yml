@@ -32,7 +32,7 @@ jobs:
 
       - name: Get list of changed files (handle no changes)
         run: |
-          CHANGED_FILES=$(git diff --name-only HEAD -- ahd-data-pipelines/conf.j2/)
+          CHANGED_FILES=$(git diff --name-only HEAD -- 'ahd-data-pipelines/conf.j2/')
           if [[ -z "$CHANGED_FILES" ]]; then
             echo "No changed files found."
           else
