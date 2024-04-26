@@ -48,4 +48,4 @@ jobs:
 
       - name: Extract census_language section
         run: |
-          start_line=$(grep -n 'census_language:' data.dev.yml | cut -d ':' -f 1)
+          start_line=$(grep -n 'census_language:' conf.j2/data.dev.yml | cut -d ':' -f 1)
