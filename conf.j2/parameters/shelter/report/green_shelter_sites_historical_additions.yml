@@ -43,7 +43,7 @@ destination_datasources:
     - column: disaster_type
       type: string
     - column: disaster_start_date
-      type: date
+      type: timestamp_ntz
     - column: overall_capacity
       type: int
     - column: overall_capacity_delta
@@ -57,9 +57,9 @@ destination_datasources:
     - column: shift_b_poc_number
       type: string
     - column: open_date
-      type: date
+      type: timestamp_ntz
     - column: close_date
-      type: date
+      type: timestamp_ntz
     - column: closure_reason
       type: string
     - column: census
@@ -74,8 +74,6 @@ destination_datasources:
       type: int
     - column: rooms_occupied_delta
       type: int
-    - column: count_date
-      type: date
     - column: completed_by
       type: string
     - column: previous_day_status
@@ -87,9 +85,9 @@ destination_datasources:
     - column: oes_region
       type: string
     - column: report_date
-      type: date
+      type: timestamp_ntz
     - column: submission_date
-      type: date
+      type: timestamp_ntz
     - column: outdated_report
       type: string
     - column: cs_delta
