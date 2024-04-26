@@ -57,7 +57,7 @@ jobs:
             end_line=$(wc -l < data.dev.yml)
           fi
 
-        sed -n "${start_line},${end_line}p" data.dev.yml > census_language_section.yml
+          sed -n "${start_line},${end_line}p" data.dev.yml > census_language_section.yml
 
       - name: Create new file with census_language section
         run: |
