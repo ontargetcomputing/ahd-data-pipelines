@@ -59,10 +59,10 @@ jobs:
 
         sed -n "${start_line},${end_line}p" data.dev.yml > census_language_section.yml
 
-    - name: Create new file with census_language section
-      run: |
-        head -n 3 data.dev.yml > data.dev2.yml
-        cat census_language_section.yml >> data.dev2.yml
+      - name: Create new file with census_language section
+        run: |
+          head -n 3 data.dev.yml > data.dev2.yml
+          cat census_language_section.yml >> data.dev2.yml
 
-    - name: Output contents of the new file
-      run: cat data.dev2.yml
+      - name: Output contents of the new file
+        run: cat data.dev2.yml
