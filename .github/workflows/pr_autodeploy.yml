@@ -45,3 +45,24 @@ jobs:
           if echo "$CHANGED_FILES" | grep -q 'ahd-data-pipelines/conf\.j2/parameters/census/language/'; then
             echo "Updating Language Pipeline"
           fi
+
+      - name: Extract census_language section
+        run: |
+          start_line=$(grep -n 'census_language:' data.dev.yml | cut -d ':' -f 1)
+
+          start_line=$((start_line + 1))
+
+          end_line=$(grep -n -m1 'template:' data.dev.yml | cut -d ':' -f 1)
+          if [ -z "$end_line" ]; then
+            end_line=$(wc -l < data.dev.yml)
+          fi
+
+        sed -n "${start_line},${end_line}p" data.dev.yml > census_language_section.yml
+
+    - name: Create new file with census_language section
+      run: |
+        head -n 3 data.dev.yml > data.dev2.yml
+        cat census_language_section.yml >> data.dev2.yml
+
+    - name: Output contents of the new file
+      run: cat data.dev2.yml
