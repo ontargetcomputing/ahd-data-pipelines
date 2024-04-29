@@ -23,6 +23,7 @@ jobs:
           brew install databricks
           echo fpath+=$(brew --prefix)/share/zsh/site-functions >> ~/.zshrc
           echo 'autoload -Uz compinit && compinit' >> ~/.zshrc
+          databricks -v
 
       - name: Set up Databricks CLI
         run: |
