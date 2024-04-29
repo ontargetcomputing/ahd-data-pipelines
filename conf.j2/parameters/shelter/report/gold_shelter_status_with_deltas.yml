@@ -56,7 +56,12 @@ source_datasources:
                 WHEN jl.s_rooms_occupied is null THEN 0
                 ELSE jl.s_rooms_occupied - ssdm.rooms_occupied
             END as rooms_occupied_delta,
-            jl.s_census as census,
+            CASE
+                WHEN jl.s_site_type = "Non Congregate" THEN jl.s_census
+                WHEN jl.s_site_type = "Congregate" THEN jl.s_midnight_count
+                ELSE
+                  NULL
+            END as census,   
             CASE
                 WHEN jl.s_site_type = "Non Congregate" THEN
                   CASE
@@ -72,8 +77,8 @@ source_datasources:
                     WHEN jl.s_midnight_count is null THEN 0 
                     ELSE jl.s_midnight_count - ssdm.census
                   END
-            END as census_delta,   
-            TO_TIMESTAMP(CONCAT(CURRENT_DATE(), ' 07:00:00'), 'yyyy-MM-dd HH:mm:ss') AS report_date,
+            END as census_delta,
+            CONVERT_TIMEZONE('America/Los_Angeles', 'GMT', TO_TIMESTAMP(CONCAT(CURRENT_DATE(), ' 07:00:00'), 'yyyy-MM-dd HH:mm:ss')) as report_date,
             jl.s_completed_by as completed_by,
             CASE
                 WHEN ssdm.site_status is null THEN ''
