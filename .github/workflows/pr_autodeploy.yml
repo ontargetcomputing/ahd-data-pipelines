@@ -14,9 +14,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Check Shell
+      - name: Install Poetry
         run: |
-          echo "Current shell: $SHELL"
+          pip install poetry
       
       - name: Install Databricks CLI
         run: |
