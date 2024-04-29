@@ -31,13 +31,14 @@ jobs:
           export PATH="$PATH:/home/linuxbrew/.linuxbrew/Cellar/databricks/0.218.1/bin"
           echo $PATH
 
-      - name: Set up Databricks CLI
+      - name: Create Databricks Config File
+        env:
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_URL_DEV }}
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN_DEV }}
         run: |
-          /home/linuxbrew/.linuxbrew/Cellar/databricks/0.218.1/bin/databricks -v
-
-      - name: Check Databricks Access
-        run: |
-          /home/linuxbrew/.linuxbrew/Cellar/databricks/0.218.1/bin/databricks workspace ls
+          echo "[dev]" > /home/runner/.databrickscfg
+          echo "host = $DATABRICKS_HOST" >> /home/runner/.databrickscfg
+          echo "token = $DATABRICKS_TOKEN" >> /home/runner/.databrickscfg
 
       - name: Get list of changed files (handle no changes)
         run: |
