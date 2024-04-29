@@ -34,11 +34,10 @@ jobs:
       - name: Set up Databricks CLI
         run: |
           /home/linuxbrew/.linuxbrew/Cellar/databricks/0.218.1/bin/databricks -v
-          databricks -v
 
       - name: Check Databricks Access
         run: |
-          databricks workspace ls
+          /home/linuxbrew/.linuxbrew/Cellar/databricks/0.218.1/bin/databricks workspace ls
 
       - name: Get list of changed files (handle no changes)
         run: |
@@ -85,8 +84,8 @@ jobs:
           rm -f databricks.yml
           python bin/process_templates.py --env dev
           cp -rf conf.j2/workflows conf/workflows
-          databricks bundle validate -t dev --profile dev
+          /home/linuxbrew/.linuxbrew/Cellar/databricks/0.218.1/bin/databricks bundle validate -t dev --profile dev
           cp .gitignore .gitignore.orig
           cp .deployment_gitignore .gitignore
-          databricks bundle deploy -t dev --profile dev
+          /home/linuxbrew/.linuxbrew/Cellar/databricks/0.218.1/bin/databricks bundle deploy -t dev --profile dev
           mv .gitignore.orig .gitignore
