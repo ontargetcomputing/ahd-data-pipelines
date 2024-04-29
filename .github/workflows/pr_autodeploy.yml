@@ -29,6 +29,7 @@ jobs:
           echo 'autoload -Uz compinit && compinit' >> ~/.zshrc
           databricks -v
           export PATH="$PATH:/home/linuxbrew/.linuxbrew/Cellar/databricks/0.218.1/bin"
+          echo $PATH
 
       - name: Set up Databricks CLI
         run: |
