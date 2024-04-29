@@ -28,6 +28,8 @@ jobs:
           echo fpath+=$(brew --prefix)/share/zsh/site-functions >> ~/.zshrc
           echo 'autoload -Uz compinit && compinit' >> ~/.zshrc
           databricks -v
+          # Add Databricks CLI to PATH
+          export PATH="$PATH:/home/linuxbrew/.linuxbrew/Cellar/databricks/0.218.1/bin"
 
       - name: Set up Databricks CLI
         run: |
