@@ -38,11 +38,6 @@ jobs:
       - name: Set up Databricks CLI
         run: |
           databricks -v
-          databricks_host="${{ secrets.DATABRICKS_URL_DEV }}"
-          if [[ ! $databricks_host =~ ^https:// ]]; then
-            databricks_host="https://${databricks_host}"
-          fi
-          echo -e "${databricks_host}\n${{ secrets.DATABRICKS_TOKEN_DEV }}" | databricks configure --token
 
       - name: Check Databricks Access
         run: |
