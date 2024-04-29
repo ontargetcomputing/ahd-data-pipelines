@@ -37,7 +37,7 @@ jobs:
 
       - name: Set up Databricks CLI
         run: |
-          databricks -v
+          /home/linuxbrew/.linuxbrew/Cellar/databricks/0.218.1/bin/databricks -v
 
       - name: Check Databricks Access
         run: |
