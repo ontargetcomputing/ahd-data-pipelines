@@ -31,6 +31,10 @@ jobs:
           # Add Databricks CLI to PATH
           export PATH="$PATH:/home/linuxbrew/.linuxbrew/Cellar/databricks/0.218.1/bin"
 
+      - name: List Databricks CLI directory contents
+        run: |
+          ls -l /home/linuxbrew/.linuxbrew/Cellar/databricks/0.218.1/bin
+
       - name: Set up Databricks CLI
         run: |
           databricks -v
