@@ -16,8 +16,9 @@ jobs:
       
       - name: Install Databricks CLI
         run: |
-          pip install databricks-cli
-      
+          brew tap databricks/tap
+          brew install databricks
+
       - name: Set up Databricks CLI
         run: |
           databricks_host="${{ secrets.DATABRICKS_URL_DEV }}"
