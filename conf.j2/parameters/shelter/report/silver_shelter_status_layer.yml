@@ -10,7 +10,7 @@ source_datasources:
           GlobalID,
           i_name,
           i_address,
-          i_county,
+          REPLACE(i_county, ' County', '') as i_county,
           i_oes_region,
           i_ada_accessible_site,
           i_backup_generator,

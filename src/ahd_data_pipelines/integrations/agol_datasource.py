@@ -78,7 +78,12 @@ class AgolDatasource(Datasource):
         dataLayer = self.gis.content.get(datasetId)
         featureLayer = FeatureLayer(dataLayer.layers[layer].url)
 
-        self.truncate_feature_layer()
+        method = "overwrite"
+        if "method" in self.params.keys():
+            method = self.params["method"]
+
+        if method == "overwrite":
+          self.truncate_feature_layer()
         features = []
         dataFrame = dataFrame.toPandas()
         dataFrame = dataFrame.astype(object).where(pd.notnull(dataFrame), None)
@@ -123,7 +128,13 @@ class AgolDatasource(Datasource):
 
         dataLayer = self.gis.content.get(datasetId)
         table = Table(dataLayer.tables[table_index].url)
-        self.truncate_table()
+        method = "overwrite"
+        if "method" in self.params.keys():
+            method = self.params["method"]
+
+        if method == "overwrite":
+          self.truncate_table()
+  
         rows = []
         dataFrame = dataFrame.toPandas()
         dataFrame = dataFrame.astype(object).where(pd.notnull(dataFrame), None)
