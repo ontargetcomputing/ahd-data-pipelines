@@ -21,6 +21,8 @@ jobs:
           eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
           brew tap databricks/tap
           brew install databricks
+          echo fpath+=$(brew --prefix)/share/zsh/site-functions >> ~/.zshrc
+          echo 'autoload -Uz compinit && compinit' >> ~/.zshrc
 
       - name: Set up Databricks CLI
         run: |
