@@ -1,7 +1,0 @@
-source_datasources:
-  - type: databricks
-    table: cdph_facilities.gold.facilities_{{ env }}
-
-destination_datasources:
-  # this is purposeful, we do not push to agol or anywhere at this point
-  - type: noop

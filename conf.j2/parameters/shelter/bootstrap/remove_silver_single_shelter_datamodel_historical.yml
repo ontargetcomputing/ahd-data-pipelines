@@ -1,6 +1,0 @@
-source_datasources:
-  - type: databricks
-    query: >
-      drop table {{ workflows['shelter_bootstrap'].catalog }}.silver.shelter_status_aggregate_{{ env }}
-destination_datasources:
-  - type: noop

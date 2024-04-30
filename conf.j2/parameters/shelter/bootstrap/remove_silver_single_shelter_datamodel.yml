@@ -1,6 +1,0 @@
-source_datasources:
-  - type: databricks
-    query: >
-      drop table {{ workflows['shelter_bootstrap'].catalog }}.silver.cassi_join_layer_with_{{ env }}
-destination_datasources:
-  - type: noop
