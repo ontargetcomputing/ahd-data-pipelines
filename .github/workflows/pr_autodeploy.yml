@@ -59,13 +59,11 @@ jobs:
       - name: Extract census_language section
         run: |
           start_line=$(grep -n 'census_language:' conf.j2/data.dev.yml | cut -d ':' -f 1)
-          end_line=$(grep -n -m1 'template:' conf.j2/data.dev.yml | cut -d ':' -f 1)
-          echo $start_line
-          echo $end_line
+          end_line=$(grep -n -m1 'template:' conf.j2/data.dev.yml | tail -n +${start_line} | cut -d ':' -f 1)
           if [ -z "$end_line" ]; then
             end_line=$(wc -l < conf.j2/data.dev.yml)
           else
-            end_line=$((end_line - 1))
+            end_line=$((end_line - 1))  # Move end_line one line up
           fi
           sed -n "${start_line},${end_line}p" conf.j2/data.dev.yml > census_language_section.yml
 
