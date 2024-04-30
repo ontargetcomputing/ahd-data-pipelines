@@ -60,6 +60,8 @@ jobs:
         run: |
           start_line=$(grep -n 'census_language:' conf.j2/data.dev.yml | cut -d ':' -f 1)
           end_line=$(grep -n -m1 'template:' conf.j2/data.dev.yml | cut -d ':' -f 1)
+          echo $start_line
+          echo $end_line
           if [ -z "$end_line" ]; then
             end_line=$(wc -l < conf.j2/data.dev.yml)
           else
