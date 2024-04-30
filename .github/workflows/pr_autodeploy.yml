@@ -79,7 +79,7 @@ jobs:
         run: |
           template_file=$(grep 'template:' conf.j2/data.dev2.yml | awk '{print $2}')
 
-          workflow_name=$(grep 'name:' "ahd-data-pipelines/conf.j2/parameters/census/language/${template_file}" | awk '{print $2}')
+          workflow_name=$(grep 'name:' "conf.j2/parameters/census/language/${template_file}" | awk '{print $2}')
 
           echo "workflow_name=${workflow_name}" >> $GITHUB_ENV
           echo "Workflow Name: $workflow_name"
