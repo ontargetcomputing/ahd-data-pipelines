@@ -9,6 +9,7 @@ import json
 import geopandas as gpd
 import pandas as pd
 from shapely import wkt
+from shapely.geometry import Polygon, MultiPolygon, shape
 
 
 class AgolDatasource(Datasource):
@@ -47,7 +48,35 @@ class AgolDatasource(Datasource):
         if len(gdf) > 0:
             gjsonString = featureSet.to_geojson
             gjsonDict = json.loads(gjsonString)
-            transformed = gpd.GeoDataFrame.from_features(gjsonDict["features"])
+            features = gjsonDict["features"]
+            data = []
+            for feature in features:
+                geometry = feature["geometry"]
+                if feature["geometry"]["type"] == "MultiPolygon":
+                    coords = geometry["coordinates"]
+                    polygons = []
+                    for poly in coords:
+                        points = []
+                        for point in poly:
+                            points.append((point[0], point[1]))
+                        polygons.append(Polygon(points))
+                    shp = MultiPolygon(polygons)
+                else:
+                    shp = shape(geometry)
+
+                props = feature["properties"]
+                props["geometry"] = shp
+                data.append(props)
+
+            df = pd.DataFrame(data)
+            # columns_to_drop = ['SHAPE', 'Shape__Area', 'Shape__Length']
+
+            # # Check if each column exists before dropping it
+            # for column in columns_to_drop:
+            #     if column in df.columns:
+            #         df.drop(columns=column, inplace=True)
+
+            transformed = gpd.GeoDataFrame(df, geometry="geometry")
 
             geom = transformed["geometry"]
 
@@ -112,6 +141,17 @@ class AgolDatasource(Datasource):
                         "rings": [[list(z) for z in zip(x, y)]],
                         "spatialReference": {"wkid": 4326},
                     }
+                elif the_type == "MULTIPART_POLYGON":
+                    interiors = geometry.interiors
+                    outerarray = []
+                    for i in range(0, len(geometry.interiors)):
+                        coords = interiors[i].coords
+                        x, y = coords.xy
+                        x = list(x)
+                        y = list(y)
+                        thearray = [list(z) for z in zip(x, y)]
+                        outerarray.append(thearray)
+                    wrappedObj["geometry"] = {"rings": outerarray, "spatialReference": {"wkid": 4326}}
                 else:
                     print(f"Unknown geometry type:{the_type}")
 

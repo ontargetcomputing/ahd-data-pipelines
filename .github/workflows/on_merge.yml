@@ -1,77 +1,60 @@
 name: Update Version
 
 on:
-  push:
-    branches:
-      - main
   pull_request:
     branches:
       - main
-    types: [opened, synchronize]
+    types: [closed]
 
 jobs:
   update_version:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
 
     env:
+      GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       GITHUB_EVENT_PATH: ${{ github.event_path }}
-      IS_MERGE: false
 
     steps:
 
-      - name: Set IS_MERGE variable
-        run: |
-          if [ "${{ github.event_name }}" = "push" ]; then
-            if echo "${{ github.event.head_commit.message }}" | grep -qi 'Merge'; then
-              echo "IS_MERGE=true" >> $GITHUB_ENV
-            fi
-          elif [ "${{ github.event_name }}" = "pull_request" ]; then
-            if echo "${{ github.event.pull_request.title }}" | grep -qi 'Merge'; then
-              echo "IS_MERGE=true" >> $GITHUB_ENV
-            fi
-          fi
+      - name: Get Token
+        id: get_workflow_token
+        uses: peter-murray/workflow-application-token-action@v2
+        with:
+          application_id: ${{ vars.GH_APPLICATION_ID }}
+          application_private_key: ${{ secrets.GH_APPLICATION_KEY }}
 
-      # Checkout Code
+      - name: Check Token
+        if: ${{ steps.get_workflow_token.outputs.token != '' }}
+        run: echo "Token successfully retrieved!"
+
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          token: ${{ steps.get_workflow_token.outputs.token }}
 
-      # output variables
-      - name: Check Variables
-        run: echo "IS_MERGE = $IS_MERGE"
+      - name: Output all tags
+        run: |
+          git fetch --tags
+          git tag
 
-      # Get latest Tag 
-      - name: Actions Ecosystem Action Get Latest Tag
-        id: get-latest-tag
-        uses: actions-ecosystem/action-get-latest-tag@v1.6.0
-
-      - name: Set latest tag as env variable
-        run: echo "LATEST_TAG=${{ steps.get-latest-tag.outputs.tag }}" >> $GITHUB_ENV
+      - name: Get latest tag version
+        run: |
+          git fetch --tags
+          latest_tag=$(git describe --tags `git rev-list --tags --max-count=1`)
+          version_number=$(echo "$latest_tag" | sed 's/v//')
+          echo "Latest tag version: $version_number"
+          echo "LATEST_TAG=$version_number" >> $GITHUB_ENV
 
       - name: Output latest tag
         run: |
           echo "Latest Tag: $LATEST_TAG"
 
-      # Extract PR Label
       - name: Extract PR labels on PR
         run: |
           PR_LABELS=$(jq --raw-output '.pull_request.labels[].name' "$GITHUB_EVENT_PATH" | paste -sd ',' - || echo "")
           echo "PR_LABELS=$PR_LABELS" >> $GITHUB_ENV
           echo "PR Labels: $PR_LABELS"
-
-      - name: Check if push event is associated with a pull request
-        id: check_pull_request
-        if: startsWith(github.event.head_commit.message, 'Merge pull request')
-        uses: actions/github-script@v4
-        with:
-          script: |
-            const payload = github.context.payload;
-            if (payload.pull_request) {
-              console.log('Pull request found:', payload.pull_request.number);
-              console.log('Labels:', payload.pull_request.labels.map(label => label.name).join(','));
-              console.log('PR_LABELS=' + payload.pull_request.labels.map(label => label.name).join(',') + ' >> $GITHUB_ENV');
-              return true;
-            }
-            return false;
 
       - name: Process PR labels
         run: |
@@ -99,7 +82,6 @@ jobs:
           echo "Major Label: $MAJOR_LABEL"
           echo "Patch Label: $PATCH_LABEL"
 
-      # Make sure two labels don't exist
       - name: Check for multiple version labels
         run: |
           if [[ ! -z "$MINOR_LABEL" && \
@@ -108,11 +90,10 @@ jobs:
                 ! -z "$PATCH_LABEL" || \
                 ! -z "$MAJOR_LABEL" && \
                 ! -z "$PATCH_LABEL" ]]; then
-            echo "Error: More than one of the version labels (minor, major, patch) exist. Exiting..."
-            exit 1
+              echo "Error: More than one of the version labels (minor, major, patch) exist. Exiting..."
+              exit 1
           fi
 
-      # Calculate new version
       - name: Set New Version
         run: |
           OLD_VERSION="$LATEST_TAG"
@@ -136,21 +117,25 @@ jobs:
 
       # Update to src/ahd_data_piplines/__init__.py and pyproject.toml
       - name: Update Version
-        if: env.IS_MERGE == 'true'
+        if: github.event.pull_request.merged == true
         run: |
-          sed -i "s/version = \"[0-9].[0-9].[0-9]\"/version = \"$NEW_VERSION\"/" pyproject.toml
-          sed -i "s/__version__ = \"[0-9].[0-9].[0-9]\"/__version__ = \"$NEW_VERSION\"/" src/ahd_data_pipelines/__init__.py
+          sed "s#version = \"[0-9]*\.[0-9]*\.[0-9]*\"#version = \"$NEW_VERSION\"#" pyproject.toml > pyproject_tmp.toml
+          mv pyproject_tmp.toml pyproject.toml
+          cat pyproject.toml
+          sed "s#__version__ = \"[0-9]*\.[0-9]*\.[0-9]*\"#__version__ = \"$NEW_VERSION\"#" src/ahd_data_pipelines/__init__.py > init_tmp.py
+          mv init_tmp.py src/ahd_data_pipelines/__init__.py
+          cat src/ahd_data_pipelines/__init__.py
 
       # Commit and push
       - name: Commit and Push Changes
-        if: env.IS_MERGE == 'true'
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
 
           git add pyproject.toml src/ahd_data_pipelines/__init__.py
+          git status
           git commit -m "Update version to $NEW_VERSION"
           git tag -a "$NEW_VERSION" -m "Version $NEW_VERSION"
           git push origin main --tags
-
-      # patch label test 312
+          
+          
