@@ -36,7 +36,7 @@ jobs:
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_URL_DEV }}
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN_DEV }}
         run: |
-          echo "[dev]" > /home/runner/.databrickscfg
+          echo "[ci]" > /home/runner/.databrickscfg
           echo "host = $DATABRICKS_HOST" >> /home/runner/.databrickscfg
           echo "token = $DATABRICKS_TOKEN" >> /home/runner/.databrickscfg
 
@@ -58,26 +58,26 @@ jobs:
 
       - name: Extract census_language section
         run: |
-          start_line=$(grep -n 'census_language:' conf.j2/data.dev.yml | cut -d ':' -f 1)
-          template_line=$(awk "NR==$start_line+2,/template:/" conf.j2/data.dev.yml | grep -n 'template:' | cut -d ':' -f 1)
+          start_line=$(grep -n 'census_language:' conf.j2/data.ci.yml | cut -d ':' -f 1)
+          template_line=$(awk "NR==$start_line+2,/template:/" conf.j2/data.ci.yml | grep -n 'template:' | cut -d ':' -f 1)
           if [ -z "$template_line" ]; then
-            end_line=$(wc -l < conf.j2/data.dev.yml)
+            end_line=$(wc -l < conf.j2/data.ci.yml)
           else
             end_line=$((start_line + template_line - 2)) # -2 to get the line before 'template:'
           fi
-          sed -n "${start_line},${end_line}p" conf.j2/data.dev.yml > census_language_section.yml
+          sed -n "${start_line},${end_line}p" conf.j2/data.ci.yml > census_language_section.yml
 
       - name: Create new file with census_language section
         run: |
-          head -n 3 conf.j2/data.dev.yml > conf.j2/data.dev2.yml
-          cat census_language_section.yml >> conf.j2/data.dev2.yml
+          head -n 3 conf.j2/data.ci.yml > conf.j2/data.ci2.yml
+          cat census_language_section.yml >> conf.j2/data.ci2.yml
 
       - name: Output contents of the new file
-        run: cat conf.j2/data.dev2.yml
+        run: cat conf.j2/data.ci.yml
 
       - name: Extract template filename and get workflow name
         run: |
-          template_file=$(grep 'template:' conf.j2/data.dev2.yml | awk '{print $2}')
+          template_file=$(grep 'template:' conf.j2/data.ci2.yml | awk '{print $2}')
           template_file="${template_file/conf/conf.j2}"
           echo "Template File: $template_file"
           workflow_name=$(grep 'name:' "${template_file}" | awk '{print $2}')
@@ -88,3 +88,5 @@ jobs:
 
 # start workflow with ID
 # check task status
+
+
