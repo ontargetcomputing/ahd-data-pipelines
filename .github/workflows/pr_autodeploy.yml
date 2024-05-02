@@ -84,7 +84,7 @@ jobs:
           template_file=$(grep 'template:' conf.j2/data.ci2.yml | awk '{print $2}')
           template_file="${template_file/conf/conf.j2}"
           echo "Template File: $template_file"
-          workflow_name=$(grep 'name:' "${template_file}" | awk '{print $2}')
+          workflow_name=$(grep 'name:' "$template_file" | cut -d ':' -f 2-)
 
           echo "workflow_name=${workflow_name}" >> $GITHUB_ENV
           echo "Workflow Name: $workflow_name"
