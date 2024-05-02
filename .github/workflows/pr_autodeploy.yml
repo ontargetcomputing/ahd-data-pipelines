@@ -73,7 +73,7 @@ jobs:
           cat census_language_section.yml >> conf.j2/data.ci2.yml
 
       - name: Output contents of the new file
-        run: cat conf.j2/data.ci.yml
+        run: cat conf.j2/data.ci2.yml
 
       - name: Extract template filename and get workflow name
         run: |
