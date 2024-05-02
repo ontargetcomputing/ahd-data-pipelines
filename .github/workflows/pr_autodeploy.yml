@@ -75,6 +75,10 @@ jobs:
       - name: Output contents of the new file
         run: cat conf.j2/data.ci2.yml
 
+      - name: List stored variables(debug)
+        run: |
+          env
+
       - name: Extract template filename and get workflow name
         run: |
           template_file=$(grep 'template:' conf.j2/data.ci2.yml | awk '{print $2}')
