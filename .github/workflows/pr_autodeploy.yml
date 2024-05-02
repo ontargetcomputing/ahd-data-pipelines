@@ -84,7 +84,6 @@ jobs:
 
           echo "workflow_name=${workflow_name}" >> $GITHUB_ENV
           echo "Workflow Name: $workflow_name"
-        shell: bash
 
 # start workflow with ID
 # check task status
