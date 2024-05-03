@@ -85,7 +85,8 @@ jobs:
           template_file="${template_file/conf/conf.j2}"
           
           workflow_name=$(grep 'name:' "$template_file" | cut -d ':' -f 2-)
-          echo "WORKFLOW_NAME=$workflow_name<<EOF" >> $GITHUB_ENV
+          workflow_name=$(echo "$workflow_name" | awk '{$1=$1;print}')
+          echo "WORKFLOW_NAME=$workflow_name" >> $GITHUB_ENV
 
       - name: Use extracted workflow name
         run: |
