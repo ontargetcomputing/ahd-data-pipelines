@@ -30,6 +30,9 @@ jobs:
           export PATH="$PATH:/home/linuxbrew/.linuxbrew/Cellar/databricks/0.218.1/bin"
           echo $PATH
 
+      - name: Output databricks version
+        run: /home/linuxbrew/.linuxbrew/Cellar/databricks/0.218.1/bin/databricks -v
+
       - name: Create Databricks Config File
         env:
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_URL_DEV }}
