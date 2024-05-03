@@ -82,7 +82,7 @@ jobs:
       - name: Extract template filename and get workflow name
         id: extract-template
         run: |
-          template_file=$(awk '/template:/ {getline; print}' conf.j2/data.ci2.yml)
+          template_file=$(awk '/template:/ {sub(/^template: /, ""); print}' conf.j2/data.ci2.yml)
           template_file="${template_file/conf/conf.j2}"
           
           workflow_name=$(grep 'name:' "$template_file" | cut -d ':' -f 2-)
