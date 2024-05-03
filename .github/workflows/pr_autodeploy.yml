@@ -27,7 +27,7 @@ jobs:
           brew install databricks
           echo fpath+=$(brew --prefix)/share/zsh/site-functions >> ~/.zshrc
           echo 'autoload -Uz compinit && compinit' >> ~/.zshrc
-          export PATH="$PATH:/home/linuxbrew/.linuxbrew/Cellar/databricks/0.218.1/bin"
+          export PATH="$PATH:/home/linuxbrew/.linuxbrew/Cellar/databricks/0.219.0/bin"
           echo $PATH
 
       - name: Output databricks version
