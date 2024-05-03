@@ -40,6 +40,14 @@ jobs:
           echo "host = $DATABRICKS_HOST" >> /home/runner/.databrickscfg
           echo "token = $DATABRICKS_TOKEN" >> /home/runner/.databrickscfg
 
+      - name: Add databricks authentication
+        run: |
+          databricks_host="${{ secrets.DATABRICKS_URL_DEV }}"
+          if [[ ! $databricks_host =~ ^https:// ]]; then
+            databricks_host="https://${databricks_host}"
+          fi
+          echo -e "${databricks_host}\n${{ secrets.DATABRICKS_TOKEN_DEV }}" | /home/linuxbrew/.linuxbrew/Cellar/databricks/0.219.0/bin/databricks configure --token
+
       - name: Get list of changed files (handle no changes)
         run: |
           CHANGED_FILES=$(git diff --name-only HEAD -- 'ahd-data-pipelines/conf.j2/')
