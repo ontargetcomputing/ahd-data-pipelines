@@ -86,7 +86,7 @@ jobs:
           echo "Template File: $template_file"
           workflow_name=$(grep 'name:' "$template_file" | cut -d ':' -f 2-)
 
-          echo "workflow_name=${workflow_name}" >> $GITHUB_ENV
+          echo "workflow_name=${workflow_name}<<EOF" >> $GITHUB_ENV
           echo "Workflow Name: $workflow_name"
 
 # start workflow with ID
