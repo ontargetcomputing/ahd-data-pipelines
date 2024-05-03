@@ -83,18 +83,19 @@ jobs:
       - name: Output contents of the new file
         run: cat conf.j2/data.ci2.yml
 
-      - name: Extract template filename and get workflow name
+# [dev richard_bach3] county_language
+      - name: Extract template filename and get job name
         id: extract-template
         run: |
           template_file=$(awk -F 'template: ' 'NF>1{print $2}' conf.j2/data.ci2.yml)
           template_file="${template_file/conf/conf.j2}"
           
-          workflow_name=$(grep 'name:' "$template_file" | cut -d ':' -f 2-)
-          echo "::set-output name=workflow_name::$workflow_name"
+          job_name==$(grep -A 1 'jobs:' "$template_file" | tail -n 1)
+          echo "::set-output name=job_name::$job_name"
 
-      - name: Use extracted workflow name
+      - name: Use extracted job name
         run: |
-          echo "Workflow Name: ${{ steps.extract-template.outputs.workflow_name }}"
+          echo "Job Name: ${{ steps.extract-template.outputs.job_name }}"
 
       - name: Get jobs list
         run: |
