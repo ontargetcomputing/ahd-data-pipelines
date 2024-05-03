@@ -40,6 +40,11 @@ jobs:
           echo "host = $DATABRICKS_HOST" >> /home/runner/.databrickscfg
           echo "token = $DATABRICKS_TOKEN" >> /home/runner/.databrickscfg
 
+      - name: (Debug) Output url secret
+        run: |
+          databricks_host="${{ secrets.DATABRICKS_URL_DEV }}"
+          echo "Databricks Host: $databricks_host"
+
       - name: Add databricks authentication
         run: |
           databricks_host="${{ secrets.DATABRICKS_URL_DEV }}"
