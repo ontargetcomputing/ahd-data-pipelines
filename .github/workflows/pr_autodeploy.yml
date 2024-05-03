@@ -31,9 +31,6 @@ jobs:
           echo 'export PATH="/home/linuxbrew/.linuxbrew/Cellar/databricks/0.219.0/bin:$PATH"' >> ~/.bashrc
           echo $PATH
 
-      - name: Output databricks version
-        run: databricks -v
-
       - name: Create Databricks Config File
         env:
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_URL_DEV }}
@@ -77,10 +74,6 @@ jobs:
 
       - name: Output contents of the new file
         run: cat conf.j2/data.ci2.yml
-
-      - name: List stored variables(debug)
-        run: |
-          env
 
       - name: Extract template filename and get workflow name
         id: extract-template
