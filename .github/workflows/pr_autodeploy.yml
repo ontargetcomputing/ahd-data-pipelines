@@ -14,22 +14,20 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
       - name: Install Poetry
         run: |
           pip install poetry
       
-      - name: Install Databricks CLI
-        run: |
-          /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-          (echo; echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"') >> /home/runner/.bashrc
-          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-          brew tap databricks/tap
-          brew install databricks
-          echo fpath+=$(brew --prefix)/share/zsh/site-functions >> ~/.zshrc
-          echo 'autoload -Uz compinit && compinit' >> ~/.zshrc
-          databricks -v
-          export PATH="$PATH:/home/linuxbrew/.linuxbrew/Cellar/databricks/0.218.1/bin"
-          echo $PATH
+      - name: install-databricks-cli
+        uses: microsoft/install-databricks-cli@v1.0.0
+
+      - name: Output databricks version 
+        run: databricks -v
 
       - name: Create Databricks Config File
         env:
