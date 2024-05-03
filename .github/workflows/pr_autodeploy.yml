@@ -29,6 +29,9 @@ jobs:
       - name: Output databricks version 
         run: databricks -v
 
+      - name: Try databricks bundle
+        run: databricks bundle
+
       - name: Create Databricks Config File
         env:
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_URL_DEV }}
