@@ -88,6 +88,10 @@ jobs:
         run: |
           echo "Workflow Name: ${{ steps.extract-template.outputs.workflow_name }}"
 
+      - name: Get workflow list
+        run: |
+          /home/linuxbrew/.linuxbrew/Cellar/databricks/0.219.0/bin/databricks workflows list
+
 # start workflow with ID
 # check task status
 
