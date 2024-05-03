@@ -80,18 +80,16 @@ jobs:
           env
 
       - name: Extract template filename and get workflow name
-        id: extract-template
         run: |
           template_file=$(awk -F 'template: ' 'NF>1{print $2}' conf.j2/data.ci2.yml)
           template_file="${template_file/conf/conf.j2}"
           
           workflow_name=$(grep 'name:' "$template_file" | cut -d ':' -f 2-)
-          echo "::set-output name=workflow_name::$workflow_name"
+          echo "WORKFLOW_NAME=$workflow_name" >> $GITHUB_ENV
 
       - name: Use extracted workflow name
         run: |
-          echo "Workflow Name: ${{ steps.extract-template.outputs.workflow_name }}"
-
+          echo "Workflow Name: $WORKFLOW_NAME"
 
 # start workflow with ID
 # check task status
