@@ -20,9 +20,15 @@ jobs:
       
       - name: Install Databricks CLI
         run: |
-          pip install databricks-cli
-          pip install --upgrade databricks-cli
-          databricks -v
+          /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+          (echo; echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"') >> /home/runner/.bashrc
+          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+          brew tap databricks/tap
+          brew install databricks
+          echo fpath+=$(brew --prefix)/share/zsh/site-functions >> ~/.zshrc
+          echo 'autoload -Uz compinit && compinit' >> ~/.zshrc
+          export PATH="$PATH:/home/linuxbrew/.linuxbrew/Cellar/databricks/0.218.1/bin"
+          echo $PATH
 
       - name: Create Databricks Config File
         env:
@@ -73,17 +79,17 @@ jobs:
           env
 
       - name: Extract template filename and get workflow name
+        id: extract-template
         run: |
           template_file=$(awk -F 'template: ' 'NF>1{print $2}' conf.j2/data.ci2.yml)
           template_file="${template_file/conf/conf.j2}"
           
           workflow_name=$(grep 'name:' "$template_file" | cut -d ':' -f 2-)
-          workflow_name=$(echo "$workflow_name" | awk '{$1=$1;print}')
-          echo "WORKFLOW_NAME=$workflow_name" >> $GITHUB_ENV
+          echo "::set-output name=workflow_name::$workflow_name"
 
       - name: Use extracted workflow name
         run: |
-          echo "Workflow Name: $WORKFLOW_NAME"
+          echo "Workflow Name: ${{ steps.extract-template.outputs.workflow_name }}"
 
 # start workflow with ID
 # check task status
