@@ -36,22 +36,12 @@ jobs:
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_URL_DEV }}
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN_DEV }}
         run: |
-          echo "[ci]" > /home/runner/.databrickscfg
-          echo "host = $DATABRICKS_HOST" >> /home/runner/.databrickscfg
-          echo "token = $DATABRICKS_TOKEN" >> /home/runner/.databrickscfg
+          echo "[ci]" > ~/.databrickscfg
+          echo "host = $DATABRICKS_HOST" >> ~/.databrickscfg
+          echo "token = $DATABRICKS_TOKEN" >> ~/.databrickscfg
 
-      - name: (Debug) Output url secret
-        run: |
-          databricks_host="${{ secrets.DATABRICKS_URL_DEV }}"
-          echo "Databricks Host: $databricks_host"
-
-      - name: Add databricks authentication
-        run: |
-          databricks_host="${{ secrets.DATABRICKS_URL_DEV }}"
-          if [[ ! $databricks_host =~ ^https:// ]]; then
-            databricks_host="https://${databricks_host}"
-          fi
-          echo -e "${databricks_host}\n${{ secrets.DATABRICKS_TOKEN_DEV }}" | /home/linuxbrew/.linuxbrew/Cellar/databricks/0.219.0/bin/databricks configure --token
+      - name: Verify successful authentication
+        run: /home/linuxbrew/.linuxbrew/Cellar/databricks/0.219.0/bin/databricks clusters list
 
       - name: Get list of changed files (handle no changes)
         run: |
