@@ -150,7 +150,7 @@ jobs:
 
           cat job_list.txt
 
-          job_id=$(awk -v job_name="Shelter" '$2 == job_name {print $1}' job_list.txt)
+          job_id=$(awk -v job_name="$job_name" '$2 == job_name {print $1; exit}' job_list.txt)
 
           echo "Extracted Job ID: $job_id"
 
