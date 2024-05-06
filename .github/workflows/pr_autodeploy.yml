@@ -91,7 +91,7 @@ jobs:
           template_file="${template_file/conf/conf.j2}"
           
           job_name==$(grep -A 1 'jobs:' "$template_file" | tail -n 1)
-          job_name=$(echo "$job_name" | tr -d '[:space:]=:')
+          job_name="[dev richard_bach3]$(echo "$job_name" | tr -d '[:space:]=:')"
           echo "::set-output name=job_name::$job_name"
 
       - name: Use extracted job name
@@ -101,6 +101,13 @@ jobs:
       - name: Get jobs list
         run: |
           /home/linuxbrew/.linuxbrew/Cellar/databricks/0.219.0/bin/databricks jobs list
+# get id by name
+
+      - name: Get job ID with Job name
+        run: |
+          job_name=${{ steps.extract-template.outputs.job_name }}
+          job_id=$(/home/linuxbrew/.linuxbrew/Cellar/databricks/0.219.0/bin/databricks jobs list --output JSON | jq -r '.jobs[] | select(.settings.name == "'"$job_name"'") | .job_id')
+          echo "::set-output name=job_id::$job_id"
 
 # start workflow with ID
 # check task status
