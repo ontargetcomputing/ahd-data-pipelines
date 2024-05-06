@@ -86,6 +86,7 @@ jobs:
       - name: Get file path
         run: |
           file_path=$(grep -oP '(?<=template:\s).*' conf.j2/data.ci2.yml | awk '{$1=$1;print}')
+          file_path=${file_path//conf/conf.j2}
           grep -A 1 'jobs:' "$file_path"
 
 # [dev richard_bach3] county_language
