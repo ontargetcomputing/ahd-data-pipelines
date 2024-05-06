@@ -145,7 +145,7 @@ jobs:
         id: get-job-id
         run: |
           job_name="${{ steps.extract-template.outputs.job_name }}"
-          job_id=$(databricks jobs list --output JSON | jq -r '.jobs[] | select(.settings.name == "'"${job_name}"'") | .job_id')
+          job_id=$(/home/linuxbrew/.linuxbrew/Cellar/databricks/0.219.0/bin/databricks jobs list --output JSON | jq -r '.jobs[] | select(.settings.name == "'"${job_name}"'") | .job_id')
           echo "::set-output name=job_id::$job_id"
           echo "Job ID: $job_id"
 
