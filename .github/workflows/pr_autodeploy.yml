@@ -87,10 +87,25 @@ jobs:
       - name: Extract template filename and get job name
         id: extract-template
         run: |
+          if [ ! -f "conf.j2/data.ci2.yml" ]; then
+              echo "Error: conf.j2/data.ci2.yml not found"
+              exit 1
+          fi
+
           template_file=$(awk -F 'template: ' 'NF>1{print $2}' conf.j2/data.ci2.yml)
+          if [ -z "$template_file" ]; then
+              echo "Error: Template filename not found in conf.j2/data.ci2.yml"
+              exit 1
+          fi
+
           template_file="${template_file/conf/conf.j2}"
-          
+
           job_name=$(grep -A 1 'jobs:' "$template_file" | tail -n 1 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | sed 's/^[^\']*//;s/[^\'\"]*$//')
+          if [ -z "$job_name" ]; then
+              echo "Error: Job name not found in $template_file"
+              exit 1
+          fi
+
           job_name="[dev richard_bach3] ${job_name}"
           echo "::set-output name=job_name::$job_name"
 
