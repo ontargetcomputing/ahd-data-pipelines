@@ -100,7 +100,7 @@ jobs:
 
           template_file="${template_file/conf/conf.j2}"
 
-          job_name=$(grep -A 1 'jobs:' "$template_file" | tail -n 1 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | sed 's/^[^\']*//;s/[^\'\"]*$//')
+          job_name=$(grep -A 1 'jobs:' "$template_file" | tail -n 1 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | sed "s/^[^']*//;s/[^']*\$//")
           if [ -z "$job_name" ]; then
               echo "Error: Job name not found in $template_file"
               exit 1
