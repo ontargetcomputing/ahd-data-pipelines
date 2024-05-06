@@ -108,7 +108,22 @@ jobs:
 
           grep -A 1 'jobs:' "$template_file"
 
-          job_name=$(grep -A 1 'jobs:' "$template_file" | tail -n 1 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | sed "s/^[^']*//;s/[^']*\$//")
+          job_name_lines=$(grep -A 1 'jobs:' "$template_file")
+          echo "Job Name Lines:"
+          echo "$job_name_lines"
+
+          job_name_last_line=$(echo "$job_name_lines" | tail -n 1)
+          echo "Last Line:"
+          echo "$job_name_last_line"
+
+          trimmed_job_name=$(echo "$job_name_last_line" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+          echo "Trimmed Job Name:"
+          echo "$trimmed_job_name"
+
+          job_name=$(echo "$trimmed_job_name" | sed "s/^[^']*//;s/[^']*\$//")
+          echo "Job Name:"
+          echo "$job_name"
+
           if [ -z "$job_name" ]; then
               echo "Error: Job name not found in $template_file"
               exit 1
