@@ -146,11 +146,11 @@ jobs:
         run: |
           job_name="${{ steps.extract-template.outputs.job_name }}"
           
-          /home/linuxbrew/.linuxbrew/Cellar/databricks/0.219.0/bin/databricks jobs list | awk '{print $1, $2}' > job_list.txt
+          /home/linuxbrew/.linuxbrew/Cellar/databricks/0.219.0/bin/databricks jobs list | awk -F'\t' '{print $1, $2}' > job_list.txt
 
           cat job_list.txt
 
-          job_id=$(awk -v job_name="$job_name" '$2 == job_name {print $1}' job_list.txt)
+          job_id=$(awk -v job_name="Shelter" '$2 == job_name {print $1}' job_list.txt)
 
           echo "Extracted Job ID: $job_id"
 
