@@ -120,7 +120,7 @@ jobs:
           echo "Trimmed Job Name:"
           echo "$trimmed_job_name"
 
-          job_name=$(echo "$trimmed_job_name" | sed "s/^[^']*//;s/[^']*\$//")
+          job_name=$(echo "$trimmed_job_name" | tr -d ':')
           echo "Job Name:"
           echo "$job_name"
 
