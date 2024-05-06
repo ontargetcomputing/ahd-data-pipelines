@@ -83,6 +83,11 @@ jobs:
       - name: Output contents of the new file
         run: cat conf.j2/data.ci2.yml
 
+      - name: Parse file test
+        run: |
+          template_file="path/to/your/file.yaml"
+          grep -A 1 'jobs:' "$template_file"
+
 # [dev richard_bach3] county_language
       - name: Extract template filename and get job name
         id: extract-template
