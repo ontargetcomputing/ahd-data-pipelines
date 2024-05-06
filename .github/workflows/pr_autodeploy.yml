@@ -106,7 +106,7 @@ jobs:
       - name: Get Job ID using Databricks CLI
         id: get-job-id
         run: |
-          job_name=${{ steps.extract-template.outputs.job_name }}
+          job_name="${{ steps.extract-template.outputs.job_name }}"
           echo "Job Name: $job_name"
 
 # start workflow with ID
