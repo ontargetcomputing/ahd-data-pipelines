@@ -107,7 +107,7 @@ jobs:
         id: get-job-id
         run: |
           job_name="[dev richard_bach3] county_language"
-          job_id=$(databricks jobs list --output JSON | jq -r '.jobs[] | select(.settings.name == "'"$job_name"'") | .job_id')
+          job_id=$(databricks jobs list --output JSON | jq -r '.jobs[] | select(.settings.name == "'"${job_name}"'") | .job_id')
           echo "::set-output name=job_id::$job_id"
           echo "Job ID: $job_id"
 
