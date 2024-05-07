@@ -161,7 +161,7 @@ jobs:
       - name: Start Databricks Job
         id: start-job
         run: |
-          run_id=$(/home/linuxbrew/.linuxbrew/Cellar/databricks/0.219.0/bin/databricks jobs run-now 97556524634444 --json | jq -r '.run_id')
+          run_id=$(/home/linuxbrew/.linuxbrew/Cellar/databricks/0.219.0/bin/databricks jobs run-now 97556524634444 | jq -r '.run_id')
           echo "::set-output name=run_id::$run_id"
 
       - name: Wait for Job Completion
