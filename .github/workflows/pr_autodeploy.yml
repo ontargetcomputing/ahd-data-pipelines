@@ -167,7 +167,7 @@ jobs:
       - name: Wait for Job Completion
         run: |
           retries=0
-          while [ $retries -lt 30 ]; do
+          while [ $retries -lt 1 ]; do
             run_status=$(/home/linuxbrew/.linuxbrew/Cellar/databricks/0.219.0/bin/databricks runs get --run-id ${{ steps.start-job.outputs.run_id }} --json | jq -r '.state.life_cycle_state')
             echo "Job status: $run_status"
             if [ "$run_status" = "TERMINATED" ]; then
