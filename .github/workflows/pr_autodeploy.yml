@@ -158,6 +158,28 @@ jobs:
           echo "::set-output name=job_id::$job_id"
           echo "Job ID: $job_id"
 
+      - name: Start Databricks Job
+        id: start-job
+        run: |
+          run_id=$(databricks runs submit --job-id 97556524634444 --json | jq -r '.run_id')
+          echo "::set-output name=run_id::$run_id"
+
+      - name: Wait for Job Completion
+        run: |
+          retries=0
+          while [ $retries -lt 30 ]; do
+            run_status=$(databricks runs get --run-id ${{ steps.start-job.outputs.run_id }} --json | jq -r '.state.life_cycle_state')
+            echo "Job status: $run_status"
+            if [ "$run_status" = "TERMINATED" ]; then
+              echo "Job completed successfully"
+              exit 0
+            fi
+            retries=$((retries+1))
+            sleep 10  # Wait for 10 seconds before checking again
+          done
+          echo "Job did not complete within the specified time"
+          exit 1
+
 
 
 
