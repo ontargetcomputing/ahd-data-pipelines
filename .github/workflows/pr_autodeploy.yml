@@ -145,18 +145,19 @@ jobs:
         id: get-job-id
         run: |
           job_name="${{ steps.extract-template.outputs.job_name }}"
-          job_name=$(echo "$job_name" | sed 's/"//g')
-          echo "Looking for $job_name"
+          job_name=$(echo "$job_name" | sed 's/"//g')  # Remove quotation marks
+
           /home/linuxbrew/.linuxbrew/Cellar/databricks/0.219.0/bin/databricks jobs list | awk -F'\t' '{print $1, $2}' | awk '{$2=$2};1' > job_list.txt
 
           cat job_list.txt
 
-          job_id=$(awk -v job_name="$job_name" '$2 == job_name {print $1; exit}' job_list.txt)
+          job_id=$(awk -v job_name="$job_name" 'tolower($2) ~ tolower(job_name) {print $1; exit}' job_list.txt)
 
           echo "Extracted Job ID: $job_id"
 
           echo "::set-output name=job_id::$job_id"
           echo "Job ID: $job_id"
+
 
 
 
