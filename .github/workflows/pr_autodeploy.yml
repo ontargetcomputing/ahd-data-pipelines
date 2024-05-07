@@ -145,7 +145,8 @@ jobs:
         id: get-job-id
         run: |
           job_name="${{ steps.extract-template.outputs.job_name }}"
-          
+          job_name=$(echo "$job_name" | sed 's/"//g')
+
           /home/linuxbrew/.linuxbrew/Cellar/databricks/0.219.0/bin/databricks jobs list | awk -F'\t' '{print $1, $2}' | awk '{$2=$2};1' > job_list.txt
 
           cat job_list.txt
@@ -156,6 +157,7 @@ jobs:
 
           echo "::set-output name=job_id::$job_id"
           echo "Job ID: $job_id"
+
 
 
 # start workflow with ID
