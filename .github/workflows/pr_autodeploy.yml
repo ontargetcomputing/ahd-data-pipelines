@@ -129,7 +129,7 @@ jobs:
               exit 1
           fi
 
-          job_name="[dev richard_bach3] \"${job_name}\""
+          job_name="[dev richard_bach3] ${job_name}"
           echo "::set-output name=job_name::$job_name"
 
       - name: Use extracted job name
