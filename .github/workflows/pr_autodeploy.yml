@@ -147,7 +147,7 @@ jobs:
           job_name="${{ steps.extract-template.outputs.job_name }}"
           job_name=$(echo "$job_name" | sed 's/"//g')  # Remove quotation marks
 
-          /home/linuxbrew/.linuxbrew/Cellar/databricks/0.219.0/bin/databricks jobs list | awk -F'\t' '{print $1 "," $2}' > job_list.csv
+          /home/linuxbrew/.linuxbrew/Cellar/databricks/0.219.0/bin/databricks jobs list --output json | jq -r '.jobs[] | [.job_id, .settings.name] | @csv' > job_list.csv
 
           cat job_list.csv
 
