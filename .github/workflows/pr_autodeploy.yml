@@ -157,3 +157,17 @@ jobs:
 
           echo "::set-output name=job_id::$job_id"
           echo "Job ID: $job_id"
+
+      - name: Find Job Details
+        id: find-job
+        run: |
+          job_id="97556524634444"
+          job_name=$(awk -v job_id="$job_id" '$1 == job_id {print $2}' job_list.txt)
+          job_name_length=$(echo -n "$job_name" | wc -c)
+          first_character=$(echo -n "$job_name" | head -c 1)
+          last_character=$(echo -n "$job_name" | tail -c 2)
+          echo "Job Name: $job_name"
+          echo "Length of Job Name: $job_name_length"
+          echo "First Character of Job Name: $first_character"
+          echo "Last Character of Job Name: $last_character"
+          
