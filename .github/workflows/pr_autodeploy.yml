@@ -147,11 +147,11 @@ jobs:
           job_name="${{ steps.extract-template.outputs.job_name }}"
           job_name=$(echo "$job_name" | sed 's/"//g')  # Remove quotation marks
 
-          /home/linuxbrew/.linuxbrew/Cellar/databricks/0.219.0/bin/databricks jobs list | awk -F'\t' '{print $1, $2}' | awk '{$2=$2};1' > job_list.txt
+          /home/linuxbrew/.linuxbrew/Cellar/databricks/0.219.0/bin/databricks jobs list | awk -F'\t' '{print $1 "," $2}' > job_list.csv
 
-          cat job_list.txt
+          cat job_list.csv
 
-          job_id=$(awk -v job_name="$job_name" 'BEGIN {print "Job Name to Match:", job_name} {print "Current Line:", $0} tolower($2) ~ tolower(job_name) {gsub(/^ *| *$/,"",$2); print "Matched Job Name:", $2; print "Matched Job ID:", $1; print $1; exit}' job_list.txt)
+          job_id=$(awk -v job_name="$job_name" 'BEGIN {print "Job Name to Match:", job_name} {print "Current Line:", $0} tolower($2) ~ tolower(job_name) {gsub(/^ *| *$/,"",$2); print "Matched Job Name:", $2; print "Matched Job ID:", $1; print $1; exit}' job_list.csv)
 
           echo "Extracted Job ID: $job_id"
 
@@ -162,7 +162,7 @@ jobs:
         id: find-job
         run: |
           job_id="97556524634444"
-          job_name=$(awk -v job_id="$job_id" '$1 == job_id {print $2}' job_list.txt)
+          job_name=$(awk -v job_id="$job_id" '$1 == job_id {print $2}' job_list.csv)
           job_name_length=$(echo -n "$job_name" | wc -c)
           first_character=$(echo -n "$job_name" | head -c 1)
           last_character=$(echo -n "$job_name" | tail -c 2)
@@ -170,4 +170,3 @@ jobs:
           echo "Length of Job Name: $job_name_length"
           echo "First Character of Job Name: $first_character"
           echo "Last Character of Job Name: $last_character"
-          
