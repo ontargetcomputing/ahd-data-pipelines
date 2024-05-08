@@ -160,11 +160,12 @@ jobs:
       - name: Find Job Details
         id: find-job
         run: |
-          job_name=$(awk -v '$1 == 97556524634444 {print $2}' job_list.csv)
+          job_name=$(awk -v id=97556524634444 '$1 == id {print $2}' job_list.csv)
           job_name_length=$(echo -n "$job_name" | wc -c)
           first_character=$(echo -n "$job_name" | head -c 1)
-          last_character=$(echo -n "$job_name" | tail -c 2)
+          last_character=$(echo -n "$job_name" | tail -c 1)
           echo "Job Name: $job_name"
           echo "Length of Job Name: $job_name_length"
           echo "First Character of Job Name: $first_character"
           echo "Last Character of Job Name: $last_character"
+
