@@ -164,25 +164,4 @@ jobs:
           echo "::set-output name=job_id::$job_id"
           echo "Job ID: $job_id"
 
-      - name: Start Databricks Job
-        id: start-job
-        run: |
-          run_id=$(/home/linuxbrew/.linuxbrew/Cellar/databricks/0.219.0/bin/databricks jobs run-now 97556524634444 | jq -r '.run_id')
-          echo "::set-output name=run_id::$run_id"
-          echo "Run Id: $run_id"
 
-      - name: Wait for Job Completion
-        run: |
-          retries=0
-          while [ $retries -lt 30 ]; do  # Wait for 5 minutes (300 seconds) with a sleep interval of 10 seconds
-            run_status=$(/home/linuxbrew/.linuxbrew/Cellar/databricks/0.219.0/bin/databricks jobs get-run ${{ steps.start-job.outputs.run_id }} | jq -r '.state.life_cycle_state')
-            echo "Job status: $run_status"
-            if [ "$run_status" = "TERMINATED" ]; then
-              echo "Job completed successfully"
-              exit 0
-            fi
-            retries=$((retries+1))
-            sleep 10  # Wait for 10 seconds before checking again
-          done
-          echo "Job did not complete within the specified time"
-          exit 1
