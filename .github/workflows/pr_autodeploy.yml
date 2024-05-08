@@ -151,6 +151,12 @@ jobs:
 
           cat job_list.txt
 
+          echo "Length of each field:"
+          awk '{print "$1 length:", length($1), "$2 length:", length($2)}' job_list.txt
+
+          job_name_length=$(echo "$job_name" | wc -c)
+          echo "Job Name length: $job_name_length"
+
           job_id=$(awk -v job_name="$job_name" 'BEGIN {print "Job Name to Match:", job_name} {print "Current Line:", $0} tolower($2) ~ tolower(job_name) {print "Matched Job Name:", $2; print "Matched Job ID:", $1; print $1; exit}' job_list.txt)
 
           echo "Extracted Job ID: $job_id"
