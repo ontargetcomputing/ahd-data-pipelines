@@ -152,7 +152,7 @@ jobs:
           cat job_list.txt
 
           echo "Length of each field:"
-          awk '{print $1 " length:", length($1), $2 " length:", length($2)}' job_list.txt
+          awk '{print $1, " length:", length($1), " ", $2, " length:", length($0)-length($1)-1}' job_list.txt
 
           job_name_length=$(echo "$job_name" | wc -c)
           echo "Job Name length: $job_name_length"
