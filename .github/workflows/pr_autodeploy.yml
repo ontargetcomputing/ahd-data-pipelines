@@ -170,5 +170,3 @@ jobs:
           echo "Length of Job Name: $job_name_length"
           echo "First Character of Job Name: $first_character"
           echo "Last Character of Job Name: $last_character"
-
-# find job with id 97556524634444 and output name, length of name, first and last characters of name
