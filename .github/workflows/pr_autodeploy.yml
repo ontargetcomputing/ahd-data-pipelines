@@ -169,7 +169,7 @@ jobs:
         run: |
           retries=0
           while [ $retries -lt 30 ]; do  # Wait for 5 minutes (300 seconds) with a sleep interval of 10 seconds
-            run_status=$(/home/linuxbrew/.linuxbrew/Cellar/databricks/0.219.0/bin/databricks runs get --run-id ${{ steps.start-job.outputs.run_id }} | jq -r '.state.life_cycle_state')
+            run_status=$(/home/linuxbrew/.linuxbrew/Cellar/databricks/0.219.0/bin/databricks jobs get --run-id ${{ steps.start-job.outputs.run_id }} | jq -r '.state.life_cycle_state')
             echo "Job status: $run_status"
             if [ "$run_status" = "TERMINATED" ]; then
               echo "Job completed successfully"
