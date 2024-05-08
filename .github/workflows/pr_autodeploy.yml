@@ -138,7 +138,7 @@ jobs:
 
       - name: Get jobs list
         run: |
-          /home/linuxbrew/.linuxbrew/Cellar/databricks/0.219.0/bin/databricks jobs list
+          /home/linuxbrew/.linuxbrew/Cellar/databricks/0.219.0/bin/databricks jobs list -o json
 
 # get job id by name
       - name: Get Job ID using Databricks CLI
