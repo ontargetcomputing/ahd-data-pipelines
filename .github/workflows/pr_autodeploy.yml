@@ -45,7 +45,7 @@ jobs:
           echo "[DEFAULT]" > ~/.databrickscfg
           echo "host = $DATABRICKS_HOST" >> ~/.databrickscfg
           echo "token = $DATABRICKS_TOKEN" >> ~/.databrickscfg
-          echo "[ci]" >> ~/.databrickscfg
+          echo "[dev]" >> ~/.databrickscfg
           echo "host = $DATABRICKS_HOST" >> ~/.databrickscfg
           echo "token = $DATABRICKS_TOKEN" >> ~/.databrickscfg
 
@@ -179,7 +179,7 @@ jobs:
           rm -f databricks.yml
           python bin/process_templates.py --env ci
           cp -rf conf.j2/workflows conf/workflows
-          /home/linuxbrew/.linuxbrew/Cellar/databricks/0.219.0/bin/databricks bundle run "[dev richard_bach3] county_language"
+          /home/linuxbrew/.linuxbrew/Cellar/databricks/0.219.0/bin/databricks bundle run "[dev richard_bach3] county_language" --profile dev
           cp .gitignore .gitignore.orig
           cp .deployment_gitignore .gitignore
           mv .gitignore.orig .gitignore
