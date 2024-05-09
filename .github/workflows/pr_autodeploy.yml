@@ -45,6 +45,9 @@ jobs:
           echo "[DEFAULT]" > ~/.databrickscfg
           echo "host = $DATABRICKS_HOST" >> ~/.databrickscfg
           echo "token = $DATABRICKS_TOKEN" >> ~/.databrickscfg
+          echo "[ci]" >> ~/.databrickscfg
+          echo "host = $DATABRICKS_HOST" >> ~/.databrickscfg
+          echo "token = $DATABRICKS_TOKEN" >> ~/.databrickscfg
 
       - name: Verify successful authentication
         run: /home/linuxbrew/.linuxbrew/Cellar/databricks/0.219.0/bin/databricks clusters list
