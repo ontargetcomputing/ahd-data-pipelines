@@ -41,7 +41,7 @@ jobs:
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_URL_DEV }}
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN_DEV }}
         run: |
-          echo "[DEFAULT]" > ~/.databrickscfg
+          echo "[ci]" > ~/.databrickscfg
           echo "host = $DATABRICKS_HOST" >> ~/.databrickscfg
           echo "token = $DATABRICKS_TOKEN" >> ~/.databrickscfg
 
@@ -136,14 +136,6 @@ jobs:
         run: |
           echo "Job Name: ${{ steps.extract-template.outputs.job_name }}"
 
-      - name: Get jobs list
-        run: |
-          /home/linuxbrew/.linuxbrew/Cellar/databricks/0.219.0/bin/databricks jobs list -o json
-
-      - name: Run job by name
-        run: |
-          /home/linuxbrew/.linuxbrew/Cellar/databricks/0.219.0/bin/databricks bundle run "[dev richard_bach3] county_language"
-
 # get job id by name
       - name: Get Job ID using Databricks CLI
         id: get-job-id
@@ -172,4 +164,21 @@ jobs:
           echo "Length of Job Name: $job_name_length"
           echo "First Character of Job Name: $first_character"
           echo "Last Character of Job Name: $last_character"
+
+# switch out conf.j2/data.ci.yml for conf.j2/data.ci2.yml and run deploy steps
+      - name: Deploy ci Pipeline with conf.j2/data.ci2.yml file
+        run: |
+          mv conf.j2/data.ci.yml conf.j2/temp.yml
+          mv conf.j2/data.ci2.yml conf.j2/data.ci.yml
+          mv conf.j2/temp.yml conf.j2/data.ci2.yml
+          rm -rf conf
+          rm -f databricks.yml
+          python bin/process_templates.py --env ci
+          cp -rf conf.j2/workflows conf/workflows
+          /home/linuxbrew/.linuxbrew/Cellar/databricks/0.219.0/bin/databricks bundle validate -t ci --profile ci
+          cp .gitignore .gitignore.orig
+          cp .deployment_gitignore .gitignore
+#/home/linuxbrew/.linuxbrew/Cellar/databricks/0.219.0/bin/databricks bundle deploy -t ci --profile ci
+#/home/linuxbrew/.linuxbrew/Cellar/databricks/0.219.0/bin/databricks bundle run "[dev richard_bach3] county_language"
+          mv .gitignore.orig .gitignore
 
