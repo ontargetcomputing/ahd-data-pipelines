@@ -178,7 +178,5 @@ jobs:
           /home/linuxbrew/.linuxbrew/Cellar/databricks/0.219.0/bin/databricks bundle validate -t ci --profile ci
           cp .gitignore .gitignore.orig
           cp .deployment_gitignore .gitignore
-#/home/linuxbrew/.linuxbrew/Cellar/databricks/0.219.0/bin/databricks bundle deploy -t ci --profile ci
-#/home/linuxbrew/.linuxbrew/Cellar/databricks/0.219.0/bin/databricks bundle run "[dev richard_bach3] county_language"
           mv .gitignore.orig .gitignore
 
