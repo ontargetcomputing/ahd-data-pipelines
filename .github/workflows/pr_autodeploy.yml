@@ -22,6 +22,7 @@ jobs:
       - name: Install modules
         run: |
           pip install jinja2
+          pip install yaml
       
       - name: Install Databricks CLI
         run: |
