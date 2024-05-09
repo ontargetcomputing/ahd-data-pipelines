@@ -19,10 +19,10 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Install Modules
+      - name: Install poetry and run it
         run: |
           pip install poetry
-          pip install jinja2
+          poetry install
       
       - name: Install Databricks CLI
         run: |
