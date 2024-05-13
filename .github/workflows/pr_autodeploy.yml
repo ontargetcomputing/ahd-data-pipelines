@@ -1,0 +1,29 @@
+name: Auto Deploy Databricks Pipeline
+
+on:
+  push:
+    paths:
+      - 'ahd-data-pipelines/conf.j2/**' # Watch for changes in any file under ahd-data-pipelines/conf.j2 directory
+  workflow_dispatch: # Allow manual triggering
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      
+      - name: Install Databricks CLI
+        run: |
+          pip install databricks-cli
+      
+      - name: Configure Databricks CLI
+        run: |
+          echo -e "${{ secrets.DATABRICKS_TOKEN_DEV }}\n${{ secrets.DATABRICKS_URL_DEV }}" | databricks configure --token
+      
+      - name: Determine changes and deploy pipelines
+        run: |
+          if git diff --name-only HEAD^ HEAD | grep -q '^ahd-data-pipelines/conf\.j2/parameters/census/language/'; then
+            echo "Updating Language Pipeline"
+          fi
