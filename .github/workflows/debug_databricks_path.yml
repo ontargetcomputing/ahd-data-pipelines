@@ -21,10 +21,10 @@ jobs:
           echo 'export PATH="/home/linuxbrew/.linuxbrew/Cellar/databricks/0.219.0/bin:$PATH"' >> ~/.bashrc
           echo $PATH
 
-      - name: cat ~/.bash_login
+      - name: cat ~/.bashrc
         run: |
           echo $PATH
-          cat ~/.bash_login
+          cat ~/.bashrc
           echo $PATH
 
       - name: Verify databricks command call
