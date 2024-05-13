@@ -24,5 +24,8 @@ jobs:
       - name: cat bash rc
         run: cat ~/.bashrc
 
+      - name: verify executable
+        run: ls -l /home/linuxbrew/.linuxbrew/Cellar/databricks/0.219.0/bin/databricks
+
       - name: Verify databricks command call
         run: databricks -v
