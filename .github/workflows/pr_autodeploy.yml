@@ -151,7 +151,7 @@ jobs:
 
           cat job_list.csv
 
-          awk -F',' '{print substr($2, 2, length($2)-2)}' job_list.csv
+          awk -F',' '{print substr($2, 4, length($2)-7)}' job_list.csv
 
           job_id=$(awk -F',' -v job_name="$job_name" '{field2 = substr($2, 4, length($2)-7)} tolower(field2) == tolower(job_name) {print $1}' job_list.csv)
 
