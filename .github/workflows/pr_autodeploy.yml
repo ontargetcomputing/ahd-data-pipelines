@@ -145,21 +145,34 @@ jobs:
         id: get-job-id
         run: |
           job_name="${{ steps.extract-template.outputs.job_name }}"
-          echo $job_name
 
           /home/linuxbrew/.linuxbrew/Cellar/databricks/0.219.0/bin/databricks jobs list --output json | jq -r '.[] | [.job_id, .settings.name] | @csv' > job_list.csv
 
-          cat job_list.csv
-
-          awk -F',' '{print substr($2, 2, length($2)-2)}' job_list.csv
-
           job_id=$(awk -F',' -v job_name="$job_name" '{field2 = substr($2, 2, length($2)-2)} tolower(field2) == tolower(job_name) {print $1}' job_list.csv)
-
-          echo "Extracted Job ID: $job_id"
 
           echo "::set-output name=job_id::$job_id"
           echo "Job ID: $job_id"
 
+      - name: Start Databricks Job
+        id: start-job
+        run: |
+          run_id=$(/home/linuxbrew/.linuxbrew/Cellar/databricks/0.219.0/bin/databricks jobs run-now ${{ steps.get-job-id.outputs.job_id }} | jq -r '.run_id')
+          echo "::set-output name=run_id::$run_id"
+          echo "Run Id: $run_id"
 
-
+        - name: Wait for Job Completion
+        run: |
+          retries=0
+          while [ $retries -lt 30 ]; do  # Wait for 5 minutes (300 seconds) with a sleep interval of 10 seconds
+            run_status=$(/home/linuxbrew/.linuxbrew/Cellar/databricks/0.219.0/bin/databricks jobs get-run ${{ steps.start-job.outputs.run_id }} | jq -r '.state.life_cycle_state')
+            echo "Job status: $run_status"
+            if [ "$run_status" = "TERMINATED" ]; then
+              echo "Job completed successfully"
+              exit 0
+            fi
+            retries=$((retries+1))
+            sleep 10  # Wait for 10 seconds before checking again
+          done
+          echo "Job did not complete within the specified time"
+          exit 1
 
