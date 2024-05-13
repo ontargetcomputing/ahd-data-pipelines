@@ -140,7 +140,7 @@ jobs:
         run: |
           echo "Job Name: ${{ steps.extract-template.outputs.job_name }}"
 
-# get job id by name
+      # get job id by name
       - name: Get Job ID using Databricks CLI
         id: get-job-id
         run: |
@@ -175,4 +175,8 @@ jobs:
           done
           echo "Job did not complete within the specified time"
           exit 1
-          
+
+      # Remaining todo:
+      #   Fix path problem
+      #   Add deploy steps
+      #   Update prepend statement to speicify ci environment
