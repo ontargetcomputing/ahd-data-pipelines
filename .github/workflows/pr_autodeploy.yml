@@ -153,7 +153,8 @@ jobs:
 
           awk -F',' '{print substr($2, 2, length($2)-2)}' job_list.csv
 
-          job_id=$(awk -F',' -v job_name=$job_name 'tolower(substr($2, 2, length($2)-2)) ~ tolower(job_name) {print $1; exit}' job_list.csv)
+# job_id=$(awk -F',' -v job_name=$job_name 'tolower(substr($2, 2, length($2)-2)) ~ tolower(job_name) {print $1; exit}' job_list.csv)
+          job_id = $(awk -F',' '{field2 = substr($2, 4, length($2)-7)} field2 == $job_name {print $1}' job_list.csv)
 
           echo "Extracted Job ID: $job_id"
 
