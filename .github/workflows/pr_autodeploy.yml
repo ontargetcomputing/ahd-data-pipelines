@@ -150,6 +150,8 @@ jobs:
 
           cat job_list.csv
 
+          awk -F',' -v job_name="$job_name" 'tolower(substr($2, 2, length($2)-2)) ~ tolower(job_name) {gsub(/^"|"$/,"",$2); print $2; exit}' job_list.csv
+
           job_id=$(awk -F',' -v job_name="$job_name" 'tolower(substr($2, 2, length($2)-2)) ~ tolower(job_name) {print $1; exit}' job_list.csv)
 
           echo "Extracted Job ID: $job_id"
