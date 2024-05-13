@@ -1,0 +1,28 @@
+name: Debug Databricks Path
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      
+      - name: Install Databricks CLI
+        run: |
+          /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+          (echo; echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"') >> /home/runner/.bashrc
+          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+          brew tap databricks/tap
+          brew install databricks
+          echo fpath+=$(brew --prefix)/share/zsh/site-functions >> ~/.zshrc
+          echo 'autoload -Uz compinit && compinit' >> ~/.zshrc
+          export PATH="/home/linuxbrew/.linuxbrew/Cellar/databricks/0.219.0/bin:$PATH"
+          echo 'export PATH="/home/linuxbrew/.linuxbrew/Cellar/databricks/0.219.0/bin:$PATH"' >> ~/.bashrc
+          echo $PATH
+
+      - name: cat bash rc
+        run: cat ~/.bashrc
+
+      - name: Verify databricks command call
+        run: databricks -v
