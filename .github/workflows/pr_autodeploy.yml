@@ -150,36 +150,13 @@ jobs:
 
           cat job_list.csv
 
-          job_id=$(awk -v job_name="$job_name" 'BEGIN {print "Job Name to Match:", job_name} {print "Current Line:", $0} tolower($2) ~ tolower(job_name) {gsub(/^ *| *$/,"",$2); print "Matched Job Name:", $2; print "Matched Job ID:", $1; print $1; exit}' job_list.csv)
+          job_id=$(awk -F',' -v job_name="$job_name" 'tolower(substr($2, 1, length($2)-1)) ~ tolower(job_name) {print $1; exit}' job_list.csv)
 
           echo "Extracted Job ID: $job_id"
 
           echo "::set-output name=job_id::$job_id"
           echo "Job ID: $job_id"
 
-      - name: Find Job Details
-        id: find-job
-        run: |
-          awk -v id='"97556524634444"' -F',' '$1 == id {print $2}' job_list.csv
-          job_name_length=$(echo -n "$job_name" | wc -c)
-          first_character=$(echo -n "$job_name" | head -c 1)
-          last_character=$(echo -n "$job_name" | tail -c 1)
-          echo "Job Name: $job_name"
-          echo "Length of Job Name: $job_name_length"
-          echo "First Character of Job Name: $first_character"
-          echo "Last Character of Job Name: $last_character"
 
-      # switch out conf.j2/data.ci.yml for conf.j2/data.ci2.yml and run deploy steps
-      - name: Deploy ci Pipeline with conf.j2/data.ci2.yml file
-        run: |
-          mv conf.j2/data.ci.yml conf.j2/temp.yml
-          mv conf.j2/data.ci2.yml conf.j2/data.ci.yml
-          mv conf.j2/temp.yml conf.j2/data.ci2.yml
-          rm -rf conf
-          rm -f databricks.yml
-          python bin/process_templates.py --env ci
-          cp -rf conf.j2/workflows conf/workflows
-          /home/linuxbrew/.linuxbrew/Cellar/databricks/0.219.0/bin/databricks bundle deploy -t ci --profile ci
-          cp .gitignore .gitignore.orig
-          cp .deployment_gitignore .gitignore
-          mv .gitignore.orig .gitignore
+
+
