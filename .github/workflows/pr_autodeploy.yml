@@ -25,17 +25,7 @@ jobs:
           pip install pyyaml
       
       - name: Install Databricks CLI
-        run: |
-          /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-          (echo; echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"') >> /home/runner/.bashrc
-          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-          brew tap databricks/tap
-          brew install databricks
-          echo fpath+=$(brew --prefix)/share/zsh/site-functions >> ~/.zshrc
-          echo 'autoload -Uz compinit && compinit' >> ~/.zshrc
-          export PATH="/home/linuxbrew/.linuxbrew/Cellar/databricks/0.219.0/bin:$PATH"
-          echo 'export PATH="/home/linuxbrew/.linuxbrew/Cellar/databricks/0.219.0/bin:$PATH"' >> ~/.bashrc
-          echo $PATH
+        run: curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
 
       - name: Create Databricks Config File
         env:
@@ -50,7 +40,7 @@ jobs:
           echo "token = $DATABRICKS_TOKEN" >> ~/.databrickscfg
 
       - name: Verify successful authentication
-        run: /home/linuxbrew/.linuxbrew/Cellar/databricks/0.219.0/bin/databricks clusters list
+        run: databricks clusters list
 
       - name: Get list of changed files (handle no changes)
         run: |
@@ -146,7 +136,7 @@ jobs:
         run: |
           job_name="${{ steps.extract-template.outputs.job_name }}"
 
-          /home/linuxbrew/.linuxbrew/Cellar/databricks/0.219.0/bin/databricks jobs list --output json | jq -r '.[] | [.job_id, .settings.name] | @csv' > job_list.csv
+          databricks jobs list --output json | jq -r '.[] | [.job_id, .settings.name] | @csv' > job_list.csv
 
           job_id=$(awk -F',' -v job_name="$job_name" '{field2 = substr($2, 2, length($2)-2)} tolower(field2) == tolower(job_name) {print $1}' job_list.csv)
 
@@ -156,7 +146,7 @@ jobs:
       - name: Start Databricks Job
         id: start-job
         run: |
-          run_id=$(/home/linuxbrew/.linuxbrew/Cellar/databricks/0.219.0/bin/databricks jobs run-now ${{ steps.get-job-id.outputs.job_id }} | jq -r '.run_id')
+          run_id=$(databricks jobs run-now ${{ steps.get-job-id.outputs.job_id }} | jq -r '.run_id')
           echo "::set-output name=run_id::$run_id"
           echo "Run Id: $run_id"
 
@@ -164,7 +154,7 @@ jobs:
         run: |
           retries=0
           while [ $retries -lt 30 ]; do  # Wait for 5 minutes (300 seconds) with a sleep interval of 10 seconds
-            run_status=$(/home/linuxbrew/.linuxbrew/Cellar/databricks/0.219.0/bin/databricks jobs get-run ${{ steps.start-job.outputs.run_id }} | jq -r '.state.life_cycle_state')
+            run_status=$(databricks jobs get-run ${{ steps.start-job.outputs.run_id }} | jq -r '.state.life_cycle_state')
             echo "Job status: $run_status"
             if [ "$run_status" = "TERMINATED" ]; then
               echo "Job completed successfully"
