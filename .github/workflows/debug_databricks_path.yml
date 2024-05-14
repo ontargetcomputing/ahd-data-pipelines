@@ -17,11 +17,18 @@ jobs:
           brew install databricks
           echo fpath+=$(brew --prefix)/share/zsh/site-functions >> ~/.zshrc
           echo 'autoload -Uz compinit && compinit' >> ~/.zshrc
-          where databricks
-          echo "/home/linuxbrew/.linuxbrew/Cellar/databricks/0.219.0/bin" >> $GITHUB_PATH
-          echo $PATH
 
-      - name: Verify databricks command call
+      - name: Check Databricks installation path
         run: |
-          echo $PATH
-          databricks -v
+          DBRICKS_PATH=$(which databricks)
+          echo "Databricks installed at: $DBRICKS_PATH"
+          echo "::set-env name=DBRICKS_PATH::$DBRICKS_PATH"
+
+      - name: Add Databricks to $GITHUB_PATH
+        run: |
+          export DBRICKS_PATH=$DBRICKS_PATH
+          echo "Adding $DBRICKS_PATH to \$GITHUB_PATH"
+          echo "$DBRICKS_PATH" >> $GITHUB_PATH
+
+      - name: Verify databricks command use
+        run: databricks -v
