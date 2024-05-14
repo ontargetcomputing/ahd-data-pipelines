@@ -10,29 +10,8 @@ jobs:
       
       - name: Install Databricks CLI
         run: |
-          /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-          (echo; echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"') >> /home/runner/.bashrc
-          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-          brew tap databricks/tap
-          brew install databricks
-          echo fpath+=$(brew --prefix)/share/zsh/site-functions >> ~/.zshrc
-          echo 'autoload -Uz compinit && compinit' >> ~/.zshrc
-
-      - name: Check Databricks installation path
-        run: |
-          DBRICKS_PATH=$(which databricks)
-          if [ -z "$DBRICKS_PATH" ]; then
-            echo "Databricks is not installed."
-            exit 1
-          fi
-          echo "Databricks installed at: $DBRICKS_PATH"
-          echo "DBRICKS_PATH=$DBRICKS_PATH" >> $GITHUB_ENV
-
-      - name: Add Databricks to $GITHUB_PATH
-        run: |
-          export DBRICKS_PATH=$DBRICKS_PATH
-          echo "Adding $DBRICKS_PATH to \$GITHUB_PATH"
-          echo "$DBRICKS_PATH" >> $GITHUB_PATH
+          curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
+          echo "/usr/local/bin" >> $GITHUB_PATH
 
       - name: Verify databricks command use
         run: databricks -v
