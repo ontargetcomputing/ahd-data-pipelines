@@ -134,7 +134,7 @@ jobs:
         run: |
           sed '7,9d' conf.j2/databricks.yml > databricks.yml
           job_name="${{ steps.extract-template.outputs.job_name }}"
-          databricks bundle run --targeg dev "$job_name" --profile default
+          databricks bundle run --target dev "$job_name" --profile default
           exit 1
 
       # get job id by name
