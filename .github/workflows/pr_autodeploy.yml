@@ -132,6 +132,7 @@ jobs:
 
       - name: Test bundle run
         run: |
+          cp conf.j2/databricks.yml databricks.yml
           job_name="${{ steps.extract-template.outputs.job_name }}"
           databricks bundle run -e dev "$job_name"
           exit 1
