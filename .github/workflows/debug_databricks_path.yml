@@ -21,8 +21,12 @@ jobs:
       - name: Check Databricks installation path
         run: |
           DBRICKS_PATH=$(which databricks)
+          if [ -z "$DBRICKS_PATH" ]; then
+            echo "Databricks is not installed."
+            exit 1
+          fi
           echo "Databricks installed at: $DBRICKS_PATH"
-          echo "::set-env name=DBRICKS_PATH::$DBRICKS_PATH"
+          echo "DBRICKS_PATH=$DBRICKS_PATH" >> $GITHUB_ENV
 
       - name: Add Databricks to $GITHUB_PATH
         run: |
