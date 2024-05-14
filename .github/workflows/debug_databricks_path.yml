@@ -17,6 +17,7 @@ jobs:
           brew install databricks
           echo fpath+=$(brew --prefix)/share/zsh/site-functions >> ~/.zshrc
           echo 'autoload -Uz compinit && compinit' >> ~/.zshrc
+          where databricks
           echo "/home/linuxbrew/.linuxbrew/Cellar/databricks/0.219.0/bin" >> $GITHUB_PATH
           echo $PATH
 
