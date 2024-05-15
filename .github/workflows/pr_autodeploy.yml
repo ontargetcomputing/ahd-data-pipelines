@@ -103,19 +103,15 @@ jobs:
 
           grep -A 1 'jobs:' "$template_file"
 
-          job_name_lines=$(grep -A 1 'jobs:' "$template_file")
-          echo "Job Name Lines:"
-          echo "$job_name_lines"
+          $job_name=$(grep -oP 'name:\s*\K.*' "$template_file")
+          echo "Job Name:"
+          echo "$job_name"
 
-          job_name_last_line=$(echo "$job_name_lines" | tail -n 1)
-          echo "Last Line:"
-          echo "$job_name_last_line"
-
-          trimmed_job_name=$(echo "$job_name_last_line" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+          job_name=$(echo "$job_name" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
           echo "Trimmed Job Name:"
-          echo "$trimmed_job_name"
+          echo "$job_name"
 
-          job_name=$(echo "$trimmed_job_name" | tr -d ':')
+          job_name=$(echo "$job_name" | tr -d ':')
           echo "Job Name:"
           echo "$job_name"
 
@@ -130,6 +126,7 @@ jobs:
       - name: Use extracted job name
         run: |
           echo "Job Name: ${{ steps.extract-template.outputs.job_name }}"
+          exit 1
 
       # get job id by name
       - name: Get Job ID using Databricks CLI
