@@ -130,13 +130,6 @@ jobs:
         run: |
           echo "Job Name: ${{ steps.extract-template.outputs.job_name }}"
 
-      - name: Test bundle run
-        run: |
-          sed '7,9d' conf.j2/databricks.yml > databricks.yml
-          job_name="${{ steps.extract-template.outputs.job_name }}"
-          databricks bundle run --target dev "$job_name" --profile DEFAULT
-          exit 1
-
       # get job id by name
       - name: Get Job ID using Databricks CLI
         id: get-job-id
