@@ -175,7 +175,7 @@ jobs:
           rm -f databricks.yml
           python bin/process_templates.py --env ci
           cp -rf conf.j2/workflows conf/workflows
-          databricks bundle validate -t ci --profile ci
+          databricks bundle deploy -t ci --profile ci
           cp .gitignore .gitignore.orig
           cp .deployment_gitignore .gitignore
           mv .gitignore.orig .gitignore
