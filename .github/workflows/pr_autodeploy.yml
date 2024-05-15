@@ -23,6 +23,7 @@ jobs:
         run: |
           pip install jinja2
           pip install pyyaml
+          pip install poetry
       
       - name: Install Databricks CLI
         run: curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
