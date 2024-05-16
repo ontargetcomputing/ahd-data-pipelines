@@ -29,3 +29,6 @@ lint:
 
 black:
 	black src
+
+cpdbfs:
+	databricks fs cp layer_definitions dbfs:/ahd_data_pipelines/layer_definitions --profile chhs_dev --recursive
