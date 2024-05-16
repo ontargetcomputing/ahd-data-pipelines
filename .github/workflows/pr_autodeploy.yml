@@ -179,5 +179,5 @@ jobs:
           mv .gitignore.orig .gitignore
 
       # Remaining todo:
-      #   Add deploy steps
+      #   Test comment trigger
       #   Update prepend statement to speicify ci environment
