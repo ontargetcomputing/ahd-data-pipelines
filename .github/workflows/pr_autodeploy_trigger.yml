@@ -1,0 +1,13 @@
+name: PR Comment Trigger
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  trigger_on_comment:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check for PR comment
+        if: github.event.issue.pull_request != '' && contains(github.event.comment.body, 'autodeploy')
+        uses: ./.github/workflows/pr_autodeploy.yml
