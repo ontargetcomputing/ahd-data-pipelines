@@ -32,7 +32,12 @@ jobs:
           pip install poetry
       
       - name: Install Databricks CLI
-        run: curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
+        run: |
+          retries=3
+          until [ $retries -eq 0 ] || curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh; do
+            ((retries--))
+            sleep 10
+          done
 
       - name: Create Databricks Config File
         env:
@@ -184,4 +189,3 @@ jobs:
           done
           echo "Job did not complete within the specified time"
           exit 1
-
