@@ -1,29 +1,191 @@
 name: Auto Deploy Databricks Pipeline
 
 on:
-  push:
-    paths:
-      - 'ahd-data-pipelines/conf.j2/**' # Watch for changes in any file under ahd-data-pipelines/conf.j2 directory
-  workflow_dispatch: # Allow manual triggering
+  issue_comment:
+    types: [created]
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     
     steps:
+      - name: Check for PR comment
+        if: github.event.issue.pull_request != '' && contains(github.event.comment.body, 'autodeploy')
+        run: echo "Autodeploy comment found. Proceeding with deployment."
+
+      - name: Exit if no autodeploy comment
+        if: github.event.issue.pull_request != '' && !contains(github.event.comment.body, 'autodeploy')
+        run: echo "No autodeploy comment found. Exiting." && exit 0
+
       - name: Checkout repository
         uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install modules
+        run: |
+          pip install jinja2
+          pip install pyyaml
+          pip install poetry
       
       - name: Install Databricks CLI
+        run: curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
+
+      - name: Create Databricks Config File
+        env:
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_URL_DEV }}
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN_DEV }}
         run: |
-          pip install databricks-cli
-      
-      - name: Configure Databricks CLI
+          echo "[DEFAULT]" > ~/.databrickscfg
+          echo "host = $DATABRICKS_HOST" >> ~/.databrickscfg
+          echo "token = $DATABRICKS_TOKEN" >> ~/.databrickscfg
+          echo "[ci]" >> ~/.databrickscfg
+          echo "host = $DATABRICKS_HOST" >> ~/.databrickscfg
+          echo "token = $DATABRICKS_TOKEN" >> ~/.databrickscfg
+
+      - name: Verify successful authentication
+        run: databricks clusters list
+
+      - name: Get list of changed files (handle no changes)
         run: |
-          echo -e "${{ secrets.DATABRICKS_TOKEN_DEV }}\n${{ secrets.DATABRICKS_URL_DEV }}" | databricks configure --token
-      
+          CHANGED_FILES=$(git diff --name-only HEAD -- 'ahd-data-pipelines/conf.j2/')
+          if [[ -z "$CHANGED_FILES" ]]; then
+            echo "No changed files found."
+            exit 0
+          else
+            echo "Changed files:"
+            echo "$CHANGED_FILES" | grep 'ahd-data-pipelines/conf\.j2/'
+          fi
+
       - name: Determine changes and deploy pipelines
         run: |
-          if git diff --name-only HEAD^ HEAD | grep -q '^ahd-data-pipelines/conf\.j2/parameters/census/language/'; then
+          if echo "$CHANGED_FILES" | grep -q 'ahd-data-pipelines/conf\.j2/parameters/census/language/'; then
             echo "Updating Language Pipeline"
           fi
+
+      - name: Extract census_language section
+        run: |
+          start_line=$(grep -n 'census_language:' conf.j2/data.ci.yml | cut -d ':' -f 1)
+          template_line=$(awk "NR==$start_line+2,/template:/" conf.j2/data.ci.yml | grep -n 'template:' | cut -d ':' -f 1)
+          if [ -z "$template_line" ]; then
+            end_line=$(wc -l < conf.j2/data.ci.yml)
+          else
+            end_line=$((start_line + template_line - 2)) # -2 to get the line before 'template:'
+          fi
+          sed -n "${start_line},${end_line}p" conf.j2/data.ci.yml > census_language_section.yml
+
+      - name: Create new file with census_language section
+        run: |
+          head -n 3 conf.j2/data.ci.yml > conf.j2/data.ci2.yml
+          cat census_language_section.yml >> conf.j2/data.ci2.yml
+
+      - name: Output contents of the new file
+        run: cat conf.j2/data.ci2.yml
+
+      - name: Get file path
+        run: |
+          file_path=$(grep -oP '(?<=template:\s).*' conf.j2/data.ci2.yml | awk '{$1=$1;print}')
+          file_path=${file_path//conf/conf.j2}
+          grep -A 1 'jobs:' "$file_path"
+
+# [dev richard_bach3] county_language
+      - name: Extract template filename and get job name
+        id: extract-template
+        run: |
+          if [ ! -f "conf.j2/data.ci2.yml" ]; then
+              echo "Error: conf.j2/data.ci2.yml not found"
+              exit 1
+          fi
+
+          template_file=$(awk -F 'template: ' 'NF>1{print $2}' conf.j2/data.ci2.yml)
+          if [ -z "$template_file" ]; then
+              echo "Error: Template filename not found in conf.j2/data.ci2.yml"
+              exit 1
+          fi
+
+          template_file="${template_file/conf/conf.j2}"
+
+          grep -A 1 'jobs:' "$template_file"
+
+          $job_name=$(grep -oP 'name:\s*\K.*' "$template_file")
+          echo "Job Name:"
+          echo "$job_name"
+
+          job_name=$(echo "$job_name" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+          echo "Trimmed Job Name:"
+          echo "$job_name"
+
+          job_name=$(echo "$job_name" | tr -d ':')
+          echo "Job Name:"
+          echo "$job_name"
+
+          if [ -z "$job_name" ]; then
+              echo "Error: Job name not found in $template_file"
+              exit 1
+          fi
+
+          job_name="[dev richard_bach3] ${job_name}"
+          echo "::set-output name=job_name::$job_name"
+
+      - name: Use extracted job name
+        run: |
+          echo "Job Name: ${{ steps.extract-template.outputs.job_name }}"
+          exit 1
+
+      # get job id by name
+      - name: Get Job ID using Databricks CLI
+        id: get-job-id
+        run: |
+          job_name="${{ steps.extract-template.outputs.job_name }}"
+
+          databricks jobs list --output json | jq -r '.[] | [.job_id, .settings.name] | @csv' > job_list.csv
+
+          job_id=$(awk -F',' -v job_name="$job_name" '{field2 = substr($2, 2, length($2)-2)} tolower(field2) == tolower(job_name) {print $1}' job_list.csv)
+
+          echo "::set-output name=job_id::$job_id"
+          echo "Job ID: $job_id"
+
+      - name: Start Databricks Job
+        id: start-job
+        run: |
+          run_id=$(databricks jobs run-now ${{ steps.get-job-id.outputs.job_id }} | jq -r '.run_id')
+          echo "::set-output name=run_id::$run_id"
+          echo "Run Id: $run_id"
+
+      - name: Wait for Job Completion
+        run: |
+          retries=0
+          while [ $retries -lt 30 ]; do  # Wait for 5 minutes (300 seconds) with a sleep interval of 10 seconds
+            run_status=$(databricks jobs get-run ${{ steps.start-job.outputs.run_id }} | jq -r '.state.life_cycle_state')
+            echo "Job status: $run_status"
+            if [ "$run_status" = "TERMINATED" ]; then
+              echo "Job completed successfully"
+              exit 0
+            fi
+            retries=$((retries+1))
+            sleep 10  # Wait for 10 seconds before checking again
+          done
+          echo "Job did not complete within the specified time"
+          exit 1
+
+      - name: Deploy ci Pipeline with conf.j2/data.ci2.yml file
+        run: |
+          mv conf.j2/data.ci.yml conf.j2/temp.yml
+          mv conf.j2/data.ci2.yml conf.j2/data.ci.yml
+          mv conf.j2/temp.yml conf.j2/data.ci2.yml
+          rm -rf conf
+          rm -f databricks.yml
+          python bin/process_templates.py --env ci
+          cp -rf conf.j2/workflows conf/workflows
+          databricks bundle deploy -t ci --profile ci
+          cp .gitignore .gitignore.orig
+          cp .deployment_gitignore .gitignore
+          mv .gitignore.orig .gitignore
+
+      # Remaining todo:
+      #   Test comment trigger
+      #   Update prepend statement to speicify ci environment
+
