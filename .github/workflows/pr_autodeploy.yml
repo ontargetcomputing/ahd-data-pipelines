@@ -110,7 +110,7 @@ jobs:
 
           grep -A 1 'jobs:' "$template_file"
 
-          $job_name=$(grep -oP 'name:\s*\K.*' "$template_file")
+          job_name=$(grep -oP 'name:\s*\K.*' "$template_file")
           echo "Job Name:"
           echo "$job_name"
 
@@ -130,6 +130,7 @@ jobs:
           job_name="[dev richard_bach3] ${job_name}"
           echo "::set-output name=job_name::$job_name"
 
+
       - name: Use extracted job name
         run: |
           echo "Job Name: ${{ steps.extract-template.outputs.job_name }}"
@@ -147,6 +148,20 @@ jobs:
 
           echo "::set-output name=job_id::$job_id"
           echo "Job ID: $job_id"
+
+      - name: Deploy ci Pipeline with conf.j2/data.ci2.yml file
+        run: |
+          mv conf.j2/data.ci.yml conf.j2/temp.yml
+          mv conf.j2/data.ci2.yml conf.j2/data.ci.yml
+          mv conf.j2/temp.yml conf.j2/data.ci2.yml
+          rm -rf conf
+          rm -f databricks.yml
+          python bin/process_templates.py --env ci
+          cp -rf conf.j2/workflows conf/workflows
+          databricks bundle deploy -t ci --profile ci
+          cp .gitignore .gitignore.orig
+          cp .deployment_gitignore .gitignore
+          mv .gitignore.orig .gitignore
 
       - name: Start Databricks Job
         id: start-job
@@ -171,16 +186,3 @@ jobs:
           echo "Job did not complete within the specified time"
           exit 1
 
-      - name: Deploy ci Pipeline with conf.j2/data.ci2.yml file
-        run: |
-          mv conf.j2/data.ci.yml conf.j2/temp.yml
-          mv conf.j2/data.ci2.yml conf.j2/data.ci.yml
-          mv conf.j2/temp.yml conf.j2/data.ci2.yml
-          rm -rf conf
-          rm -f databricks.yml
-          python bin/process_templates.py --env ci
-          cp -rf conf.j2/workflows conf/workflows
-          databricks bundle deploy -t ci --profile ci
-          cp .gitignore .gitignore.orig
-          cp .deployment_gitignore .gitignore
-          mv .gitignore.orig .gitignore
