@@ -1,16 +1,22 @@
 name: Auto Deploy Databricks Pipeline
 
 on:
-  push:
-    paths:
-      - 'ahd-data-pipelines/conf.j2/**'
-  workflow_dispatch:
+  issue_comment:
+    types: [created]
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     
     steps:
+      - name: Check for PR comment
+        if: github.event.issue.pull_request != '' && contains(github.event.comment.body, 'autodeploy')
+        run: echo "Autodeploy comment found. Proceeding with deployment."
+
+      - name: Exit if no autodeploy comment
+        if: github.event.issue.pull_request != '' && !contains(github.event.comment.body, 'autodeploy')
+        run: echo "No autodeploy comment found. Exiting." && exit 0
+
       - name: Checkout repository
         uses: actions/checkout@v2
 
@@ -48,6 +54,7 @@ jobs:
           CHANGED_FILES=$(git diff --name-only HEAD -- 'ahd-data-pipelines/conf.j2/')
           if [[ -z "$CHANGED_FILES" ]]; then
             echo "No changed files found."
+            exit 0
           else
             echo "Changed files:"
             echo "$CHANGED_FILES" | grep 'ahd-data-pipelines/conf\.j2/'
