@@ -10,6 +10,7 @@ import geopandas as gpd
 import pandas as pd
 from shapely import wkt
 from shapely.geometry import Polygon, MultiPolygon, shape
+from arcgis.geometry import Geometry
 
 
 class AgolDatasource(Datasource):
@@ -137,16 +138,7 @@ class AgolDatasource(Datasource):
                         "spatialReference": {"wkid": 4326},
                     }
                 elif the_type == "MULTIPART_POLYGON":
-                    interiors = geometry.interiors
-                    outerarray = []
-                    for i in range(0, len(geometry.interiors)):
-                        coords = interiors[i].coords
-                        x, y = coords.xy
-                        x = list(x)
-                        y = list(y)
-                        thearray = [list(z) for z in zip(x, y)]
-                        outerarray.append(thearray)
-                    wrappedObj["geometry"] = {"rings": outerarray, "spatialReference": {"wkid": 4326}}
+                    wrappedObj["geometry"] = Geometry(geometry.__geo_interface__)
                 else:
                     print(f"Unknown geometry type:{the_type}")
 
