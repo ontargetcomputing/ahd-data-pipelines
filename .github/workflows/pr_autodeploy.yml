@@ -134,7 +134,6 @@ jobs:
       - name: Use extracted job name
         run: |
           echo "Job Name: ${{ steps.extract-template.outputs.job_name }}"
-          exit 1
 
       # get job id by name
       - name: Get Job ID using Databricks CLI
@@ -185,4 +184,3 @@ jobs:
           done
           echo "Job did not complete within the specified time"
           exit 1
-
