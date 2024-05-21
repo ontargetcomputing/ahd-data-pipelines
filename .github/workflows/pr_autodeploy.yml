@@ -165,7 +165,7 @@ jobs:
       - name: Start Databricks Job
         id: start-job
         run: |
-          run_id=$(databricks jobs run-now ${{ steps.get-job-id.outputs.job_id }} | jq -r '.run_id')
+          run_id=$(databricks jobs run-now ${{ steps.get-job-id.outputs.job_id }} --profile ci | jq -r '.run_id')
           echo "::set-output name=run_id::$run_id"
           echo "Run Id: $run_id"
 
@@ -185,4 +185,3 @@ jobs:
           echo "Job did not complete within the specified time"
           exit 1
 
-          
