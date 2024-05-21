@@ -37,7 +37,7 @@ jobs:
       - name: Create Databricks Config File
         env:
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_URL_DEV }}
-          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN_DEV }}
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN_DEV_TEMP }}
         run: |
           echo "[DEFAULT]" > ~/.databrickscfg
           echo "host = $DATABRICKS_HOST" >> ~/.databrickscfg
@@ -184,8 +184,3 @@ jobs:
           cp .gitignore .gitignore.orig
           cp .deployment_gitignore .gitignore
           mv .gitignore.orig .gitignore
-
-      # Remaining todo:
-      #   Test comment trigger
-      #   Update prepend statement to speicify ci environment
-
