@@ -156,7 +156,7 @@ jobs:
         run: |
           job_name="${{ steps.extract-template.outputs.job_name }}"
 
-          databricks jobs list --output json | jq -r '.[] | [.job_id, .settings.name] | @csv' > job_list.csv
+          databricks jobs list --profile ci --output json | jq -r '.[] | [.job_id, .settings.name] | @csv' > job_list.csv
 
           job_id=$(awk -F',' -v job_name="$job_name" '{field2 = substr($2, 2, length($2)-2)} tolower(field2) == tolower(job_name) {print $1}' job_list.csv)
 
@@ -185,4 +185,3 @@ jobs:
           done
           echo "Job did not complete within the specified time"
           exit 1
-
