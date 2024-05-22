@@ -51,9 +51,6 @@ jobs:
           echo "host = $DATABRICKS_HOST" >> ~/.databrickscfg
           echo "token = $DATABRICKS_TOKEN" >> ~/.databrickscfg
 
-      - name: Verify successful authentication
-        run: databricks clusters list
-
       - name: Get list of changed files (handle no changes)
         run: |
           CHANGED_FILES=$(git diff --name-only HEAD -- 'ahd-data-pipelines/conf.j2/')
@@ -132,26 +129,12 @@ jobs:
               exit 1
           fi
 
-          job_name="[dev richard_bach3] ${job_name}"
+          job_name="[dev jeff_ranta] ${job_name}"
           echo "::set-output name=job_name::$job_name"
-
 
       - name: Use extracted job name
         run: |
           echo "Job Name: ${{ steps.extract-template.outputs.job_name }}"
-
-      # get job id by name
-      - name: Get Job ID using Databricks CLI
-        id: get-job-id
-        run: |
-          job_name="${{ steps.extract-template.outputs.job_name }}"
-
-          databricks jobs list --output json | jq -r '.[] | [.job_id, .settings.name] | @csv' > job_list.csv
-
-          job_id=$(awk -F',' -v job_name="$job_name" '{field2 = substr($2, 2, length($2)-2)} tolower(field2) == tolower(job_name) {print $1}' job_list.csv)
-
-          echo "::set-output name=job_id::$job_id"
-          echo "Job ID: $job_id"
 
       - name: Deploy ci Pipeline with conf.j2/data.ci2.yml file
         run: |
@@ -166,6 +149,19 @@ jobs:
           cp .gitignore .gitignore.orig
           cp .deployment_gitignore .gitignore
           mv .gitignore.orig .gitignore
+
+# get job id by name
+      - name: Get Job ID using Databricks CLI
+        id: get-job-id
+        run: |
+          job_name="${{ steps.extract-template.outputs.job_name }}"
+
+          databricks jobs list --output json | jq -r '.[] | [.job_id, .settings.name] | @csv' > job_list.csv
+
+          job_id=$(awk -F',' -v job_name="$job_name" '{field2 = substr($2, 2, length($2)-2)} tolower(field2) == tolower(job_name) {print $1}' job_list.csv)
+
+          echo "::set-output name=job_id::$job_id"
+          echo "Job ID: $job_id"
 
       - name: Start Databricks Job
         id: start-job
@@ -189,3 +185,4 @@ jobs:
           done
           echo "Job did not complete within the specified time"
           exit 1
+
