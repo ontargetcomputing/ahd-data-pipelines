@@ -42,7 +42,7 @@ jobs:
       - name: Create Databricks Config File
         env:
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_URL_DEV }}
-          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN_DEV_TEMP }}
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN_DEV }}
         run: |
           echo "[DEFAULT]" > ~/.databrickscfg
           echo "host = $DATABRICKS_HOST" >> ~/.databrickscfg
@@ -129,7 +129,7 @@ jobs:
               exit 1
           fi
 
-          job_name="[dev jeff_ranta] ${job_name}"
+          job_name="[dev richard_bach] ${job_name}"
           echo "::set-output name=job_name::$job_name"
 
       - name: Use extracted job name
