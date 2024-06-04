@@ -9,6 +9,9 @@ jobs:
   get_changed_files: 
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        
       - name: Get list of changed files (handle no changes)
         run: |
           CHANGED_FILES=$(git diff --name-only HEAD -- 'ahd-data-pipelines/conf.j2/')
