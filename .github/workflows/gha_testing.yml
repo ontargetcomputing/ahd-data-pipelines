@@ -3,18 +3,27 @@ name: Testing
 on: workflow_dispatch
 
 env:
-  changed_files: 
+  changed_files: ""
 
 jobs:
-  get_changed_files: 
+  get_changed_files:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v2
-        
+        with:
+          fetch-depth: 2
+
+      - name: Fetch all branches
+        run: git fetch --all
+
       - name: Get list of changed files (handle no changes)
+        id: get_changed_files
         run: |
-          CHANGED_FILES=$(git diff --name-only HEAD -- 'ahd-data-pipelines/conf.j2/')
+          # Compare against the base branch
+          BASE_BRANCH=$(git rev-parse --abbrev-ref HEAD~1)
+          echo "Comparing with base branch: $BASE_BRANCH"
+          CHANGED_FILES=$(git diff --name-only $BASE_BRANCH -- 'ahd-data-pipelines/conf.j2/')
           if [[ -z "$CHANGED_FILES" ]]; then
             echo "No changed files found."
             echo "changed_files=" >> $GITHUB_ENV
@@ -24,8 +33,6 @@ jobs:
             CHANGED_FILES_LIST=$(echo "$CHANGED_FILES" | grep 'ahd-data-pipelines/conf\.j2/' | tr '\n' ' ')
             echo "changed_files=$CHANGED_FILES_LIST" >> $GITHUB_ENV
           fi
-        
-      - name: Display changed files
-        run: |
-          echo "Changed files: ${{ env.changed_files }}"
 
+      - name: Display changed files
+        run: echo "Changed files: ${{ env.changed_files }}"
