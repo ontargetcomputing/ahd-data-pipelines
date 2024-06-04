@@ -22,6 +22,6 @@ jobs:
             echo "changed_files=$CHANGED_FILES_LIST" >> $GITHUB_ENV
           fi
         
-        - name: Display changed files
-          run: |
-            echo "Changed files: ${{ env.changed_files }}"
+      - name: Display changed files
+        run: |
+          echo "Changed files: ${{ env.changed_files }}"
