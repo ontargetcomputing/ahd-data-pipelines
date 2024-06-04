@@ -20,7 +20,6 @@ jobs:
       - name: Get list of changed files (handle no changes)
         id: get_changed_files
         run: |
-          # Compare against the base branch
           BASE_BRANCH=$(git rev-parse --abbrev-ref HEAD~1)
           echo "Comparing with base branch: $BASE_BRANCH"
           CHANGED_FILES=$(git diff --name-only $BASE_BRANCH -- 'ahd-data-pipelines/conf.j2/')
@@ -35,4 +34,5 @@ jobs:
           fi
 
       - name: Display changed files
-        run: echo "Changed files: ${{ env.changed_files }}"
+        run: |
+          echo "Changed files: ${{ env.changed_files }}"
