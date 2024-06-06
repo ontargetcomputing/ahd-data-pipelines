@@ -3,8 +3,9 @@ from unittest.mock import patch, MagicMock
 from pyspark.sql import SparkSession
 import pandas as pd
 import geopandas as gpd
+import json
 from shapely import wkt
-from shapely.geometry import Point, Polygon
+from shapely.geometry import Point, Polygon, shape
 from ahd_data_pipelines.pandas.pandas_helper import PandasHelper
 from ahd_data_pipelines.integrations.agol_datasource import AgolDatasource  # Adjust the import according to your actual module name
 
@@ -67,14 +68,19 @@ class TestAgolDatasource(unittest.TestCase):
         mock_feature_layer_instance = mock_FeatureLayer.return_value
         mock_gis_instance.content.get.return_value.layers = [mock_feature_layer_instance]
         mock_feature_layer_instance.url = "fake-layer-url"
-        
+
         featureSet = MagicMock()
         featureSet.sdf = pd.DataFrame({
-            'geometry': [Point(1, 2), Polygon([(0, 0), (1, 1), (1, 0)])]
+            'geometry': ['POINT (1 2)', 'POLYGON ((0 0, 1 1, 1 0, 0 0))']
         })
         # Ensure to_geojson returns a valid JSON string
-        featureSet.to_geojson.return_value = '{"features": [{"geometry": {"type": "Point", "coordinates": [1, 2]}, "properties": {"field1": "value1"}},{"geometry": {"type": "Polygon", "coordinates": [[[0, 0], [1, 1], [1, 0], [0, 0]]]}, "properties": {"field2": "value2"}}]}'
-        
+        featureSet.to_geojson = json.dumps({
+            "features": [
+                {"geometry": {"type": "Point", "coordinates": [1, 2]}, "properties": {"field1": "value1"}},
+                {"geometry": {"type": "Polygon", "coordinates": [[[0, 0], [1, 1], [1, 0], [0, 0]]]}, "properties": {"field2": "value2"}}
+            ]
+        })
+
         mock_feature_layer_instance.query.return_value = featureSet
 
         mock_spark_df = MagicMock()
@@ -102,15 +108,29 @@ class TestAgolDatasource(unittest.TestCase):
         mock_feature_layer_instance.query.assert_called_once()
 
         expected_gdf = gpd.GeoDataFrame({
-            'field1': ['value1', None],
-            'field2': [None, 'value2'],
-            'geometry': [Point(1, 2), Polygon([(0, 0), (1, 1), (1, 0), (0, 0)])]
-        }, geometry='geometry', crs="EPSG:4326")
+        'field1': ['value1', None],
+        'field2': [None, 'value2'],
+        'geometry': [Point(1, 2), Polygon([(0, 0), (1, 1), (1, 0)])]
+        }, crs="EPSG:4326")
 
-        gpd.testing.assert_geodataframe_equal(
-            mock_geopandas_to_pysparksql.call_args[0][0],
-            expected_gdf
-        )
+        # Access the gpd_df argument from the keyword arguments
+        actual_gdf = mock_geopandas_to_pysparksql.call_args[1]['gpd_df']
+        
+        # Print the actual and expected dataframes for debugging
+        print("Actual GeoDataFrame:")
+        print(actual_gdf)
+        print("Expected GeoDataFrame:")
+        print(expected_gdf)
+
+        # Use pandas testing tools for detailed comparison
+        try:
+            pd.testing.assert_frame_equal(
+                actual_gdf.reset_index(drop=True),
+                expected_gdf.reset_index(drop=True)
+            )
+        except AssertionError as e:
+            print("AssertionError:", e)
+            raise
 
         self.assertEqual(result, mock_spark_df)
         spark.stop()
