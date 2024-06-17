@@ -1,26 +1,32 @@
 source_datasources:
   - type: databricks
     query: >
-      select
-        f.ComplexName as cmpx_name,
-        f.ComplexID as cmpx_id,
-        f.PercentContained as contained,
-        f.county as county,
-        f.GISAcres as gis_acres,
-        f.IRWINID as irwinid,
-        f.Label as label,
-        f.oes_region as oes_region,
-        f.POOCounty as poo_county,
-        f.IncidentName as incident_name,
-        f.FireDiscoveryDateTime as fire_discovery_datetime,
-        f.CalculatedAcres as calculated_acres,
-        f.DailyAcres as reported_acres,
-        f.geometry as geometry
-      from ahd_wildfires.gold.california_fires_perims_{{ env }} f
+      select * from (
+        select
+          f.ComplexName as cmpx_name,
+          f.ComplexID as cmpx_id,
+          f.PercentContained as contained,
+          f.county as county,
+          f.GISAcres as gis_acres,
+          f.IRWINID as irwinid,
+          f.Label as label,
+          f.oes_region as oes_region,
+          f.POOCounty as poo_county,
+          f.IncidentName as incident_name,
+          f.FireDiscoveryDateTime as fire_discovery_datetime,
+          CASE
+            WHEN points.IncidentTypeCategory is not null THEN points.IncidentTypeCategory
+            ELSE f.IncidentTypeCategory
+          END as IncidentTypeCategory,
+          f.CalculatedAcres as calculated_acres,
+          f.DailyAcres as reported_acres,
+          f.geometry as geometry
+        from ahd_wildfires.gold.california_fires_perims_prod f 
+        join ahd_wildfires.silver.california_fires_points_prod points on points.IRWINID = f.IRWINID) as abc
       where 
-        ( f.CalculatedAcres >= 5.0 or f.DailyAcres >= 5.0 or f.GISAcres >= 5.0)
-        and f.IncidentTypeCategory != 'RX'
-        and ( f.PercentContained is null or f.PercentContained != 100.0 )
+        ( calculated_acres >= 5.0 or reported_acres >= 5.0 or gis_acres >= 5.0)
+        and IncidentTypeCategory != 'RX'
+        and ( contained is null or contained != 100.0 )
 destination_datasources:
   - type: agol
     dataset_id: {{ workflows['hazard_wildfire'].green.perimeters.destination.dataset_id }}
