@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ahd-data-pipelines"
-version = "0.11.13"
+version = "0.12.0"
 description = "wheel file based on ahd-data-pipelines"
 authors = ["balutbomber <balutbomber@gmail.com>"]
 readme = "README.md"
