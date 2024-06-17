@@ -71,7 +71,7 @@ resources:
           existing_cluster_id: ${var.ahd_cluster_id}
           python_wheel_task:
             package_name: ${bundle.name}
-            entry_point: medallion_task
+            entry_point: gold_wildife_perims_task
             parameters: [ "--conf-file", "${var.param_files_dir}/hazard/wildfire/gold_perims_task.yml", "--stage", "${bundle.target}"]
           libraries:
             - whl: /dist/*.whl
