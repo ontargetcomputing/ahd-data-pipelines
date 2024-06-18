@@ -35,4 +35,4 @@ destination_datasources:
     object_id: FID
     geometry: 
       column: geometry
-      type: POLYGON
+      type: DYNAMIC
