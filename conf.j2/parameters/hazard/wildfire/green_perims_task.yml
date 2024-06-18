@@ -14,10 +14,7 @@ source_datasources:
           f.POOCounty as poo_county,
           f.IncidentName as incident_name,
           f.FireDiscoveryDateTime as fire_discovery_datetime,
-          CASE
-            WHEN points.IncidentTypeCategory is not null THEN points.IncidentTypeCategory
-            ELSE f.IncidentTypeCategory
-          END as IncidentTypeCategory,
+          COALESCE(points.IncidentTypeCategory, f.IncidentTypeCategory) AS IncidentTypeCategory,
           f.CalculatedAcres as calculated_acres,
           f.DailyAcres as reported_acres,
           f.geometry as geometry
