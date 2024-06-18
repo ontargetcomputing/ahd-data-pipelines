@@ -1,0 +1,36 @@
+bronze: true
+source_datasources:
+  - type: databricks
+    query: >
+      select 
+        current_date() as effective_date,
+        'CDPH' as ade_source,
+        'CDPH-SNF' as ade_source_facility_type,
+        case when Facility_Status = 'Open' then 1 else 0 end as operational_with_impacts_int,
+        0 as nonoperational_long_term_int,
+        0 as nonoperational_short_term_int,
+        0 as partially_evacuated_int,
+        0 as fully_evacuated_int
+        from cdph_facilities.gold.impacted_prod;
+    
+destination_datasources:
+  - type: databricks
+    table: shelter.bronze.facilities_historical_impact_{{ env }}
+
+    data_types:
+    - column: effective_date
+      type: date
+    - column: ade_source
+      type: string
+    - column: ade_source_facility_type
+      type: string
+    - column: operational_with_impacts_int
+      type: int
+    - column: nonoperational_long_term_int
+      type: int
+    - column: nonoperational_short_term_int
+      type: int
+    - column: partially_evacuated_int
+      type: int
+    - column: fully_evacuated_int
+      type: int

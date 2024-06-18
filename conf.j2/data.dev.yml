@@ -133,6 +133,13 @@ workflows:
         dataset_id: 1a707547eebb47358112a473c1048677
         layer: 0
 
+  facilities_historical_impact:
+    template: conf/workflows/facilities/historical_impact.yml
+    green:
+      destination:
+        dataset_id: f792829fbe2542dfba255737bedbbfc8
+        layer: 0
+
   census_language:
     template: conf/workflows/census/language.yml
 
