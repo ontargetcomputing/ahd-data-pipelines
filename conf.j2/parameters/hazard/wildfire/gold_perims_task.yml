@@ -21,7 +21,7 @@ source_datasources:
               perims.IMTName,
               points.IRWINID,
               points.IncidentName,
-              perims.IncidentTypeCategory,
+              COALESCE(points.IncidentTypeCategory, perims.IncidentTypeCategory) AS IncidentTypeCategory,
               perims.Label,
               perims.LocalIncidentID, 
               perims.MapMethod,
