@@ -2,13 +2,16 @@ bronze: true
 source_datasources:
   - type: databricks
     query: >
-      select 
-        current_date() as effective_date,
+      select current_date() as effective_date,
         'CDPH' as ade_source,
-        'CDPH-SNF' as ade_source_facility_type,
+        case 
+        when Facility_Type = 'SNF' then 'CDPH-SNF' 
+        when Facility_Type = 'GACH' then 'CDPH-GACH'
+        else 'CDPH-Other'
+        end as ade_source_facility_type,
         case when Facility_Status = 'Open' then 1 else 0 end as operational_with_impacts_int,
         0 as nonoperational_long_term_int,
-        0 as nonoperational_short_term_int,
+        case when Facility_Status <> 'Open' and Facility_Status is not null then 1 else 0 end as nonoperational_short_term_int,
         0 as partially_evacuated_int,
         0 as fully_evacuated_int
         from cdph_facilities.gold.impacted_prod;
