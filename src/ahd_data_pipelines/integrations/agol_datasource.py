@@ -9,7 +9,8 @@ import json
 import geopandas as gpd
 import pandas as pd
 from shapely import wkt
-from shapely.geometry import Polygon, MultiPolygon, shape
+from shapely.geometry import Point, Polygon, MultiPolygon, shape
+from arcgis.geometry import Geometry
 
 
 class AgolDatasource(Datasource):
@@ -122,6 +123,19 @@ class AgolDatasource(Datasource):
                 del the_dict[column]
                 the_type = self.params["geometry"]["type"]
                 print(f"Converting geometry type:{type}")
+                if the_type == "DYNAMIC":
+                    #geom_type = type(geometry)
+                    if isinstance(geometry, MultiPolygon):
+                        the_type = "MULTIPART_POLYGON"
+                    elif isinstance(geometry, Polygon):
+                        the_type = "POLYGON"
+                    elif isinstance(geometry, Point):
+                        the_type = "POINT"
+                    else:
+                        the_type = type(geometry)
+                    #print(type(geometry))
+                    #print(geometry)
+
                 if the_type == "POINT":
                     wrappedObj["geometry"] = {
                         "x": geometry.x,
@@ -137,16 +151,7 @@ class AgolDatasource(Datasource):
                         "spatialReference": {"wkid": 4326},
                     }
                 elif the_type == "MULTIPART_POLYGON":
-                    interiors = geometry.interiors
-                    outerarray = []
-                    for i in range(0, len(geometry.interiors)):
-                        coords = interiors[i].coords
-                        x, y = coords.xy
-                        x = list(x)
-                        y = list(y)
-                        thearray = [list(z) for z in zip(x, y)]
-                        outerarray.append(thearray)
-                    wrappedObj["geometry"] = {"rings": outerarray, "spatialReference": {"wkid": 4326}}
+                    wrappedObj["geometry"] = Geometry(geometry.__geo_interface__)
                 else:
                     print(f"Unknown geometry type:{the_type}")
 

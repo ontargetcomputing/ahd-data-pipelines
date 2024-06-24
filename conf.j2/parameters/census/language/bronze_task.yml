@@ -4,6 +4,7 @@ source_datasources:
     table: census.upload.county_language
     
 destination_datasources:
+  # destination datasources
   - type: databricks
     table: census.bronze.county_language_{{ env }}
     data_types:
@@ -35,3 +36,4 @@ destination_datasources:
       type: double
     - column: speaks_arabic_percent
       type: double
+

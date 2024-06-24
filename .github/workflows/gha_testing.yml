@@ -1,0 +1,27 @@
+name: Testing
+
+on: workflow_dispatch
+
+env:
+  changed_files: 
+
+jobs:
+  get_changed_files: 
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get list of changed files (handle no changes)
+        run: |
+          CHANGED_FILES=$(git diff --name-only HEAD -- 'ahd-data-pipelines/conf.j2/')
+          if [[ -z "$CHANGED_FILES" ]]; then
+            echo "No changed files found."
+            echo "changed_files=" >> $GITHUB_ENV
+          else
+            echo "Changed files:"
+            echo "$CHANGED_FILES"
+            CHANGED_FILES_LIST=$(echo "$CHANGED_FILES" | grep 'ahd-data-pipelines/conf\.j2/' | tr '\n' ' ')
+            echo "changed_files=$CHANGED_FILES_LIST" >> $GITHUB_ENV
+          fi
+        
+      - name: Display changed files
+        run: |
+          echo "Changed files: ${{ env.changed_files }}"
