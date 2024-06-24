@@ -34,6 +34,6 @@ destination_datasources:
     - column: fully_evacuated_int
       type: int
   - type: agol
-    dataset_id: {{ workflows['facilities_historical_impact'].green.facilities_historical_impact.destination.dataset_id }}
-    layer: {{ workflows['facilities_historical_impact'].green.facilities_historical_impact.destination.layer }}
+    dataset_id: {{ workflows['facilities_historical_impact'].green.destination.dataset_id }}
+    layer: {{ workflows['facilities_historical_impact'].green.destination.layer }}
     url: https://chhsagency.maps.arcgis.com/home/
