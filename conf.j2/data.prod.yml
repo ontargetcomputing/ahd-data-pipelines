@@ -92,6 +92,13 @@ workflows:
         dataset_id: 1d23a053ed204d9c8e35f0683539a375
         layer: 0
 
+  facilities_historical_impact:
+    template: conf/workflows/facilities/historical_impact.yml
+    green:
+      destination:
+        dataset_id: 2c3c1f443f4b44188da576ca67a21f66
+        layer: 0
+
   hazard_wildfire:
     template: conf/workflows/hazard/wildfire.yml
     bronze: 
