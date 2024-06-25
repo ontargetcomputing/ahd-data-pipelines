@@ -19,7 +19,7 @@ resources:
             entry_point: medallion_task
             parameters: [ "--conf-file", "${var.param_files_dir}/facilities/historical_impact/bronze_task.yml", "--stage", "${bundle.target}"]
           libraries:
-            - whl: ${workspace.root_path}/dist/*.whl
+            - whl: /Workspace/Users/jeff.ranta@chhs.ca.gov/.bundle/ahd_data_pipelines/dev/dist/*.whl
 
         - task_key: "silver"
           depends_on: 
@@ -30,7 +30,7 @@ resources:
             entry_point: medallion_task
             parameters: [ "--conf-file", "${var.param_files_dir}/facilities/historical_impact/silver_task.yml", "--stage", "${bundle.target}"]
           libraries:
-            - whl: ${workspace.root_path}/dist/*.whl
+            - whl: /Workspace/Users/jeff.ranta@chhs.ca.gov/.bundle/ahd_data_pipelines/dev/dist/*.whl
 
         - task_key: "gold"
           depends_on: 
@@ -41,7 +41,7 @@ resources:
             entry_point: medallion_task
             parameters: [ "--conf-file", "${var.param_files_dir}/facilities/historical_impact/gold_task.yml", "--stage", "${bundle.target}"]
           libraries:
-            - whl: ${workspace.root_path}/dist/*.whl
+            - whl: /Workspace/Users/jeff.ranta@chhs.ca.gov/.bundle/ahd_data_pipelines/dev/dist/*.whl
 
         - task_key: "green"
           depends_on: 
@@ -52,4 +52,4 @@ resources:
             entry_point: medallion_task
             parameters: [ "--conf-file", "${var.param_files_dir}/facilities/historical_impact/green_task.yml", "--stage", "${bundle.target}"]
           libraries:
-            - whl: ${workspace.root_path}/dist/*.whl
+            - whl: /Workspace/Users/jeff.ranta@chhs.ca.gov/.bundle/ahd_data_pipelines/dev/dist/*.whl
