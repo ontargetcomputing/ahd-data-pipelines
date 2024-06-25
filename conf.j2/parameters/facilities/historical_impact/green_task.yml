@@ -1,17 +1,17 @@
 source_datasources:
   - type: databricks
     query: >
-    SELECT 
-          effective_date,
-          ade_source,
-          ade_source_facility_type, 
-          operational_with_impacts_int,
-          nonoperational_long_term_int,
-          nonoperational_short_term_int,
-          partially_evacuated_int,
-          fully_evacuated_int
-      FROM shelter.gold.facilities_historical_impact_{{ env }}
-      WHERE effective_date = current_date();
+      SELECT 
+            effective_date,
+            ade_source,
+            ade_source_facility_type, 
+            operational_with_impacts_int,
+            nonoperational_long_term_int,
+            nonoperational_short_term_int,
+            partially_evacuated_int,
+            fully_evacuated_int
+        FROM shelter.gold.facilities_historical_impact_{{ env }}
+        WHERE effective_date = current_date();
 
 destination_datasources:
   - type: databricks
