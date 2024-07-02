@@ -9,13 +9,15 @@ import json
 import geopandas as gpd
 import pandas as pd
 from shapely import wkt
+from shapely.geometry import Point, Polygon, MultiPolygon, shape
+from arcgis.geometry import Geometry
 
 
 class AgolDatasource(Datasource):
     """ """
 
     def __init__(self, params: dict = None, spark: SparkSession = None):
-        self.gis = GIS(params["url"], params["username"], params["password"])
+        self.gis = GIS(params["url"], params["username"], params["password"], verify_cert=False)
         self.params = params
         self.spark = spark
 
@@ -47,7 +49,35 @@ class AgolDatasource(Datasource):
         if len(gdf) > 0:
             gjsonString = featureSet.to_geojson
             gjsonDict = json.loads(gjsonString)
-            transformed = gpd.GeoDataFrame.from_features(gjsonDict["features"])
+            features = gjsonDict["features"]
+            data = []
+            for feature in features:
+                geometry = feature["geometry"]
+                if feature["geometry"]["type"] == "MultiPolygon":
+                    coords = geometry["coordinates"]
+                    polygons = []
+                    for poly in coords:
+                        points = []
+                        for point in poly:
+                            points.append((point[0], point[1]))
+                        polygons.append(Polygon(points))
+                    shp = MultiPolygon(polygons)
+                else:
+                    shp = shape(geometry)
+
+                props = feature["properties"]
+                props["geometry"] = shp
+                data.append(props)
+
+            df = pd.DataFrame(data)
+            # columns_to_drop = ['SHAPE', 'Shape__Area', 'Shape__Length']
+
+            # # Check if each column exists before dropping it
+            # for column in columns_to_drop:
+            #     if column in df.columns:
+            #         df.drop(columns=column, inplace=True)
+
+            transformed = gpd.GeoDataFrame(df, geometry="geometry")
 
             geom = transformed["geometry"]
 
@@ -98,6 +128,19 @@ class AgolDatasource(Datasource):
                 del the_dict[column]
                 the_type = self.params["geometry"]["type"]
                 print(f"Converting geometry type:{type}")
+                if the_type == "DYNAMIC":
+                    #geom_type = type(geometry)
+                    if isinstance(geometry, MultiPolygon):
+                        the_type = "MULTIPART_POLYGON"
+                    elif isinstance(geometry, Polygon):
+                        the_type = "POLYGON"
+                    elif isinstance(geometry, Point):
+                        the_type = "POINT"
+                    else:
+                        the_type = type(geometry)
+                    #print(type(geometry))
+                    #print(geometry)
+
                 if the_type == "POINT":
                     wrappedObj["geometry"] = {
                         "x": geometry.x,
@@ -112,6 +155,8 @@ class AgolDatasource(Datasource):
                         "rings": [[list(z) for z in zip(x, y)]],
                         "spatialReference": {"wkid": 4326},
                     }
+                elif the_type == "MULTIPART_POLYGON":
+                    wrappedObj["geometry"] = Geometry(geometry.__geo_interface__)
                 else:
                     print(f"Unknown geometry type:{the_type}")
 

@@ -1,0 +1,61 @@
+{
+    "created": 1647442482000,
+    "isOrgItem": true,
+    "modified": 1650565114000,
+    "guid": null,
+    "name": "",
+    "title": "Dashboard Data",
+    "type": "Feature Service",
+    "typeKeywords": [
+        "ArcGIS Server",
+        "Data",
+        "Feature Access",
+        "Feature Service",
+        "Multilayer",
+        "Service",
+        "Hosted Service",
+        "View Service"
+    ],
+    "description": null,
+    "tags": [],
+    "snippet": null,
+    "thumbnail": "thumbnail/ago_downloaded.gif",
+    "documentation": null,
+    "extent": [
+        [
+            -124.41516299980121,
+            0
+        ],
+        [
+            3.346485212890511e-14,
+            42.00951900031157
+        ]
+    ],
+    "categories": [],
+    "spatialReference": "102100",
+    "accessInformation": null,
+    "licenseInfo": null,
+    "culture": "",
+    "properties": null,
+    "advancedSettings": null,
+    "proxyFilter": null,
+    "access": "org",
+    "size": 0,
+    "subInfo": 0,
+    "appCategories": [],
+    "industries": [],
+    "languages": [],
+    "largeThumbnail": null,
+    "banner": null,
+    "screenshots": [],
+    "listed": false,
+    "protected": false,
+    "commentsEnabled": true,
+    "numComments": 0,
+    "numRatings": 0,
+    "avgRating": 0,
+    "numViews": 964,
+    "itemControl": "admin",
+    "scoreCompleteness": 33,
+    "groupDesignations": null
+}

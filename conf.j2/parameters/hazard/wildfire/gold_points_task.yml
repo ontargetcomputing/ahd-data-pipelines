@@ -12,7 +12,7 @@ source_datasources:
               points.oes_region,
               points.PooCounty,
               points.IncidentName,
-              pointss.IncidentTypeCategory,
+              points.IncidentTypeCategory,
               points.FireDiscoveryDateTime,
               points.CalculatedAcres,
               points.DailyAcres,

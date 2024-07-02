@@ -1,0 +1,70 @@
+source_datasources:
+  - type: databricks
+    query: >
+      WITH all_source_facility_types AS (
+          SELECT 'CDPH-GACH' AS ade_source_facility_type
+          UNION ALL
+          SELECT 'CDHP-Other'
+          UNION ALL
+          SELECT 'CDPH-SNF'
+          UNION ALL
+          SELECT 'CDSS-ASC'
+          UNION ALL
+          SELECT 'CDSS-Child Care'
+          UNION ALL
+          SELECT 'CDSS-Child Res'
+          UNION ALL
+          SELECT 'DDS-All'
+          UNION ALL
+          SELECT 'DHCS-All'
+          UNION ALL
+          SELECT 'DSH-All'
+      ),
+      aggregated_data AS (
+          SELECT 
+              effective_date,
+              ade_source,
+              ade_source_facility_type, 
+              SUM(operational_with_impacts_int) AS operational_with_impacts_int,
+              SUM(nonoperational_long_term_int) AS nonoperational_long_term_int,
+              SUM(nonoperational_short_term_int) AS nonoperational_short_term_int,
+              SUM(partially_evacuated_int) AS partially_evacuated_int,
+              SUM(fully_evacuated_int) AS fully_evacuated_int
+          FROM shelter.bronze.facilities_historical_impact_{{ env }}
+          WHERE effective_date = current_date()
+          GROUP BY effective_date, ade_source, ade_source_facility_type
+      )
+      SELECT 
+          ad.effective_date,
+          ad.ade_source,
+          asft.ade_source_facility_type, 
+          COALESCE(ad.operational_with_impacts_int, 0) AS operational_with_impacts_int,
+          COALESCE(ad.nonoperational_long_term_int, 0) AS nonoperational_long_term_int,
+          COALESCE(ad.nonoperational_short_term_int, 0) AS nonoperational_short_term_int,
+          COALESCE(ad.partially_evacuated_int, 0) AS partially_evacuated_int,
+          COALESCE(ad.fully_evacuated_int, 0) AS fully_evacuated_int
+      FROM all_source_facility_types asft
+      LEFT JOIN aggregated_data ad ON asft.ade_source_facility_type = ad.ade_source_facility_type
+      ORDER BY asft.ade_source_facility_type;
+
+
+destination_datasources:
+  - type: databricks
+    table: shelter.silver.facilities_historical_impact_{{ env }}
+    data_types:
+    - column: effective_date
+      type: date
+    - column: ade_source
+      type: string
+    - column: ade_source_facility_type
+      type: string
+    - column: operational_with_impacts_int
+      type: int
+    - column: nonoperational_long_term_int
+      type: int
+    - column: nonoperational_short_term_int
+      type: int
+    - column: partially_evacuated_int
+      type: int
+    - column: fully_evacuated_int
+      type: int
