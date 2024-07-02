@@ -17,7 +17,7 @@ class AgolDatasource(Datasource):
     """ """
 
     def __init__(self, params: dict = None, spark: SparkSession = None):
-        self.gis = GIS(params["url"], params["username"], params["password"])
+        self.gis = GIS(params["url"], params["username"], params["password"], verify_cert=False)
         self.params = params
         self.spark = spark
 
