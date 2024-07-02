@@ -71,7 +71,7 @@ class DatabricksDatasource(Datasource):
                         print(f"Casting {column} to {type}")
                         dataFrame = dataFrame.withColumn(column, dataFrame[column].cast(type))
                     else:
-                        print(f"{column} does not exist.")
+                        print(f"*********** {column} does not exist. Unable to cast")
             else:
                 print("No datatypes to cast")
 

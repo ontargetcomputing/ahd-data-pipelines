@@ -1,9 +1,9 @@
 source_datasources:
   - type: databricks
-    table: {{ workflows['shelter_bootstrap'].catalog }}.silver.shelter_status_with_deltas_{{ env }}
+    table: {{ workflows['shelter_bootstrap'].catalog }}.silver.cassi_join_layer_with_deltas_{{ env }}
 destination_datasources:
   - type: databricks
-    table: {{ workflows['shelter_bootstrap'].catalog }}.gold.shelter_status_with_deltas_{{ env }}
+    table: {{ workflows['shelter_bootstrap'].catalog }}.gold.cassi_join_layer_with_deltas_{{ env }}
     data_types:
     - column: datahub_site_id
       type: int
@@ -34,7 +34,7 @@ destination_datasources:
     - column: disaster_type
       type: string
     - column: disaster_start_date
-      type: string
+      type: timestamp_ntz
     - column: overall_capacity
       type: int
     - column: overall_capacity_delta
@@ -52,9 +52,9 @@ destination_datasources:
     - column: shift_b_poc_number
       type: string
     - column: open_date
-      type: date
+      type: timestamp_ntz
     - column: close_date
-      type: date
+      type: timestamp_ntz
     - column: closure_reason
       type: string
     - column: estimated_census_outside
@@ -70,13 +70,13 @@ destination_datasources:
     - column: census_delta
       type: int
     - column: report_date
-      type: date
+      type: timestamp_ntz
     - column: completed_by
       type: string
     - column: previous_day_status
       type: string
     - column: submission_date
-      type: date
+      type: timestamp_ntz
     - column: outdated_report
       type: string
     - column: geometry

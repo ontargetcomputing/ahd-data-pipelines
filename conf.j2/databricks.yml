@@ -22,6 +22,9 @@ variables:
   param_files_dir:
     description: The location of parameters files
     default: /Workspace/${workspace.file_path}/conf/parameters
+  source_files_dir:
+    description: The location of src files
+    default: /Workspace/${workspace.file_path}/src
 artifacts:
   default:
     type: whl

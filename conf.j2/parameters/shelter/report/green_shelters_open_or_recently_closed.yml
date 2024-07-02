@@ -39,8 +39,9 @@ source_datasources:
           previous_day_status,
           report_date, 
           submission_date,
-          geometry
-      from {{ workflows['shelter_report'].catalog }}.gold.shelter_status_with_deltas_{{ env }}
+          geometry,
+          outdated_report
+      from {{ workflows['shelter_report'].catalog }}.gold.cassi_join_layer_with_deltas_{{ env }}
       where datahub_site_id is not null and (site_status != 'Closed'
               or ( site_status = 'Closed' and DATEDIFF(current_date(), close_date) = 1));
 
@@ -49,10 +50,6 @@ destination_datasources:
     table: {{ workflows['shelter_report'].catalog }}.green.shelters_open_or_recently_closed_{{ env }}
     method: overwrite
     data_types:
-    - column: OBJECTID
-      type: string
-    - column: GlobalID
-      type: int
     - column: datasource
       type: string
     - column: agency_type
@@ -82,7 +79,7 @@ destination_datasources:
     - column: disaster_type
       type: string
     - column: disaster_start_date
-      type: date
+      type: timestamp_ntz
     - column: overall_capacity
       type: int
     - column: overall_capacity_delta
@@ -96,9 +93,9 @@ destination_datasources:
     - column: shift_b_poc_number
       type: string
     - column: open_date
-      type: date
+      type: timestamp_ntz
     - column: close_date
-      type: date
+      type: timestamp_ntz
     - column: closure_reason
       type: string
     - column: census
@@ -113,8 +110,6 @@ destination_datasources:
       type: int
     - column: rooms_occupied_delta
       type: int
-    - column: count_date
-      type: date
     - column: completed_by
       type: string
     - column: previous_day_status
@@ -126,9 +121,9 @@ destination_datasources:
     - column: oes_region
       type: string
     - column: report_date
-      type: date
+      type: timestamp_ntz
     - column: submission_date
-      type: date
+      type: timestamp_ntz
     - column: outdated_report
       type: string
 

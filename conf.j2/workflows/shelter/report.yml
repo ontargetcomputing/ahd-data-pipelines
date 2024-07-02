@@ -1,8 +1,7 @@
 resources:
   jobs:
     shelter_report:
-      name: shelter_report
-
+      name: Shelter Report
       email_notifications:
         on_failure:
           - ${var.notification_email}
@@ -140,3 +139,13 @@ resources:
             parameters: [ "--conf-file", "${var.param_files_dir}/shelter/report/green_shelter_sites_historical_agol.yml", "--stage", "${bundle.target}"]
           libraries:
             - whl: /dist/*.whl
+
+        - task_key: excel_task
+          existing_cluster_id: ${var.ahd_cluster_id}
+          depends_on: 
+            - task_key:  green_shelter_sites_historical_agol
+          notebook_task:
+            notebook_path: "${var.source_files_dir}/ahd_data_pipelines/tasks/shelter/report/shelter_excel_report"
+            base_parameters:
+                environment: ${bundle.target}
+                root_file_path: ${var.source_files_dir}/ahd_data_pipelines
