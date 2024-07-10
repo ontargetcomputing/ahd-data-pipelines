@@ -18,7 +18,7 @@ variables:
   notification_email:
     description: Email address to send notification of job runs to
     default: 
-      Richard.Bach3@chhs.ca.gov
+      Jeff.Ranta@CHHS.CA.GOV
   param_files_dir:
     description: The location of parameters files
     default: /Workspace/${workspace.file_path}/conf/parameters
