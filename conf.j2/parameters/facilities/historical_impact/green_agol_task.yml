@@ -8,6 +8,7 @@ destination_datasources:
     is_table: true
     table_index: {{ workflows['facilities_historical_impact'].green.destination.table_index }}
     url: https://chhsagency.maps.arcgis.com/home/
+    method: append
     data_types:
     - column: effective_date
       type: date
