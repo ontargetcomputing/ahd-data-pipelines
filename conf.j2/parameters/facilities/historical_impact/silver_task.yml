@@ -2,42 +2,47 @@ source_datasources:
   - type: databricks
     query: >
       WITH all_source_facility_types AS (
-      SELECT 'CDPH' as ade_source, 'CDPH-GACH' AS ade_source_facility_type
-      UNION ALL
-      SELECT 'CDPH', 'CDHP-Other'
-      UNION ALL
-      SELECT 'CDPH', 'CDPH-SNF'
-      UNION ALL
-      SELECT 'CDSS', 'CDSS-ASC'
-      UNION ALL
-      SELECT 'CDSS', 'CDSS-Child Care'
-      UNION ALL
-      SELECT 'CDSS', 'CDSS-Child Res'
-      UNION ALL
-      SELECT 'DDS', 'DDS-All'
-      UNION ALL
-      SELECT 'DHCS', 'DHCS-All'
-      UNION ALL
-      SELECT 'DSH', 'DSH-All'
+          SELECT 'CDPH' as ade_source, 'CDPH-GACH' AS ade_source_facility_type
+          UNION ALL
+          SELECT 'CDPH', 'CDHP-Other'
+          UNION ALL
+          SELECT 'CDPH', 'CDPH-SNF'
+          UNION ALL
+          SELECT 'CDSS', 'CDSS-ASC'
+          UNION ALL
+          SELECT 'CDSS', 'CDSS-Child Care'
+          UNION ALL
+          SELECT 'CDSS', 'CDSS-Child Res'
+          UNION ALL
+          SELECT 'DDS', 'DDS-All'
+          UNION ALL
+          SELECT 'DHCS', 'DHCS-All'
+          UNION ALL
+          SELECT 'DSH', 'DSH-All'
       ),
       aggregated_data AS (
-          SELECT 
+          SELECT
               effective_date,
               ade_source,
-              ade_source_facility_type, 
+              ade_source_facility_type,
               SUM(operational_with_impacts_int) AS operational_with_impacts_int,
               SUM(nonoperational_long_term_int) AS nonoperational_long_term_int,
               SUM(nonoperational_short_term_int) AS nonoperational_short_term_int,
               SUM(partially_evacuated_int) AS partially_evacuated_int,
               SUM(fully_evacuated_int) AS fully_evacuated_int
-          FROM shelter.bronze.facilities_historical_impact_dev
+          FROM shelter.bronze.facilities_historical_impact_{{ env }}
           WHERE effective_date = current_date()
           GROUP BY effective_date, ade_source, ade_source_facility_type
+      ),
+      existing_data AS (
+          SELECT DISTINCT effective_date
+          FROM shelter.silver.facilities_historical_impact_{{ env }}
+          WHERE effective_date = current_date()
       )
-      SELECT 
+      SELECT
           current_date() as effective_date,
           asft.ade_source,
-          asft.ade_source_facility_type, 
+          asft.ade_source_facility_type,
           COALESCE(ad.operational_with_impacts_int, 0) AS operational_with_impacts_int,
           COALESCE(ad.nonoperational_long_term_int, 0) AS nonoperational_long_term_int,
           COALESCE(ad.nonoperational_short_term_int, 0) AS nonoperational_short_term_int,
@@ -45,6 +50,9 @@ source_datasources:
           COALESCE(ad.fully_evacuated_int, 0) AS fully_evacuated_int
       FROM all_source_facility_types asft
       LEFT JOIN aggregated_data ad ON asft.ade_source_facility_type = ad.ade_source_facility_type
+      WHERE NOT EXISTS (
+          SELECT 1 FROM existing_data WHERE effective_date = current_date()
+      )
       ORDER BY asft.ade_source_facility_type;
 
 destination_datasources:
