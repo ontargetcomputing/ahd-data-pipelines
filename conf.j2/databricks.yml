@@ -14,11 +14,11 @@ variables:
   run_as_user:
     description: The user to run jobs as
     default:
-      Richard.Bach3@chhs.ca.gov
+      Jeff.Ranta@CHHS.CA.GOV
   notification_email:
     description: Email address to send notification of job runs to
     default: 
-      Richard.Bach3@chhs.ca.gov
+      Jeff.Ranta@CHHS.CA.GOV
   param_files_dir:
     description: The location of parameters files
     default: /Workspace/${workspace.file_path}/conf/parameters
@@ -53,7 +53,7 @@ targets:
     # - The 'development' mode is used for Delta Live Tables pipelines
     mode: development
     variables:
-      ahd_cluster_id: 0624-171155-ifgfeiez
+      ahd_cluster_id: 0131-170506-cm2znzat
     workspace:
       host: https://dbc-a6893d54-2596.cloud.databricks.com
       root_path: /Users/${workspace.current_user.userName}/.bundle/${bundle.name}/${bundle.target}
@@ -65,10 +65,10 @@ targets:
       notification_email: agencydatahub@chhs.ca.gov
     workspace:
       host: https://calhhs-ahd-live.cloud.databricks.com/
-      # We always use /Users/Richard.Bach3@chhs.ca.gov for all resources to make sure we only have a single copy.
+      # We always use /Users/Jeff.Ranta@CHHS.CA.GOV for all resources to make sure we only have a single copy.
       # If this path results in an error, please make sure you have a recent version of the CLI installed.
       root_path: /Shared/.bundle/prod/${bundle.name}
     run_as:
-      # This runs as Richard.Bach3@chhs.ca.gov in production. We could also use a service principal here,
+      # This runs as Jeff.Ranta@CHHS.CA.GOV in production. We could also use a service principal here,
       # see https://docs.databricks.com/dev-tools/bundles/permissions.html.
       user_name: ${var.run_as_user}
