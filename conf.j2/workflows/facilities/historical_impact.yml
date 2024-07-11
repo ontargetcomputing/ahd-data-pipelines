@@ -20,7 +20,7 @@ resources:
             entry_point: medallion_task
             parameters: [ "--conf-file", "${var.param_files_dir}/facilities/historical_impact/bronze_task.yml", "--stage", "${bundle.target}"]
           libraries:
-            - whl: /Workspace/Users/jeff.ranta@chhs.ca.gov/.bundle/ahd_data_pipelines/dev/artifacts/.internal/ahd_data_pipelines-0.19.0-py3-none-any.whl
+            - whl: ../dist/*.whl
 
         - task_key: "silver"
           depends_on: 
