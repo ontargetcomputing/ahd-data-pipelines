@@ -8,7 +8,7 @@ resources:
         pause_status: UNPAUSED
       email_notifications:
         on_failure:
-          - Richard.Bach3@chhs.ca.gov
+          - Jeff.Ranta@CHHS.CA.GOV
 
       tasks:
         - task_key: "pulse"

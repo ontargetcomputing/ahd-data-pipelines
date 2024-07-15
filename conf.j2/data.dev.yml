@@ -1,5 +1,5 @@
 env: dev
-notification_email: Richard.Bach3@chhs.ca.gov
+notification_email: Jeff.Ranta@CHHS.CA.GOV
 workflows:
   ops:
     template: conf/workflows/ops/heartbeat.yml
