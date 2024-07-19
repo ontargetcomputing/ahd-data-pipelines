@@ -18,7 +18,7 @@ resources:
             entry_point: medallion_task
             parameters: [ "--conf-file", "${var.param_files_dir}/shelter/report/bronze_shelter_sites_historical_layer.yml", "--stage", "${bundle.target}"]
           libraries:
-            - whl: /dist/*.whl
+            - whl: ../../../dist/*.whl
 
         - task_key: "bronze_shelter_status_layer"
           existing_cluster_id: ${var.ahd_cluster_id}
@@ -27,7 +27,7 @@ resources:
             entry_point: medallion_task
             parameters: [ "--conf-file", "${var.param_files_dir}/shelter/report/bronze_shelter_status_layer.yml", "--stage", "${bundle.target}"]
           libraries:
-            - whl: /dist/*.whl
+            - whl: ../../../dist/*.whl
 
         - task_key: "silver_shelter_status_layer"
           existing_cluster_id: ${var.ahd_cluster_id}
@@ -38,7 +38,7 @@ resources:
             entry_point: medallion_task
             parameters: [ "--conf-file", "${var.param_files_dir}/shelter/report/silver_shelter_status_layer.yml", "--stage", "${bundle.target}"]
           libraries:
-            - whl: /dist/*.whl
+            - whl: ../../../dist/*.whl
 
         - task_key: "Append_to_Site_Information"
           existing_cluster_id: ${var.ahd_cluster_id}
@@ -49,7 +49,7 @@ resources:
             entry_point: medallion_task
             parameters: [ "--conf-file", "${var.param_files_dir}/shelter/report/append_to_site_information.yml", "--stage", "${bundle.target}"]
           libraries:
-            - whl: /dist/*.whl
+            - whl: ../../../dist/*.whl
 
         - task_key: "gold_shelter_status_with_deltas"
           existing_cluster_id: ${var.ahd_cluster_id}
@@ -60,7 +60,7 @@ resources:
             entry_point: medallion_task
             parameters: [ "--conf-file", "${var.param_files_dir}/shelter/report/gold_shelter_status_with_deltas.yml", "--stage", "${bundle.target}"]
           libraries:
-            - whl: /dist/*.whl
+            - whl: ../../../dist/*.whl
 
         - task_key: "green_shelter_sites"
           existing_cluster_id: ${var.ahd_cluster_id}
@@ -71,7 +71,7 @@ resources:
             entry_point: medallion_task
             parameters: [ "--conf-file", "${var.param_files_dir}/shelter/report/green_shelter_sites.yml", "--stage", "${bundle.target}"]
           libraries:
-            - whl: /dist/*.whl
+            - whl: ../../../dist/*.whl
 
         - task_key: "green_shelter_sites_to_agol"
           existing_cluster_id: ${var.ahd_cluster_id}
@@ -82,7 +82,7 @@ resources:
             entry_point: medallion_task
             parameters: [ "--conf-file", "${var.param_files_dir}/shelter/report/green_shelter_sites_to_agol.yml", "--stage", "${bundle.target}"]
           libraries:
-            - whl: /dist/*.whl
+            - whl: ../../../dist/*.whl
 
         - task_key: "gold_shelter_sites_aggregate"
           existing_cluster_id: ${var.ahd_cluster_id}
@@ -93,7 +93,7 @@ resources:
             entry_point: medallion_task
             parameters: [ "--conf-file", "${var.param_files_dir}/shelter/report/gold_shelter_sites_aggregate.yml", "--stage", "${bundle.target}"]
           libraries:
-            - whl: /dist/*.whl
+            - whl: ../../../dist/*.whl
 
         - task_key: "green_shelters_open_or_recently_closed"
           existing_cluster_id: ${var.ahd_cluster_id}
@@ -104,7 +104,7 @@ resources:
             entry_point: medallion_task
             parameters: [ "--conf-file", "${var.param_files_dir}/shelter/report/green_shelters_open_or_recently_closed.yml", "--stage", "${bundle.target}"]
           libraries:
-            - whl: /dist/*.whl
+            - whl: ../../../dist/*.whl
 
         - task_key: "green_shelter_type_deltas"
           existing_cluster_id: ${var.ahd_cluster_id}
@@ -115,7 +115,7 @@ resources:
             entry_point: medallion_task
             parameters: [ "--conf-file", "${var.param_files_dir}/shelter/report/green_shelter_type_deltas.yml", "--stage", "${bundle.target}"]
           libraries:
-            - whl: /dist/*.whl
+            - whl: ../../../dist/*.whl
 
         - task_key: "green_shelter_sites_historical_additions"
           existing_cluster_id: ${var.ahd_cluster_id}
@@ -127,7 +127,7 @@ resources:
             entry_point: medallion_task
             parameters: [ "--conf-file", "${var.param_files_dir}/shelter/report/green_shelter_sites_historical_additions.yml", "--stage", "${bundle.target}"]
           libraries:
-            - whl: /dist/*.whl
+            - whl: ../../../dist/*.whl
 
         - task_key: "green_shelter_sites_historical_agol"
           existing_cluster_id: ${var.ahd_cluster_id}
@@ -138,7 +138,7 @@ resources:
             entry_point: medallion_task
             parameters: [ "--conf-file", "${var.param_files_dir}/shelter/report/green_shelter_sites_historical_agol.yml", "--stage", "${bundle.target}"]
           libraries:
-            - whl: /dist/*.whl
+            - whl: ../../../dist/*.whl
 
         - task_key: excel_task
           existing_cluster_id: ${var.ahd_cluster_id}

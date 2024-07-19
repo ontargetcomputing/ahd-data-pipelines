@@ -18,7 +18,7 @@ resources:
             entry_point: medallion_task
             parameters: [ "--conf-file", "${var.param_files_dir}/shelter/bootstrap/bronze_site_information.yml", "--stage", "${bundle.target}"]
           libraries:
-            - whl: /dist/*.whl
+            - whl: ../../../dist/*.whl
         - task_key: "silver_site_information"
           depends_on: 
             - task_key:  bronze_site_information
@@ -28,7 +28,7 @@ resources:
             entry_point: medallion_task
             parameters: [ "--conf-file", "${var.param_files_dir}/shelter/bootstrap/silver_site_information.yml", "--stage", "${bundle.target}"]
           libraries:
-            - whl: /dist/*.whl
+            - whl: ../../../dist/*.whl
         - task_key: "create_gold_site_information_table"
           existing_cluster_id: ${var.ahd_cluster_id}
           python_wheel_task:
@@ -36,7 +36,7 @@ resources:
             entry_point: medallion_task
             parameters: [ "--conf-file", "${var.param_files_dir}/shelter/bootstrap/create_gold_site_information_table.yml", "--stage", "${bundle.target}"]
           libraries:
-            - whl: /dist/*.whl
+            - whl: ../../../dist/*.whl
         - task_key: "gold_site_information"
           depends_on: 
             - task_key:  silver_site_information
@@ -47,7 +47,7 @@ resources:
             entry_point: medallion_task
             parameters: [ "--conf-file", "${var.param_files_dir}/shelter/bootstrap/gold_site_information.yml", "--stage", "${bundle.target}"]
           libraries:
-            - whl: /dist/*.whl
+            - whl: ../../../dist/*.whl
         - task_key: "remove_bronze_site_information"
           depends_on: 
             - task_key:  gold_site_information
@@ -57,7 +57,7 @@ resources:
             entry_point: medallion_task
             parameters: [ "--conf-file", "${var.param_files_dir}/shelter/bootstrap/remove_bronze_site_information.yml", "--stage", "${bundle.target}"]
           libraries:
-            - whl: /dist/*.whl
+            - whl: ../../../dist/*.whl
         - task_key: "remove_silver_site_information"
           depends_on: 
             - task_key:  gold_site_information
@@ -67,7 +67,7 @@ resources:
             entry_point: medallion_task
             parameters: [ "--conf-file", "${var.param_files_dir}/shelter/bootstrap/remove_silver_site_information.yml", "--stage", "${bundle.target}"]
           libraries:
-            - whl: /dist/*.whl
+            - whl: ../../../dist/*.whl
       ########################################################
       ###### END - SITE_INFORMATION
       ########################################################
@@ -81,7 +81,7 @@ resources:
             entry_point: medallion_task
             parameters: [ "--conf-file", "${var.param_files_dir}/shelter/bootstrap/bronze_single_shelter_datamodel_historical.yml", "--stage", "${bundle.target}"]
           libraries:
-            - whl: /dist/*.whl
+            - whl: ../../../dist/*.whl
         - task_key: "silver_single_shelter_datamodel_historical"
           depends_on: 
             - task_key:  bronze_single_shelter_datamodel_historical
@@ -91,7 +91,7 @@ resources:
             entry_point: medallion_task
             parameters: [ "--conf-file", "${var.param_files_dir}/shelter/bootstrap/silver_single_shelter_datamodel_historical.yml", "--stage", "${bundle.target}"]
           libraries:
-            - whl: /dist/*.whl
+            - whl: ../../../dist/*.whl
         - task_key: "gold_single_shelter_datamodel_historical"
           depends_on: 
             - task_key:  silver_single_shelter_datamodel_historical
@@ -101,7 +101,7 @@ resources:
             entry_point: medallion_task
             parameters: [ "--conf-file", "${var.param_files_dir}/shelter/bootstrap/gold_single_shelter_datamodel_historical.yml", "--stage", "${bundle.target}"]
           libraries:
-            - whl: /dist/*.whl
+            - whl: ../../../dist/*.whl
         - task_key: "remove_bronze_single_shelter_datamodel_historical"
           depends_on: 
             - task_key:  gold_single_shelter_datamodel_historical
@@ -111,7 +111,7 @@ resources:
             entry_point: medallion_task
             parameters: [ "--conf-file", "${var.param_files_dir}/shelter/bootstrap/remove_bronze_single_shelter_datamodel_historical.yml", "--stage", "${bundle.target}"]
           libraries:
-            - whl: /dist/*.whl
+            - whl: ../../../dist/*.whl
         - task_key: "remove_silver_single_shelter_datamodel_historical"
           depends_on: 
             - task_key:  gold_single_shelter_datamodel_historical
@@ -121,7 +121,7 @@ resources:
             entry_point: medallion_task
             parameters: [ "--conf-file", "${var.param_files_dir}/shelter/bootstrap/remove_silver_single_shelter_datamodel_historical.yml", "--stage", "${bundle.target}"]
           libraries:
-            - whl: /dist/*.whl
+            - whl: ../../../dist/*.whl
       ########################################################
       ###### END - shelter_sites_aggregate
       ########################################################
@@ -136,7 +136,7 @@ resources:
             entry_point: medallion_task
             parameters: [ "--conf-file", "${var.param_files_dir}/shelter/bootstrap/bronze_shelter_sites_historical.yml", "--stage", "${bundle.target}"]
           libraries:
-            - whl: /dist/*.whl
+            - whl: ../../../dist/*.whl
         - task_key: "silver_shelter_sites_historical"
           depends_on: 
             - task_key:  bronze_shelter_sites_historical
@@ -146,7 +146,7 @@ resources:
             entry_point: medallion_task
             parameters: [ "--conf-file", "${var.param_files_dir}/shelter/bootstrap/silver_shelter_sites_historical.yml", "--stage", "${bundle.target}"]
           libraries:
-            - whl: /dist/*.whl
+            - whl: ../../../dist/*.whl
         - task_key: "gold_shelter_sites_historical"
           depends_on: 
             - task_key:  silver_shelter_sites_historical
@@ -156,7 +156,7 @@ resources:
             entry_point: medallion_task
             parameters: [ "--conf-file", "${var.param_files_dir}/shelter/bootstrap/gold_shelter_sites_historical.yml", "--stage", "${bundle.target}"]
           libraries:
-            - whl: /dist/*.whl
+            - whl: ../../../dist/*.whl
 
       ########################################################
       ###### BEGIN - single shelter datamodel
@@ -168,7 +168,7 @@ resources:
             entry_point: medallion_task
             parameters: [ "--conf-file", "${var.param_files_dir}/shelter/bootstrap/bronze_single_shelter_datamodel.yml", "--stage", "${bundle.target}"]
           libraries:
-            - whl: /dist/*.whl
+            - whl: ../../../dist/*.whl
         - task_key: "silver_single_shelter_datamodel"
           depends_on: 
             - task_key:  bronze_single_shelter_datamodel
@@ -178,7 +178,7 @@ resources:
             entry_point: medallion_task
             parameters: [ "--conf-file", "${var.param_files_dir}/shelter/bootstrap/silver_single_shelter_datamodel.yml", "--stage", "${bundle.target}"]
           libraries:
-            - whl: /dist/*.whl
+            - whl: ../../../dist/*.whl
         - task_key: "gold_single_shelter_datamodel"
           depends_on: 
             - task_key:  silver_single_shelter_datamodel
@@ -188,7 +188,7 @@ resources:
             entry_point: medallion_task
             parameters: [ "--conf-file", "${var.param_files_dir}/shelter/bootstrap/gold_single_shelter_datamodel.yml", "--stage", "${bundle.target}"]
           libraries:
-            - whl: /dist/*.whl
+            - whl: ../../../dist/*.whl
         - task_key: "remove_bronze_single_shelter_datamodel"
           depends_on: 
             - task_key:  gold_single_shelter_datamodel
@@ -198,7 +198,7 @@ resources:
             entry_point: medallion_task
             parameters: [ "--conf-file", "${var.param_files_dir}/shelter/bootstrap/remove_bronze_single_shelter_datamodel.yml", "--stage", "${bundle.target}"]
           libraries:
-            - whl: /dist/*.whl
+            - whl: ../../../dist/*.whl
         - task_key: "remove_silver_single_shelter_datamodel"
           depends_on: 
             - task_key:  gold_single_shelter_datamodel
@@ -208,7 +208,7 @@ resources:
             entry_point: medallion_task
             parameters: [ "--conf-file", "${var.param_files_dir}/shelter/bootstrap/remove_silver_single_shelter_datamodel.yml", "--stage", "${bundle.target}"]
           libraries:
-            - whl: /dist/*.whl
+            - whl: ../../../dist/*.whl
       ########################################################
       ###### END - single shelter datamodel
       ########################################################

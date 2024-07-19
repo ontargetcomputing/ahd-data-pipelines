@@ -18,4 +18,4 @@ resources:
             entry_point: green_data_update_task
             parameters: [ "--stage", "${bundle.target}"]
           libraries:
-            - whl: /dist/*.whl
+            - whl: ../../../dist/*.whl

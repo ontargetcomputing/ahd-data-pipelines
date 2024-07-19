@@ -71,4 +71,4 @@ targets:
     run_as:
       # This runs as Jeff.Ranta@CHHS.CA.GOV in production. We could also use a service principal here,
       # see https://docs.databricks.com/dev-tools/bundles/permissions.html.
-      user_name: ${var.run_as_user}
+      user_name: Richard.Bach3@chhs.ca.gov

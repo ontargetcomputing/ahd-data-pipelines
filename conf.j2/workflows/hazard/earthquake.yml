@@ -18,24 +18,24 @@ resources:
             package_name: ${bundle.name}
             entry_point: medallion_task
             parameters: [ "--conf-file", "${var.param_files_dir}/hazard/earthquake/bronze_recent_shakemap_geometries.yml", "--stage", "${bundle.target}" ]
-          libraries:
-            - whl: /dist/*.whl
+          # libraries:
+          #   - whl: /dist/*.whl
         - task_key: "bronze_epicenter"
           existing_cluster_id: ${var.ahd_cluster_id}
           python_wheel_task:
             package_name: ${bundle.name}
             entry_point: medallion_task
             parameters: [ "--conf-file", "${var.param_files_dir}/hazard/earthquake/bronze_epicenter_task.yml", "--stage", "${bundle.target}" ]
-          libraries:
-            - whl: /dist/*.whl
+          # libraries:
+          #   - whl: /dist/*.whl
         - task_key: "bronze_shakemap"
           existing_cluster_id: ${var.ahd_cluster_id}
           python_wheel_task:
             package_name: ${bundle.name}
             entry_point: medallion_task
             parameters: [ "--conf-file", "${var.param_files_dir}/hazard/earthquake/bronze_shakemap_task.yml", "--stage", "${bundle.target}" ]
-          libraries:
-            - whl: /dist/*.whl
+          # libraries:
+          #   - whl: /dist/*.whl
         - task_key: "silver_shakemap_geometries"
           depends_on: 
             - task_key:  bronze_shakemap_geometries
@@ -44,8 +44,8 @@ resources:
             package_name: ${bundle.name}
             entry_point: medallion_task
             parameters: [ "--conf-file", "${var.param_files_dir}/hazard/earthquake/silver_recent_shakemap_geometries.yml", "--stage", "${bundle.target}" ]
-          libraries:
-            - whl: /dist/*.whl
+          # libraries:
+          #   - whl: /dist/*.whl
         - task_key: "silver_epicenter"
           depends_on: 
             - task_key:  bronze_epicenter
@@ -54,8 +54,8 @@ resources:
             package_name: ${bundle.name}
             entry_point: medallion_task
             parameters: [ "--conf-file", "${var.param_files_dir}/hazard/earthquake/silver_epicenter_task.yml", "--stage", "${bundle.target}" ]
-          libraries:
-            - whl: /dist/*.whl
+          # libraries:
+          #   - whl: /dist/*.whl
         - task_key: "silver_shakemap"
           depends_on: 
             - task_key:  bronze_shakemap
@@ -64,8 +64,8 @@ resources:
             package_name: ${bundle.name}
             entry_point: medallion_task
             parameters: [ "--conf-file", "${var.param_files_dir}/hazard/earthquake/silver_shakemap_task.yml", "--stage", "${bundle.target}" ]
-          libraries:
-            - whl: /dist/*.whl
+          # libraries:
+          #   - whl: /dist/*.whl
         - task_key: "gold_epicenter"
           depends_on: 
             - task_key:  silver_epicenter
@@ -74,8 +74,8 @@ resources:
             package_name: ${bundle.name}
             entry_point: medallion_task
             parameters: [ "--conf-file", "${var.param_files_dir}/hazard/earthquake/gold_epicenter_task.yml", "--stage", "${bundle.target}" ]
-          libraries:
-            - whl: /dist/*.whl
+          # libraries:
+          #   - whl: /dist/*.whl
         - task_key: "gold_shakemap"
           depends_on: 
             - task_key: gold_epicenter
@@ -85,8 +85,8 @@ resources:
             package_name: ${bundle.name}
             entry_point: medallion_task
             parameters: [ "--conf-file", "${var.param_files_dir}/hazard/earthquake/gold_shakemap_task.yml", "--stage", "${bundle.target}" ]
-          libraries:
-            - whl: /dist/*.whl
+          # libraries:
+          #   - whl: /dist/*.whl
         - task_key: "green_epicenter"
           depends_on: 
             - task_key:  gold_epicenter
@@ -95,8 +95,8 @@ resources:
             package_name: ${bundle.name}
             entry_point: medallion_task
             parameters: [ "--conf-file", "${var.param_files_dir}/hazard/earthquake/green_epicenter_task.yml", "--stage", "${bundle.target}" ]
-          libraries:
-            - whl: /dist/*.whl
+          # libraries:
+          #   - whl: /dist/*.whl
         - task_key: "green_shakemap"
           depends_on: 
             - task_key:  gold_shakemap
@@ -106,8 +106,8 @@ resources:
             package_name: ${bundle.name}
             entry_point: medallion_task
             parameters: [ "--conf-file", "${var.param_files_dir}/hazard/earthquake/green_shakemap_task.yml", "--stage", "${bundle.target}" ]
-          libraries:
-            - whl: /dist/*.whl
+          # libraries:
+          #   - whl: /dist/*.whl
         - task_key: "green_epicenter_agol"
           depends_on: 
             - task_key:  green_epicenter
@@ -116,8 +116,8 @@ resources:
             package_name: ${bundle.name}
             entry_point: medallion_task
             parameters: [ "--conf-file", "${var.param_files_dir}/hazard/earthquake/green_epicenter_agol_task.yml", "--stage", "${bundle.target}" ]
-          libraries:
-            - whl: /dist/*.whl
+          # libraries:
+          #   - whl: /dist/*.whl
         - task_key: "green_shakemap_agol"
           depends_on: 
             - task_key:  green_shakemap
@@ -126,5 +126,5 @@ resources:
             package_name: ${bundle.name}
             entry_point: medallion_task
             parameters: [ "--conf-file", "${var.param_files_dir}/hazard/earthquake/green_shakemap_agol_task.yml", "--stage", "${bundle.target}" ]
-          libraries:
-            - whl: /dist/*.whl
+          # libraries:
+          #   - whl: /dist/*.whl

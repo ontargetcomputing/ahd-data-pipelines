@@ -18,4 +18,4 @@ resources:
             entry_point: medallion_task
             parameters: [ "--conf-file", "${var.param_files_dir}/ops/heartbeat.yml", "--stage", "${bundle.target}"]
           libraries:
-            - whl: /dist/*.whl
+            - whl: ../../../dist/*.whl
