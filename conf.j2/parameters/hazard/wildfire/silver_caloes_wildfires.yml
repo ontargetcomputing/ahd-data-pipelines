@@ -82,4 +82,3 @@ destination_datasources:
       type: string
     - column: OBJECTID
       type: string
-{% endif %}

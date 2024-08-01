@@ -49,6 +49,8 @@ resources:
           - whl: ../../../dist/*.whl
 
         - task_key: "silver_caloes_wildfires"
+          depends_on: 
+            - task_key:  bronze_caloes_wildfires
           existing_cluster_id: ${var.ahd_cluster_id}
           python_wheel_task:
             package_name: ${bundle.name}
@@ -58,6 +60,8 @@ resources:
           - whl: ../../../dist/*.whl
 
         - task_key: "silver_caloes_wildfires_children"
+          depends_on: 
+            - task_key:  bronze_caloes_wildfires_children
           existing_cluster_id: ${var.ahd_cluster_id}
           python_wheel_task:
             package_name: ${bundle.name}
