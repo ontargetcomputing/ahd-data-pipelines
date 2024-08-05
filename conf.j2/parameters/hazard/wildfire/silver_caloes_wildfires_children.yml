@@ -1,6 +1,6 @@
 source_datasources:
   - type: databricks
-    table: census.bronze.caloes_wildfires_{{ env }}
+    table: ahd_wildfires.bronze.caloes_wildfires_{{ env }}
 
 destination_datasources:
   - type: databricks
