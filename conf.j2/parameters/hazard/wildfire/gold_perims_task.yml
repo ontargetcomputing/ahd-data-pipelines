@@ -40,6 +40,7 @@ source_datasources:
             perims.geometry,
             points.geometry as geometry_x,
             points.oes_region
+            'IRWIN' as Source
           FROM ahd_wildfires.silver.california_fires_points_{{ env }} points
           LEFT JOIN (
             SELECT 
@@ -127,6 +128,7 @@ source_datasources:
             '' as `perims.geometry`,
             '' as `geometry_x`,
             '' as `points.oes_region`
+            'OES' as Source
           FROM ahd_wildfires.silver.caloes_wildfires_{{ env }}
           WHERE EXISTS (SELECT 1 FROM caloes_data)
 
@@ -205,4 +207,6 @@ destination_datasources:
     - column: geometry
       type: string
     - column: oes_region
+      type: string
+    - column: source
       type: string
