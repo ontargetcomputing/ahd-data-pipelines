@@ -22,7 +22,8 @@ source_datasources:
                 points.FireDiscoveryDateTime,
                 points.CalculatedAcres,
                 points.DailyAcres,
-                points.geometry
+                points.geometry,
+                'IRWIN' as Source
               from ahd_wildfires.silver.california_fires_points_{{ env }} as points
               join ahd_wildfires.gold.california_fires_perims_{{ env }} as perims on points.IRWINID = perims.IRWINID
         )
@@ -42,7 +43,8 @@ source_datasources:
               FireDiscoveryDateTime as `points.FireDiscoveryDateTime`,
               IncidentSize as `points.CalculatedAcres`,
               '' as `points.DailyAcres`,
-              geometry as `points.geometry`
+              geometry as `points.geometry`,
+              'CALOES' as Source
           FROM ahd_wildfires.silver.caloes_wildfires_{{ env }}
           WHERE EXISTS (SELECT 1 FROM caloes_data)
 
@@ -89,5 +91,7 @@ destination_datasources:
       - column: DailyAcres
         type: double
       - column: geometry
+        type: string
+      - column: Source
         type: string
 
