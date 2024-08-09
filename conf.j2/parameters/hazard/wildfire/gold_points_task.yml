@@ -1,24 +1,58 @@
 source_datasources:
   - type: databricks
     query: >
-        select
-              perims.ComplexName,
-              perims.ComplexID,
-              points.PercentContained,
-              points.county,
-              perims.GISAcres,
-              points.IRWINID,
-              perims.Label,
-              points.oes_region,
-              points.PooCounty,
-              points.IncidentName,
-              points.IncidentTypeCategory,
-              points.FireDiscoveryDateTime,
-              points.CalculatedAcres,
-              points.DailyAcres,
-              points.geometry
-        from ahd_wildfires.silver.california_fires_points_{{ env }} as points
-          join ahd_wildfires.gold.california_fires_perims_{{ env }} as perims on points.IRWINID = perims.IRWINID;
+        WITH caloes_data AS (
+          SELECT *
+          FROM ahd_wildfires.silver.caloes_wildfires_{{ env }}
+          LIMIT 1
+        ),
+        main_query AS (
+              select
+                perims.ComplexName,
+                perims.ComplexID,
+                points.PercentContained,
+                points.county,
+                perims.GISAcres,
+                points.IRWINID,
+                perims.Label,
+                points.oes_region,
+                points.PooCounty,
+                points.IncidentName,
+                points.IncidentTypeCategory,
+                points.FireDiscoveryDateTime,
+                points.CalculatedAcres,
+                points.DailyAcres,
+                points.geometry
+              from ahd_wildfires.silver.california_fires_points_{{ env }} as points
+              join ahd_wildfires.gold.california_fires_perims_{{ env }} as perims on points.IRWINID = perims.IRWINID
+        )
+        SELECT * FROM (
+          SELECT 
+              '' as `perims.ComplexName`,
+              '' as `perims.ComplexID`,
+              PercentContained as `points.PercentContained`,
+              County as `points.county`,
+              '' as `perims.GISAcres`,
+              IrwinID as `points.IRWINID`,
+              '' as `perims.Label`,
+              '' as `points.oes_region`,
+              '' as `points.PooCounty`,
+              IncidentName as `points.IncidentName`,
+              IncidentTypeCategory as `points.IncidentTypeCategory`,
+              FireDiscoveryDateTime as `points.FireDiscoveryDateTime`,
+              IncidentSize as `points.CalculatedAcres`,
+              '' as `points.DailyAcres`,
+              geometry as `points.geometry`
+          FROM ahd_wildfires.silver.caloes_wildfires_{{ env }}
+          WHERE EXISTS (SELECT 1 FROM caloes_data)
+
+          UNION ALL
+
+          SELECT *
+          FROM main_query
+          WHERE NOT EXISTS (SELECT 1 FROM caloes_data)
+        ) AS combined_result
+
 destination_datasources:
   - type: databricks
     table: ahd_wildfires.gold.california_fires_points_{{ env }}
