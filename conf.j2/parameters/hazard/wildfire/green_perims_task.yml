@@ -1,32 +1,31 @@
 source_datasources:
   - type: databricks
     query: >
-      select * from (
-        select
-          f.ComplexName as cmpx_name,
-          f.ComplexID as cmpx_id,
-          f.PercentContained as contained,
-          f.county as county,
-          f.GISAcres as gis_acres,
-          f.IRWINID as irwinid,
-          f.Label as label,
-          f.oes_region as oes_region,
-          f.POOCounty as poo_county,
-          f.IncidentName as incident_name,
-          f.FireDiscoveryDateTime as fire_discovery_datetime,
-          CASE
-            WHEN points.IncidentTypeCategory is not null THEN points.IncidentTypeCategory
-            ELSE f.IncidentTypeCategory
-          END as IncidentTypeCategory,
-          f.CalculatedAcres as calculated_acres,
-          f.DailyAcres as reported_acres,
-          f.geometry as geometry
-        from ahd_wildfires.gold.california_fires_perims_prod f 
-        join ahd_wildfires.silver.california_fires_points_prod points on points.IRWINID = f.IRWINID) as abc
-      where 
-        ( calculated_acres >= 5.0 or reported_acres >= 5.0 or gis_acres >= 5.0)
-        and IncidentTypeCategory != 'RX'
-        and ( contained is null or contained != 100.0 )
+        WITH ranked_data AS (
+          SELECT
+            COALESCE(gold.ComplexName, perims.ComplexName) as cmpx_name,
+            COALESCE(gold.ComplexID, perims.ComplexID) as cmpx_id,
+            COALESCE(gold.PercentContained) as contained,
+            COALESCE(gold.county, points.county, perims.county) as county,
+            COALESCE(gold.GISAcres, perims.GISAcres) as gis_acres,
+            COALESCE(gold.IRWINID) as irwinid,
+            COALESCE(gold.Label, perims.Label) as label,
+            COALESCE(gold.oes_region, points.oes_region, perims.oes_region) as oes_region,
+            COALESCE(gold.POOCounty, points.POOCounty) as poo_county,
+            COALESCE(gold.IncidentName, points.IncidentName, perims.IncidentName) as incident_name,
+            COALESCE(gold.FireDiscoveryDateTime) as fire_discovery_datetime,
+            COALESCE(gold.IncidentTypeCategory, points.IncidentTypeCategory, perims.IncidentTypeCategory) as IncidentTypeCategory,
+            COALESCE(gold.CalculatedAcres, points.CalculatedAcres) as calculated_acres,
+            COALESCE(gold.DailyAcres, points.DailyAcres) as reported_acres,
+            COALESCE(gold.geometry, points.geometry, perims.geometry) as geometry,
+            ROW_NUMBER() OVER (PARTITION BY gold.IRWINID ORDER BY gold.IRWINID) as rn
+          FROM ahd_wildfires.gold.california_fires_perims_dev gold
+          LEFT OUTER JOIN ahd_wildfires.silver.california_fires_perims_dev perims ON perims.IRWINID = gold.IRWINID
+          LEFT OUTER JOIN ahd_wildfires.silver.california_fires_points_dev points ON points.IRWINID = gold.IRWINID
+        )
+        SELECT *
+        FROM ranked_data
+        WHERE rn = 1;
 destination_datasources:
   - type: agol
     dataset_id: {{ workflows['hazard_wildfire'].green.perimeters.destination.dataset_id }}
