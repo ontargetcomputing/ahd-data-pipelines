@@ -94,6 +94,10 @@ source_datasources:
               geometry,
               ade_date_submitted
           ) AS perims ON points.IRWINID = perims.IRWINID
+            where 
+            ( `points`.`CalculatedAcres` >= 5.0 or `points`.`DailyAcres` >= 5.0 or `perims`.`GISAcres` >= 5.0) and
+            ( points.IncidentTypeCategory != 'RX' and perims.IncidentTypeCategory != 'RX') and
+            ( points.PercentContained is null or points.PercentContained != 100.0 )
         )
         SELECT * FROM (
           SELECT 
