@@ -26,6 +26,10 @@ source_datasources:
                 'IRWIN' as Source
               from ahd_wildfires.silver.california_fires_points_{{ env }} as points
               join ahd_wildfires.gold.california_fires_perims_{{ env }} as perims on points.IRWINID = perims.IRWINID
+              where
+              ( `points`.`CalculatedAcres` >= 5.0 or `perims`.`DailyAcres` >= 5.0 or `perims`.`GISAcres` >= 5.0) and
+              ( points.IncidentTypeCategory != 'RX' and perims.IncidentTypeCategory != 'RX') and
+              ( points.PercentContained is null or points.PercentContained != 100.0 )
         )
         SELECT * FROM (
           SELECT 
