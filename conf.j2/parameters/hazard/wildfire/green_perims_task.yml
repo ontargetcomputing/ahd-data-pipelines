@@ -20,8 +20,8 @@ source_datasources:
             COALESCE(points.geometry, perims.geometry) as geometry,
             ROW_NUMBER() OVER (PARTITION BY gold.IRWINID ORDER BY gold.IRWINID) as rn
           FROM ahd_wildfires.gold.california_fires_perims_{{ env }} gold
-          LEFT OUTER JOIN ahd_wildfires.silver.california_fires_perims_{{ env }} perims ON perims.IRWINID = gold.IRWINID
-          LEFT OUTER JOIN ahd_wildfires.silver.california_fires_points_{{ env }} points ON points.IRWINID = gold.IRWINID
+          LEFT OUTER JOIN ahd_wildfires.silver.california_fires_perims_{{ env }} perims ON upper(perims.IRWINID) = upper(gold.IRWINID)
+          LEFT OUTER JOIN ahd_wildfires.silver.california_fires_points_{{ env }} points ON upper(points.IRWINID) = upper(gold.IRWINID)
         )
         SELECT *
         FROM ranked_data
