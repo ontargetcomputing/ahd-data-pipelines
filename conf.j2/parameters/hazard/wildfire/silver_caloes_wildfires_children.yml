@@ -1,6 +1,24 @@
+variables:
+  test_use_no_data: false  # Set this to true when you want to test with an empty result
+
 source_datasources:
   - type: databricks
-    table: ahd_wildfires.bronze.caloes_wildfires_{{ env }}
+    {% if test_use_no_data %}
+    query: >
+      SELECT
+        ChildIrwinID, ParentIrwinID, RelationshipType, IrwinID, CreatedOnDateTime, IncidentName,
+        InitialLatitude, InitialLongitude, County, POOProtectingAgency, FireIdentifier, IncidentSize,
+        DataSource, ContainmentDateTime, ControlDateTime, DiscoveryAcres, Fatalities, FinalAcres,
+        FireCause, FireCauseGeneral, FireDiscoveryDateTime, FireMgmtComplexity, FireOutDateTime,
+        GACC, ICS209ReportForTimePeriodFrom, ICS209ReportForTimePeriodTo, IncidentManagementOrganization,
+        IncidentTypeCategory, IncidentTypeKind, Injuries, IsValid, ModifiedOnDateTime,
+        OtherStructuresDestroyed, PercentContained, POOState, PredominantFuelModel, PrimaryFuelModel,
+        ResidencesDestroyed, TotalIncidentPersonnel, PredominantFuelGroup, OBJECTID
+      FROM ahd_wildfires.bronze.caloes_wildfires_{{ env }}
+      LIMIT 0
+    {% else %}
+    table: ahd_wildfires.bronze.caloes_wildfires_children_{{ env }}
+    {% endif %}
 
 destination_datasources:
   - type: databricks
@@ -72,7 +90,7 @@ destination_datasources:
       type: string
     - column: OtherStructuresDestroyed
       type: string
-    - column: PercentContainted
+    - column: PercentContained
       type: string
     - column: POOState
       type: string
@@ -82,7 +100,7 @@ destination_datasources:
       type: string
     - column: ResidencesDestroyed
       type: string
-    - column: TotalIncidentPersonell
+    - column: TotalIncidentPersonnel
       type: string
     - column: PredominantFuelGroup
       type: string
