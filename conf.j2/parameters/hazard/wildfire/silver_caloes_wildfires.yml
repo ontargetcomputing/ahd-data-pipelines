@@ -25,7 +25,7 @@ destination_datasources:
   - type: databricks
     table: ahd_wildfires.silver.caloes_wildfires_{{ env }}
     data_types:
-      - column: IRWINID
+      - column: IrwinID
         type: string
       - column: CreatedOnDateTime
         type: string
