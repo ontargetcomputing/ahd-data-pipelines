@@ -100,7 +100,7 @@ destination_datasources:
       type: string
     - column: ResidencesDestroyed
       type: string
-    - column: TotalIncidentPersonnel
+    - column: TotalIncidentPersonell
       type: string
     - column: PredominantFuelGroup
       type: string
