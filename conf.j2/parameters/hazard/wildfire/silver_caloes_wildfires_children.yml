@@ -14,7 +14,7 @@ source_datasources:
         IncidentTypeCategory, IncidentTypeKind, Injuries, IsValid, ModifiedOnDateTime,
         OtherStructuresDestroyed, PercentContained, POOState, PredominantFuelModel, PrimaryFuelModel,
         ResidencesDestroyed, TotalIncidentPersonnel, PredominantFuelGroup, OBJECTID
-      FROM ahd_wildfires.bronze.caloes_wildfires_{{ env }}
+      FROM ahd_wildfires.bronze.caloes_wildfires_children_{{ env }}
       LIMIT 0
     {% else %}
     table: ahd_wildfires.bronze.caloes_wildfires_children_{{ env }}
