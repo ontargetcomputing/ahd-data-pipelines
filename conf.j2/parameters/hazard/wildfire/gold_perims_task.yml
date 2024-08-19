@@ -145,6 +145,7 @@ source_datasources:
 destination_datasources:
   - type: databricks
     table: ahd_wildfires.gold.california_fires_perims_{{ env }}
+    overwrite: true
     truncate_on_empty: true
     epoch_to_timestamp:
       - CreateDate

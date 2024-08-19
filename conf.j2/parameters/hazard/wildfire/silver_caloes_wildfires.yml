@@ -1,29 +1,25 @@
-variables:
-  test_use_no_data: false # Set this to true when you want to test with an empty result
-
 source_datasources:
   - type: databricks
-    {% if test_use_no_data %}
-    query: >
-      SELECT
-        IRWINID, CreatedOnDateTime, IncidentName, InitialLatitude, InitialLongitude,
-        County, POOProtectingAgency, FireIdentifier, IncidentSize, DataSource,
-        ContainmentDateTime, ControlDateTime, DiscoveryAcres, Fatalities, FinalAcres,
-        FireCause, FireCauseGeneral, FireDiscoveryDateTime, FireMgmtComplexity,
-        FireOutDateTime, GACC, ICS209ReportForTimePeriodFrom, ICS209ReportForTimePeriodTo,
-        IncidentManagementOrganization, IncidentTypeCategory, IncidentTypeKind,
-        Injuries, IsValid, ModifiedOnDateTime, OtherStructuresDestroyed,
-        PercentContained, POOState, PredominantFuelModel, PrimaryFuelModel,
-        ResidencesDestroyed, TotalIncidentPersonnel, PredominantFuelGroup, OBJECTID
-      FROM ahd_wildfires.bronze.caloes_wildfires_{{ env }}
-      LIMIT 0
-    {% else %}
+    # # test query to test blank data, uncomment the query and comment the table to use
+    # query: >
+    #   SELECT
+    #     IRWINID, CreatedOnDateTime, IncidentName, InitialLatitude, InitialLongitude,
+    #     County, POOProtectingAgency, FireIdentifier, IncidentSize, DataSource,
+    #     ContainmentDateTime, ControlDateTime, DiscoveryAcres, Fatalities, FinalAcres,
+    #     FireCause, FireCauseGeneral, FireDiscoveryDateTime, FireMgmtComplexity,
+    #     FireOutDateTime, GACC, ICS209ReportForTimePeriodFrom, ICS209ReportForTimePeriodTo,
+    #     IncidentManagementOrganization, IncidentTypeCategory, IncidentTypeKind,
+    #     Injuries, IsValid, ModifiedOnDateTime, OtherStructuresDestroyed,
+    #     PercentContained, POOState, PredominantFuelModel, PrimaryFuelModel,
+    #     ResidencesDestroyed, TotalIncidentPersonnel, PredominantFuelGroup, OBJECTID
+    #   FROM ahd_wildfires.bronze.caloes_wildfires_{{ env }}
+    #   LIMIT 0
     table: ahd_wildfires.bronze.caloes_wildfires_{{ env }}
-    {% endif %}
 
 destination_datasources:
   - type: databricks
     table: ahd_wildfires.silver.caloes_wildfires_{{ env }}
+    overwrite: true
     data_types:
       - column: IrwinID
         type: string
