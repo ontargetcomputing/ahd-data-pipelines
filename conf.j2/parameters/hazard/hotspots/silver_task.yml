@@ -1,0 +1,41 @@
+source_datasources:
+  - type: databricks
+    table: ahd_wildfires.bronze.hotspots_{{ env }}
+    
+destination_datasources:
+  - type: databricks
+    table: ahd_wildfires.silver.hotspots_{{ env }}
+    data_types:
+    - column: OBJECTID
+      type: string
+    - column: latitude
+      type: double
+    - column: longitude
+      type: double
+    - column: bright_ti4
+      type: double
+    - column: scan
+      type: double
+    - column: track
+      type: double
+    - column: acq_date
+      type: Date
+    - column: acq_time
+      type: Date
+    - column: satellite
+      type: string
+    - column: confidence
+      type: string
+    - column: version
+      type: string
+    - column: bright_ti5
+      type: double
+    - column: frp
+      type: double
+    - column: daynight
+      type: string
+    - column: esritimeutc
+      type: Date
+    - column: hours_old
+      type: int
+      
