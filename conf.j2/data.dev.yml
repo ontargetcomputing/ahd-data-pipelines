@@ -173,3 +173,13 @@ workflows:
             dataset_id : 10833d3faf9c4cb1a69ec667d374b5eb
             table_index: 0
 
+  hazard_hotspots:
+    template: conf/workflows/hazard/hotspots.yml
+    bronze: 
+      source:
+        dataset_id: dece90af1a0242dcbf0ca36d30276aa3
+        layer: 0
+    green_agol:
+      destination:
+        dataset_id: 020eb4efa482467a9fffe647af1709a2
+        layer: 0
