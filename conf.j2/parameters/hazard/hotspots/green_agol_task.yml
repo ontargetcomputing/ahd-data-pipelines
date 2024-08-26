@@ -1,0 +1,13 @@
+source_datasources:
+  - type: databricks
+    table: ahd_wildfires.green.hotspots_{{ env }}
+
+destination_datasources:
+  - type: agol
+    dataset_id: {{ workflows['hazard_hotspots'].green.destination.dataset_id }}
+    layer: {{ workflows['hazard_hotspots'].green.destination.layer }}
+    url: https://chhsagency.maps.arcgis.com/home/
+    object_id: FID
+    geometry: 
+      column: geometry
+      type: DYNAMIC
