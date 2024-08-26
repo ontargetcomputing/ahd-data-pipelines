@@ -1,6 +1,6 @@
 resources:
   jobs:
-    county_language:
+    Hotspots:
       name: Hotspots
 
       email_notifications:
