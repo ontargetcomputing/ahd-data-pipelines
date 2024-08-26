@@ -160,3 +160,14 @@ workflows:
 
   esri_greendataupdate:
     template: conf/workflows/esri/greendataupdate.yml
+
+  hazard_hotspots:
+    template: conf/workflows/hazard/hotspots.yml
+    bronze: 
+      source:
+        dataset_id: dece90af1a0242dcbf0ca36d30276aa3
+        layer: 0
+    green_agol:
+      destination:
+        dataset_id: a9fca1bb0ece4fc19b17cfe1df933e47
+        layer: 0
