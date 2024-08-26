@@ -4,8 +4,8 @@ source_datasources:
 
 destination_datasources:
   - type: agol
-    dataset_id: {{ workflows['hazard_hotspots'].green.destination.dataset_id }}
-    layer: {{ workflows['hazard_hotspots'].green.destination.layer }}
+    dataset_id: {{ workflows['hazard_hotspots'].green_agol.destination.dataset_id }}
+    layer: {{ workflows['hazard_hotspots'].green_agol.destination.layer }}
     url: https://chhsagency.maps.arcgis.com/home/
     object_id: FID
     geometry: 
