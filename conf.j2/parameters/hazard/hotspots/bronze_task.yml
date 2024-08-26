@@ -13,19 +13,19 @@ destination_datasources:
     - column: OBJECTID
       type: string
     - column: latitude
-      type: double
+      type: string
     - column: longitude
-      type: double
+      type: string
     - column: bright_ti4
-      type: double
+      type: string
     - column: scan
-      type: double
+      type: string
     - column: track
-      type: double
+      type: string
     - column: acq_date
-      type: Date
+      type: string
     - column: acq_time
-      type: Date
+      type: string
     - column: satellite
       type: string
     - column: confidence
@@ -33,12 +33,12 @@ destination_datasources:
     - column: version
       type: string
     - column: bright_ti5
-      type: double
+      type: string
     - column: frp
-      type: double
+      type: string
     - column: daynight
       type: string
     - column: esritimeutc
-      type: Date
+      type: string
     - column: hours_old
-      type: int
+      type: string
