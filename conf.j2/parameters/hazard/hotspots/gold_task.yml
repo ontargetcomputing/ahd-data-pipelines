@@ -1,6 +1,16 @@
+spatial_joins: 
+  - left_index: 0
+    right_index: 1
+    how: inner
+    predicate: intersects 
+    drop_columns:
+      - index
+      - index_right
 source_datasources:
   - type: databricks
     table: ahd_wildfires.silver.hotspots_{{ env }}
+  - type: databricks
+    table: ahd_wildfires.gold.california_fires_perims_{{ env }}
     
 destination_datasources:
   - type: databricks
