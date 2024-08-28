@@ -15,6 +15,7 @@ source_datasources:
 destination_datasources:
   - type: databricks
     table: ahd_wildfires.gold.hotspots_{{ env }}
+    convert_zpoint: geometry
     data_types:
     - column: OBJECTID
       type: string
