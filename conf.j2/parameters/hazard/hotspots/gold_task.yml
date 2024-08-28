@@ -4,7 +4,6 @@ spatial_joins:
     how: inner
     predicate: intersects 
     drop_columns:
-      - index
       - index_right
 source_datasources:
   - type: databricks
