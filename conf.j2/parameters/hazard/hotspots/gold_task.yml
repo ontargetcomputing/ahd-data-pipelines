@@ -1,7 +1,7 @@
 spatial_joins:
   - left_index: 0
     right_index: 1
-    how: left
+    how: inner
     predicate: intersects
     drop_columns:
       - index_right
