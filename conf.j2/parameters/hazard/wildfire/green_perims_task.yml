@@ -18,13 +18,13 @@ source_datasources:
             COALESCE(gold.CalculatedAcres, points.CalculatedAcres) as calculated_acres,
             COALESCE(gold.DailyAcres, points.DailyAcres) as reported_acres,
             perims.geometry as geometry,
-            COALESCE(gold.POOProtectingAgency, points.POOProtectingAgency) as POOProtectingAgency,
-            COALESCE(gold.Fatalities, points.Fatalities) as Fatalities,
-            COALESCE(gold.IncidentManagementOrganization, points.IncidentManagementOrganization) as IncidentManagementOrganization,
-            COALESCE(gold.Injuries, points.Injuries) as Injuries,
-            COALESCE(gold.OtherStructuresDestroyed, points.OtherStructuresDestroyed) as OtherStructuresDestroyed,
-            COALESCE(gold.ResidencesDestroyed, points.ResidencesDestroyed) as ResidencesDestroyed,
-            COALESCE(gold.TotalIncidentPersonnel, points.TotalIncidentPersonnel) as TotalIncidentPersonnel,
+            gold.POOProtectingAgency as POOProtectingAgency,
+            gold.Fatalities as Fatalities,
+            gold.IncidentManagementOrganization as IncidentManagementOrganization,
+            gold.Injuries as Injuries,
+            gold.OtherStructuresDestroyed as OtherStructuresDestroyed,
+            gold.ResidencesDestroyed as ResidencesDestroyed,
+            gold.TotalIncidentPersonnel as TotalIncidentPersonnel,
             ROW_NUMBER() OVER (PARTITION BY gold.IRWINID ORDER BY gold.IRWINID) as rn
           FROM ahd_wildfires.gold.california_fires_perims_{{ env }} gold
           LEFT OUTER JOIN ahd_wildfires.silver.california_fires_perims_{{ env }} perims ON upper(perims.IRWINID) = upper(gold.IRWINID)
