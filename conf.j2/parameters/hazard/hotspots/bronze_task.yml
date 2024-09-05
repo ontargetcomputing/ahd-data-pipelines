@@ -11,7 +11,7 @@ destination_datasources:
     table: ahd_wildfires.bronze.hotspots_{{ env }}
     geometry: 
       column: geometry
-      type: POINT
+      type: DYNAMIC
     data_types:
     - column: OBJECTID
       type: string
