@@ -9,6 +9,9 @@ source_datasources:
 destination_datasources:
   - type: databricks
     table: ahd_wildfires.bronze.hotspots_{{ env }}
+    geometry: 
+      column: geometry
+      type: POINT
     data_types:
     - column: OBJECTID
       type: string
