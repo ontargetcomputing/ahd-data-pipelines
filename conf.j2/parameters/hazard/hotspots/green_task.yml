@@ -1,10 +1,11 @@
 source_datasources:
   - type: databricks
-    table: ahd_wildfires.gold.hotspots_{{ env }}
+    table: ahd_wildfires.gold.hotspots_within_perims_{{ env }}
 
 destination_datasources:
   - type: databricks
     table: ahd_wildfires.green.hotspots_{{ env }}
+    method: overwrite
     data_types:
     - column: OBJECTID
       type: string
@@ -19,9 +20,9 @@ destination_datasources:
     - column: track
       type: double
     - column: acq_date
-      type: Date
+      type: timestamp
     - column: acq_time
-      type: Date
+      type: timestamp
     - column: satellite
       type: string
     - column: confidence
@@ -35,6 +36,6 @@ destination_datasources:
     - column: daynight
       type: string
     - column: esritimeutc
-      type: Date
+      type: timestamp
     - column: hours_old
       type: int

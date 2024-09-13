@@ -19,9 +19,9 @@ destination_datasources:
     - column: track
       type: double
     - column: acq_date
-      type: Date
+      type: timestamp
     - column: acq_time
-      type: Date
+      type: timestamp
     - column: satellite
       type: string
     - column: confidence
@@ -35,7 +35,7 @@ destination_datasources:
     - column: daynight
       type: string
     - column: esritimeutc
-      type: Date
+      type: timestamp
     - column: hours_old
       type: int
       

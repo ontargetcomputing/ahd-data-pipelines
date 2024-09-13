@@ -1,0 +1,90 @@
+spatial_joins:
+  - left_index: 0
+    right_index: 1
+    how: inner
+    predicate: intersects
+    drop_columns:
+      - index_right
+source_datasources:
+  - type: databricks
+    table: ahd_wildfires.gold.hotspots_ca_{{ env }}
+  - type: databricks
+    table: ahd_wildfires.gold.california_fires_perims_{{ env }}
+    
+destination_datasources:
+  - type: databricks
+    table: ahd_wildfires.gold.hotspots_within_perims_{{ env }}
+    method: overwrite
+    drop_columns:
+      - Comments
+      - ComplexName
+      - ComplexID
+      - FeatureCategory
+      - GeometryID
+      - GlobalID
+      - IMTName
+      - Label
+      - LocalIncidentID
+      - MapMethod
+      - PooCounty
+      - UnitID
+      - oes_region
+      - Fatalities
+      - CreateDate
+      - CreateDateAge
+      - CalculatedAcres
+      - ade_date_submitted_left
+      - DateCurrent
+      - FireDiscoveryDateTime
+      - GACC
+      - CurrentDateAge
+      - DailyAcres
+      - IncidentTypeCategory
+      - PercentContained
+      - IncidentName
+      - GISAcres
+      - IRWINID
+      - Source
+      - ade_date_submitted_right
+      - county
+      - PolygonDateTime
+      - POOProtectingAgency
+      - ResidencesDestroyed
+      - OtherStructuresDestroyed
+      - IncidentManagementOrganization
+      - TotalIncidentPersonnel
+      - Injuries
+    data_types:
+    - column: OBJECTID
+      type: string
+    - column: latitude
+      type: double
+    - column: longitude
+      type: double
+    - column: bright_ti4
+      type: double
+    - column: scan
+      type: double
+    - column: track
+      type: double
+    - column: acq_date
+      type: timestamp
+    - column: acq_time
+      type: timestamp
+    - column: satellite
+      type: string
+    - column: confidence
+      type: string
+    - column: version
+      type: string
+    - column: bright_ti5
+      type: double
+    - column: frp
+      type: double
+    - column: daynight
+      type: string
+    - column: esritimeutc
+      type: timestamp
+    - column: hours_old
+      type: int
+      

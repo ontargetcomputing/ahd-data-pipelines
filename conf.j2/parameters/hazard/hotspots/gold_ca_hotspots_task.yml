@@ -4,17 +4,44 @@ spatial_joins:
     how: inner
     predicate: intersects
     drop_columns:
+      - index
       - index_right
+      - NAME
 source_datasources:
   - type: databricks
     table: ahd_wildfires.silver.hotspots_{{ env }}
   - type: databricks
-    table: ahd_wildfires.gold.california_fires_perims_{{ env }}
+    table: datahub_common.gold.california_shape
     
 destination_datasources:
   - type: databricks
-    table: ahd_wildfires.gold.hotspots_{{ env }}
-    convert_zpoint: geometry
+    table: ahd_wildfires.gold.hotspots_ca_{{ env }}
+    method: overwrite
+    drop_columns:
+      - ade_date_submitted_left
+      - CreateDate
+      - CalculatedAcres
+      - DateCurrent
+      - FireDiscoveryDateTime
+      - CreateDateAge
+      - CurrentDateAge
+      - DailyAcres
+      - IncidentTypeCategory
+      - IncidentName
+      - GISAcres
+      - GACC
+      - IRWINID
+      - PercentContained
+      - Source
+      - ade_date_submitted_right
+      - county
+      - PolygonDateTime
+      - ResidencesDestroyed
+      - OtherStructuresDestroyed
+      - IncidentManagementOrganization
+      - TotalIncidentPersonnel
+      - POOProtectingAgency
+      - Injuries
     data_types:
     - column: OBJECTID
       type: string
@@ -29,9 +56,9 @@ destination_datasources:
     - column: track
       type: double
     - column: acq_date
-      type: Date
+      type: timestamp
     - column: acq_time
-      type: Date
+      type: timestamp
     - column: satellite
       type: string
     - column: confidence
@@ -45,7 +72,7 @@ destination_datasources:
     - column: daynight
       type: string
     - column: esritimeutc
-      type: Date
+      type: timestamp
     - column: hours_old
       type: int
       

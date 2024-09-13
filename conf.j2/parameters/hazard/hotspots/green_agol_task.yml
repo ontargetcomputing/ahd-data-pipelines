@@ -8,4 +8,7 @@ destination_datasources:
     layer: {{ workflows['hazard_hotspots'].green_agol.destination.layer }}
     url: https://chhsagency.maps.arcgis.com/home/
     object_id: OBJECTID
-    
+    geometry:
+      column: geometry
+      type: DYNAMIC
+      
