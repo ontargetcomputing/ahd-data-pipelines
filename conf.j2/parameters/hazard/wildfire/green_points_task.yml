@@ -17,7 +17,7 @@ source_datasources:
             COALESCE(gold.IncidentTypeCategory, points.IncidentTypeCategory, perims.IncidentTypeCategory) as IncidentTypeCategory,
             COALESCE(gold.CalculatedAcres, points.CalculatedAcres) as calculated_acres,
             COALESCE(gold.DailyAcres, points.DailyAcres) as reported_acres,
-            points.geometry as geometry,
+            COALESCE(gold.geometry, points.geometry) as geometry,
             gold.POOProtectingAgency as POOProtectingAgency,
             gold.Fatalities as Fatalities,
             gold.IncidentManagementOrganization as IncidentManagementOrganization,

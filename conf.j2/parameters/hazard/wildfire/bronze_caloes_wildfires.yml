@@ -7,7 +7,8 @@ destination_datasources:
 {% else -%}
 source_datasources:
   - type: agol
-    original_crs: 4326
+    original_crs: 3857
+    new_crs: 4326
     dataset_id: {{ workflows['hazard_wildfire'].bronze.caloes_wildfires.source.dataset_id }}
     layer: {{ workflows['hazard_wildfire'].bronze.caloes_wildfires.source.layer }}    
     url: https://chhsagency.maps.arcgis.com/home/
