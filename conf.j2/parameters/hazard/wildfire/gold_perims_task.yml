@@ -1,41 +1,57 @@
-
 source_datasources:
   - type: databricks
     query: >
-        select
-              points.CalculatedAcres,
-              perims.Comments,
-              perims.ComplexName,
-              perims.ComplexID,
-              perims.CreateDate,
-              perims.CreateDateAge,
-              perims.CurrentDateAge,
-              points.DailyAcres,
-              perims.DateCurrent,
-              points.FireDiscoveryDateTime,
-              perims.FeatureCategory,
-              points.GACC,      
-              perims.GISAcres,
-              perims.GeometryID,
-              perims.GlobalID,
-              perims.IMTName,
-              points.IRWINID,
-              points.IncidentName,
-              points.IncidentTypeCategory,
-              perims.Label,
-              perims.LocalIncidentID, 
-              perims.MapMethod,
-              points.PercentContained,      
-              perims.PolygonDateTime,
-              points.PooCounty,
-              perims.UnitID,
-              perims.ade_date_submitted,
-              points.county, 
-              perims.geometry,
-              points.geometry as geometry_x,
-              points.oes_region
-        from ahd_wildfires.silver.california_fires_points_{{ env }} points 
-        left join ( select count(1) as thecount, IncidentName,
+        WITH caloes_data AS (
+          SELECT *
+          FROM ahd_wildfires.silver.caloes_wildfires_{{ env }}
+          LIMIT 1
+        ),
+        main_query AS (
+          SELECT
+            points.CalculatedAcres,
+            perims.Comments,
+            perims.ComplexName,
+            perims.ComplexID,
+            perims.CreateDate,
+            perims.CreateDateAge,
+            perims.CurrentDateAge,
+            points.DailyAcres,
+            perims.DateCurrent,
+            points.FireDiscoveryDateTime,
+            perims.FeatureCategory,
+            points.GACC,
+            perims.GISAcres,
+            perims.GeometryID,
+            perims.GlobalID,
+            perims.IMTName,
+            points.IRWINID,
+            points.IncidentName,
+            points.IncidentTypeCategory,
+            perims.Label,
+            perims.LocalIncidentID,
+            perims.MapMethod,
+            points.PercentContained,
+            perims.PolygonDateTime,
+            points.PooCounty,
+            perims.UnitID,
+            perims.ade_date_submitted,
+            points.county,
+            perims.geometry,
+            points.geometry as geometry_x,
+            points.oes_region,
+            'IRWIN' as Source,
+            NULL as POOProtectingAgency,
+            NULL as Fatalities,
+            NULL as IncidentManagementOrganization,
+            NULL as Injuries,
+            NULL as OtherStructuresDestroyed,
+            NULL as ResidencesDestroyed,
+            NULL as TotalIncidentPersonnel
+          FROM ahd_wildfires.silver.california_fires_points_{{ env }} points
+          LEFT JOIN (
+            SELECT
+              COUNT(1) as thecount,
+              IncidentName,
               FeatureCategory,
               MapMethod,
               Comments,
@@ -49,7 +65,7 @@ source_datasources:
               GACC,
               IMTName,
               UnitID,
-              LocalIncidentID, 
+              LocalIncidentID,
               IRWINID,
               GeometryID,
               GlobalID,
@@ -58,33 +74,89 @@ source_datasources:
               IncidentTypeCategory,
               geometry,
               ade_date_submitted
-          from ahd_wildfires.silver.california_fires_perims_{{ env }}
-          group by IncidentName,
-                FeatureCategory,
-                MapMethod,
-                Comments,
-                GISAcres,
-                Label,
-                CreateDate,
-                DateCurrent,
-                PolygonDateTime,
-                ComplexName,
-                ComplexID,
-                GACC,
-                IMTName,
-                UnitID,
-                LocalIncidentID, 
-                IRWINID,
-                GeometryID,
-                GlobalID,
-                CurrentDateAge,
-                CreateDateAge,
-                IncidentTypeCategory,
-                geometry,
-                ade_date_submitted ) as perims on points.IRWINID = perims.IRWINID;
+            FROM ahd_wildfires.silver.california_fires_perims_{{ env }}
+            GROUP BY
+              IncidentName,
+              FeatureCategory,
+              MapMethod,
+              Comments,
+              GISAcres,
+              Label,
+              CreateDate,
+              DateCurrent,
+              PolygonDateTime,
+              ComplexName,
+              ComplexID,
+              GACC,
+              IMTName,
+              UnitID,
+              LocalIncidentID,
+              IRWINID,
+              GeometryID,
+              GlobalID,
+              CurrentDateAge,
+              CreateDateAge,
+              IncidentTypeCategory,
+              geometry,
+              ade_date_submitted
+          ) AS perims ON points.IRWINID = perims.IRWINID
+            where
+            ( `points`.`CalculatedAcres` >= 5.0 or `points`.`DailyAcres` >= 5.0 or `perims`.`GISAcres` >= 5.0) and
+            ( points.IncidentTypeCategory != 'RX' and perims.IncidentTypeCategory != 'RX') and
+            ( points.PercentContained is null or points.PercentContained != 100.0 )
+        )
+        SELECT * FROM (
+          SELECT
+            IncidentSize as `CalculatedAcres`,
+            NULL as `Comments`,
+            NULL as `ComplexName`,
+            NULL as `ComplexID`,
+            NULL as `CreateDate`,
+            NULL as `CreateDateAge`,
+            NULL as `CurrentDateAge`,
+            NULL as `DailyAcres`,
+            NULL as `DateCurrent`,
+            FireDiscoveryDateTime as `FireDiscoveryDateTime`,
+            NULL as `FeatureCategory`,
+            GACC,
+            NULL as `GISAcres`,
+            NULL as `GeometryID`,
+            NULL as `GlobalID`,
+            NULL as `IMTName`,
+            IrwinID as `IRWINID`,
+            IncidentName,
+            IncidentTypeCategory,
+            NULL as `Label`,
+            NULL as `LocalIncidentID`,
+            NULL as `MapMethod`,
+            PercentContained,
+            NULL as `PolygonDateTime`,
+            NULL as `PooCounty`,
+            NULL as `UnitID`,
+            ade_date_submitted,
+            County as `county`,
+            geometry as `geometry`,
+            geometry as `geometry_x`,
+            NULL as `oes_region`,
+            'OES' as Source,
+            POOProtectingAgency,
+            Fatalities,
+            IncidentManagementOrganization,
+            Injuries,
+            OtherStructuresDestroyed,
+            ResidencesDestroyed,
+            TotalIncidentPersonnel
+          FROM ahd_wildfires.silver.caloes_wildfires_{{ env }}
+          WHERE EXISTS (SELECT 1 FROM caloes_data)
+          UNION ALL
+          SELECT *
+          FROM main_query
+          WHERE NOT EXISTS (SELECT 1 FROM caloes_data)
+        ) AS combined_result
 destination_datasources:
   - type: databricks
     table: ahd_wildfires.gold.california_fires_perims_{{ env }}
+    overwrite: true
     truncate_on_empty: true
     epoch_to_timestamp:
       - CreateDate
@@ -151,4 +223,18 @@ destination_datasources:
     - column: geometry
       type: string
     - column: oes_region
+      type: string
+    - column: source
+      type: string
+    - column: Fatalities
+      type: string
+    - column: IncidentManagementOrganization
+      type: string
+    - column: Injuries
+      type: string
+    - column: OtherStructuresDestroyed
+      type: string
+    - column: ResidencesDestroyed
+      type: string
+    - column: TotalIncidentPersonnel
       type: string

@@ -14,6 +14,7 @@ source_datasources:
 destination_datasources:
   - type: databricks
     table: ahd_wildfires.bronze.california_fires_points_{{ env }}
+    overwrite: true
     data_types:
     - column: OBJECTID
       type: string

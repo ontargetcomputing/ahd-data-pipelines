@@ -1,27 +1,79 @@
 source_datasources:
   - type: databricks
     query: >
-        select
-              perims.ComplexName,
-              perims.ComplexID,
-              points.PercentContained,
-              points.county,
-              perims.GISAcres,
-              points.IRWINID,
-              perims.Label,
-              points.oes_region,
-              points.PooCounty,
-              points.IncidentName,
-              points.IncidentTypeCategory,
-              points.FireDiscoveryDateTime,
-              points.CalculatedAcres,
-              points.DailyAcres,
-              points.geometry
-        from ahd_wildfires.silver.california_fires_points_{{ env }} as points
-          join ahd_wildfires.gold.california_fires_perims_{{ env }} as perims on points.IRWINID = perims.IRWINID;
+        WITH caloes_data AS (
+          SELECT *
+          FROM ahd_wildfires.silver.caloes_wildfires_{{ env }}
+          LIMIT 1
+        ),
+        main_query AS (
+              select
+                perims.ComplexName,
+                perims.ComplexID,
+                points.PercentContained,
+                points.county,
+                perims.GISAcres,
+                points.IRWINID,
+                perims.Label,
+                points.oes_region,
+                points.PooCounty,
+                points.IncidentName,
+                points.IncidentTypeCategory,
+                points.FireDiscoveryDateTime,
+                points.CalculatedAcres,
+                points.DailyAcres,
+                points.geometry,
+                'IRWIN' as Source,
+                NULL as POOProtectingAgency,
+                NULL as Fatalities,
+                NULL as IncidentManagementOrganization,
+                NULL as Injuries,
+                NULL as OtherStructuresDestroyed,
+                NULL as ResidencesDestroyed,
+                NULL as TotalIncidentPersonnel
+              from ahd_wildfires.silver.california_fires_points_{{ env }} as points
+              join ahd_wildfires.gold.california_fires_perims_{{ env }} as perims on points.IRWINID = perims.IRWINID
+              where
+              ( `points`.`CalculatedAcres` >= 5.0 or `perims`.`DailyAcres` >= 5.0 or `perims`.`GISAcres` >= 5.0) and
+              ( points.IncidentTypeCategory != 'RX' and perims.IncidentTypeCategory != 'RX') and
+              ( points.PercentContained is null or points.PercentContained != 100.0 )
+        )
+        SELECT * FROM (
+          SELECT
+              NULL as `ComplexName`,
+              NULL as `ComplexID`,
+              PercentContained,
+              County as `county`,
+              NULL as `GISAcres`,
+              IrwinID as `IRWINID`,
+              NULL as `Label`,
+              NULL as `oes_region`,
+              NULL as `PooCounty`,
+              IncidentName,
+              IncidentTypeCategory,
+              FireDiscoveryDateTime,
+              IncidentSize as `CalculatedAcres`,
+              NULL as `DailyAcres`,
+              geometry,
+              'CALOES' as Source,
+              POOProtectingAgency,
+              Fatalities,
+              IncidentManagementOrganization,
+              Injuries,
+              OtherStructuresDestroyed,
+              ResidencesDestroyed,
+              TotalIncidentPersonnel
+          FROM ahd_wildfires.silver.caloes_wildfires_{{ env }}
+          WHERE EXISTS (SELECT 1 FROM caloes_data)
+          UNION ALL
+          SELECT *
+          FROM main_query
+          WHERE NOT EXISTS (SELECT 1 FROM caloes_data)
+        ) AS combined_result
 destination_datasources:
   - type: databricks
     table: ahd_wildfires.gold.california_fires_points_{{ env }}
+    overwrite: true
     truncate_on_empty: true
     epoch_to_timestamp:
       - FireDiscoveryDateTime
@@ -56,4 +108,17 @@ destination_datasources:
         type: double
       - column: geometry
         type: string
-
+      - column: Source
+        type: string
+      - column: Fatalities
+        type: string
+      - column: IncidentManagementOrganization
+        type: string
+      - column: Injuries
+        type: string
+      - column: OtherStructuresDestroyed
+        type: string
+      - column: ResidencesDestroyed
+        type: string
+      - column: TotalIncidentPersonnel
+        type: string
