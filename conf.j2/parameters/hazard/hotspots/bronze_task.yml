@@ -1,0 +1,45 @@
+bronze: true
+source_datasources:
+  - type: agol
+    original_crs: 3857
+    new_crs: 4326
+    dataset_id: {{ workflows['hazard_hotspots'].bronze.source.dataset_id }}
+    layer: {{ workflows['hazard_hotspots'].bronze.source.layer }}    
+    url: https://chhsagency.maps.arcgis.com/home/
+    
+destination_datasources:
+  - type: databricks
+    table: ahd_wildfires.bronze.hotspots_{{ env }}
+    data_types:
+    - column: OBJECTID
+      type: string
+    - column: latitude
+      type: string
+    - column: longitude
+      type: string
+    - column: bright_ti4
+      type: string
+    - column: scan
+      type: string
+    - column: track
+      type: string
+    - column: acq_date
+      type: timestamp
+    - column: acq_time
+      type: timestamp
+    - column: satellite
+      type: string
+    - column: confidence
+      type: string
+    - column: version
+      type: string
+    - column: bright_ti5
+      type: string
+    - column: frp
+      type: string
+    - column: daynight
+      type: string
+    - column: esritimeutc
+      type: timestamp
+    - column: hours_old
+      type: string
