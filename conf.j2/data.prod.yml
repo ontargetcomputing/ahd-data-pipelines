@@ -55,7 +55,7 @@ workflows:
     gold:
       site_information:
         source:
-          identity_start_with: 285
+          identity_start_with: 301
 
   shelter_report:
     template: conf/workflows/shelter/report.yml
@@ -64,7 +64,7 @@ workflows:
     bronze:
       shelter_status_layer: 
         source:
-          dataset_id: 91074516e20743b2a1d5bd3159e1efe7 
+          dataset_id: f822666536ad4d768ec79a944cfd1a6e 
           layer: 0
 
       shelter_sites_historical:
