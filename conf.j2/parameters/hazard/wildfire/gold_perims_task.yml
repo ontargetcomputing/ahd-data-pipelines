@@ -1,4 +1,3 @@
-
 source_datasources:
   - type: databricks
     query: >
@@ -41,16 +40,16 @@ source_datasources:
             points.geometry as geometry_x,
             points.oes_region,
             'IRWIN' as Source,
-            NULL as POOProtectingAgency, 
-            NULL as Fatalities, 
-            NULL as IncidentManagementOrganization, 
-            NULL as Injuries, 
-            NULL as OtherStructuresDestroyed, 
-            NULL as ResidencesDestroyed, 
+            NULL as POOProtectingAgency,
+            NULL as Fatalities,
+            NULL as IncidentManagementOrganization,
+            NULL as Injuries,
+            NULL as OtherStructuresDestroyed,
+            NULL as ResidencesDestroyed,
             NULL as TotalIncidentPersonnel
           FROM ahd_wildfires.silver.california_fires_points_{{ env }} points
           LEFT JOIN (
-            SELECT 
+            SELECT
               COUNT(1) as thecount,
               IncidentName,
               FeatureCategory,
@@ -76,7 +75,7 @@ source_datasources:
               geometry,
               ade_date_submitted
             FROM ahd_wildfires.silver.california_fires_perims_{{ env }}
-            GROUP BY 
+            GROUP BY
               IncidentName,
               FeatureCategory,
               MapMethod,
@@ -101,13 +100,13 @@ source_datasources:
               geometry,
               ade_date_submitted
           ) AS perims ON points.IRWINID = perims.IRWINID
-            where 
+            where
             ( `points`.`CalculatedAcres` >= 5.0 or `points`.`DailyAcres` >= 5.0 or `perims`.`GISAcres` >= 5.0) and
             ( points.IncidentTypeCategory != 'RX' and perims.IncidentTypeCategory != 'RX') and
             ( points.PercentContained is null or points.PercentContained != 100.0 )
         )
         SELECT * FROM (
-          SELECT 
+          SELECT
             IncidentSize as `CalculatedAcres`,
             NULL as `Comments`,
             NULL as `ComplexName`,
@@ -140,18 +139,16 @@ source_datasources:
             geometry as `geometry_x`,
             NULL as `oes_region`,
             'OES' as Source,
-            POOProtectingAgency, 
-            Fatalities, 
-            IncidentManagementOrganization, 
-            Injuries, 
-            OtherStructuresDestroyed, 
-            ResidencesDestroyed, 
+            POOProtectingAgency,
+            Fatalities,
+            IncidentManagementOrganization,
+            Injuries,
+            OtherStructuresDestroyed,
+            ResidencesDestroyed,
             TotalIncidentPersonnel
           FROM ahd_wildfires.silver.caloes_wildfires_{{ env }}
           WHERE EXISTS (SELECT 1 FROM caloes_data)
-
           UNION ALL
-
           SELECT *
           FROM main_query
           WHERE NOT EXISTS (SELECT 1 FROM caloes_data)

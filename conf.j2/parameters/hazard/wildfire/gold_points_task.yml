@@ -24,12 +24,12 @@ source_datasources:
                 points.DailyAcres,
                 points.geometry,
                 'IRWIN' as Source,
-                NULL as POOProtectingAgency, 
-                NULL as Fatalities, 
-                NULL as IncidentManagementOrganization, 
-                NULL as Injuries, 
-                NULL as OtherStructuresDestroyed, 
-                NULL as ResidencesDestroyed, 
+                NULL as POOProtectingAgency,
+                NULL as Fatalities,
+                NULL as IncidentManagementOrganization,
+                NULL as Injuries,
+                NULL as OtherStructuresDestroyed,
+                NULL as ResidencesDestroyed,
                 NULL as TotalIncidentPersonnel
               from ahd_wildfires.silver.california_fires_points_{{ env }} as points
               join ahd_wildfires.gold.california_fires_perims_{{ env }} as perims on points.IRWINID = perims.IRWINID
@@ -39,7 +39,7 @@ source_datasources:
               ( points.PercentContained is null or points.PercentContained != 100.0 )
         )
         SELECT * FROM (
-          SELECT 
+          SELECT
               NULL as `ComplexName`,
               NULL as `ComplexID`,
               PercentContained,
@@ -57,22 +57,19 @@ source_datasources:
               geometry,
               'CALOES' as Source,
               POOProtectingAgency,
-              Fatalities, 
-              IncidentManagementOrganization, 
-              Injuries, 
-              OtherStructuresDestroyed, 
-              ResidencesDestroyed, 
+              Fatalities,
+              IncidentManagementOrganization,
+              Injuries,
+              OtherStructuresDestroyed,
+              ResidencesDestroyed,
               TotalIncidentPersonnel
           FROM ahd_wildfires.silver.caloes_wildfires_{{ env }}
           WHERE EXISTS (SELECT 1 FROM caloes_data)
-
           UNION ALL
-
           SELECT *
           FROM main_query
           WHERE NOT EXISTS (SELECT 1 FROM caloes_data)
         ) AS combined_result
-
 destination_datasources:
   - type: databricks
     table: ahd_wildfires.gold.california_fires_points_{{ env }}
@@ -125,4 +122,3 @@ destination_datasources:
         type: string
       - column: TotalIncidentPersonnel
         type: string
-

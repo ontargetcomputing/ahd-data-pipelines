@@ -39,6 +39,16 @@ destination_datasources:
     layer: {{ workflows['hazard_wildfire'].green.perimeters.destination.layer }}
     url: https://chhsagency.maps.arcgis.com/home/
     object_id: FID
-    geometry: 
+    geometry:
       column: geometry
       type: DYNAMIC
+
+
+
+
+
+
+
+
+
+
