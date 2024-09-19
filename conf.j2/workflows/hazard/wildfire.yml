@@ -12,6 +12,24 @@ resources:
         timezone_id: "America/Los_Angeles"
       
       tasks:
+        - task_key: "bronze_caloes_wildfires"
+          existing_cluster_id: ${var.ahd_cluster_id}
+          python_wheel_task:
+            package_name: ${bundle.name}
+            entry_point: medallion_task
+            parameters: [ "--conf-file", "${var.param_files_dir}/hazard/wildfire/bronze_caloes_wildfires.yml", "--stage", "${bundle.target}"]
+          libraries:
+          - whl: ../../../dist/*.whl
+
+        - task_key: "bronze_caloes_wildfires_children"
+          existing_cluster_id: ${var.ahd_cluster_id}
+          python_wheel_task:
+            package_name: ${bundle.name}
+            entry_point: medallion_task
+            parameters: [ "--conf-file", "${var.param_files_dir}/hazard/wildfire/bronze_caloes_wildfires_children.yml", "--stage", "${bundle.target}"]
+          libraries:
+          - whl: ../../../dist/*.whl
+
         - task_key: "bronze_points"
           existing_cluster_id: ${var.ahd_cluster_id}
           python_wheel_task:
@@ -19,7 +37,7 @@ resources:
             entry_point: medallion_task
             parameters: [ "--conf-file", "${var.param_files_dir}/hazard/wildfire/bronze_points_task.yml", "--stage", "${bundle.target}"]
           libraries:
-            - whl: /dist/*.whl
+          - whl: ../../../dist/*.whl
 
         - task_key: "bronze_perims"
           existing_cluster_id: ${var.ahd_cluster_id}
@@ -28,7 +46,29 @@ resources:
             entry_point: medallion_task
             parameters: [ "--conf-file", "${var.param_files_dir}/hazard/wildfire/bronze_perims_task.yml", "--stage", "${bundle.target}"]
           libraries:
-            - whl: /dist/*.whl
+          - whl: ../../../dist/*.whl
+
+        - task_key: "silver_caloes_wildfires"
+          depends_on: 
+            - task_key:  bronze_caloes_wildfires
+          existing_cluster_id: ${var.ahd_cluster_id}
+          python_wheel_task:
+            package_name: ${bundle.name}
+            entry_point: medallion_task
+            parameters: [ "--conf-file", "${var.param_files_dir}/hazard/wildfire/silver_caloes_wildfires.yml", "--stage", "${bundle.target}"]
+          libraries:
+          - whl: ../../../dist/*.whl
+
+        - task_key: "silver_caloes_wildfires_children"
+          depends_on: 
+            - task_key:  bronze_caloes_wildfires_children
+          existing_cluster_id: ${var.ahd_cluster_id}
+          python_wheel_task:
+            package_name: ${bundle.name}
+            entry_point: medallion_task
+            parameters: [ "--conf-file", "${var.param_files_dir}/hazard/wildfire/silver_caloes_wildfires_children.yml", "--stage", "${bundle.target}"]
+          libraries:
+          - whl: ../../../dist/*.whl
 
         - task_key: "silver_points"
           depends_on: 
@@ -39,7 +79,7 @@ resources:
             entry_point: silver_wildfire_perims_task
             parameters: [ "--conf-file", "${var.param_files_dir}/hazard/wildfire/silver_points_task.yml", "--stage", "${bundle.target}"]
           libraries:
-            - whl: /dist/*.whl
+          - whl: ../../../dist/*.whl
 
         - task_key: "silver_perims"
           depends_on: 
@@ -50,7 +90,7 @@ resources:
             entry_point: silver_wildfire_perims_task
             parameters: [ "--conf-file", "${var.param_files_dir}/hazard/wildfire/silver_perims_task.yml", "--stage", "${bundle.target}"]
           libraries:
-            - whl: /dist/*.whl
+          - whl: ../../../dist/*.whl
 
         - task_key: "gold_points"
           depends_on: 
@@ -62,7 +102,7 @@ resources:
             entry_point: medallion_task
             parameters: [ "--conf-file", "${var.param_files_dir}/hazard/wildfire/gold_points_task.yml", "--stage", "${bundle.target}"]
           libraries:
-            - whl: /dist/*.whl
+          - whl: ../../../dist/*.whl
 
         - task_key: "gold_perims"
           depends_on: 
@@ -74,7 +114,7 @@ resources:
             entry_point: gold_wildfire_perims_task
             parameters: [ "--conf-file", "${var.param_files_dir}/hazard/wildfire/gold_perims_task.yml", "--stage", "${bundle.target}"]
           libraries:
-            - whl: /dist/*.whl
+          - whl: ../../../dist/*.whl
 
         - task_key: "green_points"
           depends_on: 
@@ -85,7 +125,7 @@ resources:
             entry_point: medallion_task
             parameters: [ "--conf-file", "${var.param_files_dir}/hazard/wildfire/green_points_task.yml", "--stage", "${bundle.target}"]
           libraries:
-            - whl: /dist/*.whl
+          - whl: ../../../dist/*.whl
 
         - task_key: "green_perims"
           depends_on: 
@@ -96,4 +136,4 @@ resources:
             entry_point: medallion_task
             parameters: [ "--conf-file", "${var.param_files_dir}/hazard/wildfire/green_perims_task.yml", "--stage", "${bundle.target}"]
           libraries:
-            - whl: /dist/*.whl
+          - whl: ../../../dist/*.whl

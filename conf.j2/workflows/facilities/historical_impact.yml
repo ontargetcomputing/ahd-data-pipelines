@@ -1,34 +1,34 @@
 resources:
   jobs:
-    county_language:
-      name: County Language Data
+    facility_historical_impact:
+      name: facility_historical_impact
 
       email_notifications:
         on_failure:
           - ${var.notification_email}
 
       schedule:
-        quartz_cron_expression: "33 0 0 ? * Mon"
+        quartz_cron_expression: "17 0 9 ? * Sat"
         timezone_id: "America/Los_Angeles"
-      
+
       tasks:
         - task_key: "bronze"
           existing_cluster_id: ${var.ahd_cluster_id}
           python_wheel_task:
             package_name: ${bundle.name}
             entry_point: medallion_task
-            parameters: [ "--conf-file", "${var.param_files_dir}/census/language/bronze_task.yml", "--stage", "${bundle.target}"]
+            parameters: [ "--conf-file", "${var.param_files_dir}/facilities/historical_impact/bronze_task.yml", "--stage", "${bundle.target}"]
           libraries:
             - whl: ../../../dist/*.whl
 
         - task_key: "silver"
           depends_on: 
-            - task_key: bronze
+            - task_key:  bronze
           existing_cluster_id: ${var.ahd_cluster_id}
           python_wheel_task:
             package_name: ${bundle.name}
             entry_point: medallion_task
-            parameters: [ "--conf-file", "${var.param_files_dir}/census/language/silver_task.yml", "--stage", "${bundle.target}"]
+            parameters: [ "--conf-file", "${var.param_files_dir}/facilities/historical_impact/silver_task.yml", "--stage", "${bundle.target}"]
           libraries:
             - whl: ../../../dist/*.whl
 
@@ -39,7 +39,7 @@ resources:
           python_wheel_task:
             package_name: ${bundle.name}
             entry_point: medallion_task
-            parameters: [ "--conf-file", "${var.param_files_dir}/census/language/gold_task.yml", "--stage", "${bundle.target}"]
+            parameters: [ "--conf-file", "${var.param_files_dir}/facilities/historical_impact/gold_task.yml", "--stage", "${bundle.target}"]
           libraries:
             - whl: ../../../dist/*.whl
 
@@ -50,7 +50,17 @@ resources:
           python_wheel_task:
             package_name: ${bundle.name}
             entry_point: medallion_task
-            parameters: [ "--conf-file", "${var.param_files_dir}/census/language/green_task.yml", "--stage", "${bundle.target}"]
+            parameters: [ "--conf-file", "${var.param_files_dir}/facilities/historical_impact/green_task.yml", "--stage", "${bundle.target}"]
           libraries:
             - whl: ../../../dist/*.whl
 
+        - task_key: "green_agol"
+          depends_on: 
+            - task_key:  green
+          existing_cluster_id: ${var.ahd_cluster_id}
+          python_wheel_task:
+            package_name: ${bundle.name}
+            entry_point: medallion_task
+            parameters: [ "--conf-file", "${var.param_files_dir}/facilities/historical_impact/green_agol_task.yml", "--stage", "${bundle.target}"]
+          libraries:
+            - whl: ../../../dist/*.whl

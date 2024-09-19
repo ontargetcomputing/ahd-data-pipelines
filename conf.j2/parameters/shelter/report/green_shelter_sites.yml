@@ -1,169 +1,128 @@
-unions:
-  - left_index: 0
-    right_index: 1
 source_datasources:
-  - type: pandas
-    dtypes:
-      - datahub_site_id: string
-      - name: string
-      - address: string
-      - county_fips: int
-      - county: string
-      - city: string
-      - state: string
-      - zipcode: string
-      - oes_region: string
-      - backup_generator: string
-      - ada_accessible_site: string 
-      - datasource: string
-      - dr_name: string
-      - disaster_type: string
-      - disaster_start_date: string
-      - overall_capacity: int
-      - overall_capacity_delta: int
-      - agency_type: string
-      - site_status: string
-      - site_type: string
-      - shift_a_poc_name: string
-      - shift_a_poc_number: string
-      - shift_b_poc_name: string
-      - shift_b_poc_number: string
-      - open_date: timestamp
-      - close_date: timestamp
-      - closure_reason: string
-      - estimated_census_outside: int
-      - est_census_outside_delta: int
-      - rooms_occupied: int
-      - rooms_occupied_delta: int
-      - census: int
-      - census_delta: int
-      - report_date: timestamp
-      - completed_by: string
-      - previous_day_status: string
-      - submission_date: timestamp
-      - outdated_report: string
-      - geometry: string
-    data: 
-      - datahub_site_id: ""
-        name: ""
-        address: ""
-        county_fips: 0
-        county: ""
-        city: ""
-        state: ""
-        zipcode: ""
-        oes_region: ""
-        backup_generator: ""
-        ada_accessible_site: ""
-        datasource: ""
-        dr_name: ""
-        disaster_type: ""
-        disaster_start_date: ""
-        overall_capacity: 0
-        overall_capacity_delta: 0
-        agency_type: ""
-        site_status: "dummy"
-        site_type: "Congregate"
-        shift_a_poc_name: ""
-        shift_a_poc_number: ""
-        shift_b_poc_name: ""
-        shift_b_poc_number: ""
-        open_date: 
-        close_date: 
-        closure_reason: ""
-        estimated_census_outside: 0
-        est_census_outside_delta: 0
-        rooms_occupied: 0
-        rooms_occupied_delta: 0
-        census: 0
-        census_delta: 0
-        report_date: 
-        completed_by: ""
-        previous_day_status: ""
-        submission_date: 
-        outdated_report: 
-        geometry: "POINT (0.0 0.0)"
-      - datahub_site_id: ""
-        name: ""
-        address: ""
-        county_fips: 0
-        county: ""
-        city: ""
-        state: ""
-        zipcode: ""
-        oes_region: ""
-        backup_generator: ""
-        ada_accessible_site: ""
-        datasource: ""
-        dr_name: ""
-        disaster_type: ""
-        disaster_start_date: ""
-        overall_capacity: 0
-        overall_capacity_delta: 0
-        agency_type: ""
-        site_status: "dummy"
-        site_type: "Non Congregate"
-        shift_a_poc_name: ""
-        shift_a_poc_number: ""
-        shift_b_poc_name: ""
-        shift_b_poc_number: ""
-        open_date: 
-        close_date: 
-        closure_reason: ""
-        estimated_census_outside: 0
-        est_census_outside_delta: 0
-        rooms_occupied: 0
-        rooms_occupied_delta: 0
-        census: 0
-        census_delta: 0
-        report_date: 
-        completed_by: ""
-        previous_day_status: ""
-        submission_date: 
-        outdated_report: 
-        geometry: "POINT (0.0 0.0)"
   - type: databricks
     query: >
-        select datahub_site_id,
-                name,
-                address,
-                county_fips,
-                county,
-                city,
-                state,
-                zipcode,
-                oes_region,
-                backup_generator,
-                ada_accessible_site,
-                datasource,
-                dr_name,
-                disaster_type,
-                disaster_start_date,
-                overall_capacity,
-                overall_capacity_delta,
-                agency_type,
-                site_status,
-                site_type,
-                shift_a_poc_name,
-                shift_a_poc_number,
-                shift_b_poc_name,
-                shift_b_poc_number,
-                open_date,
-                close_date,
-                closure_reason,
-                estimated_census_outside,
-                est_census_outside_delta,
-                rooms_occupied,
-                rooms_occupied_delta,
-                census,
-                census_delta,
-                report_date,
-                completed_by,
-                previous_day_status,
-                submission_date,
-                outdated_report,
-                geometry
-        from {{ workflows['shelter_report'].catalog }}.gold.shelter_status_with_deltas_{{ env }};
+      select datahub_site_id,
+              name,
+              address,
+              county_fips,
+              county,
+              city,
+              state,
+              zipcode,
+              oes_region,
+              backup_generator,
+              ada_accessible_site,
+              datasource,
+              dr_name,
+              disaster_type,
+              disaster_start_date,
+              overall_capacity,
+              overall_capacity_delta,
+              agency_type,
+              site_status,
+              site_type,
+              shift_a_poc_name,
+              shift_a_poc_number,
+              shift_b_poc_name,
+              shift_b_poc_number,
+              open_date,
+              close_date,
+              closure_reason,
+              estimated_census_outside,
+              est_census_outside_delta,
+              rooms_occupied,
+              rooms_occupied_delta,
+              census,
+              census_delta,
+              report_date,
+              completed_by,
+              previous_day_status,
+              submission_date,
+              outdated_report,
+              geometry
+      from {{ workflows['shelter_report'].catalog }}.gold.cassi_join_layer_with_deltas_{{ env }}
+      union all
+      SELECT 
+          "" AS datahub_site_id,
+          "" AS name,
+          "" AS address,
+          0 AS county_fips,
+          "" AS county,
+          "" AS city,
+          "" AS state,
+          "" AS zipcode,
+          "" AS oes_region,
+          "" AS backup_generator,
+          "" AS ada_accessible_site,
+          "" as datasource,
+          "" AS dr_name,
+          "" AS disaster_type,
+          "" AS disaster_start_date,
+          0 AS overall_capacity,
+          0 AS overall_capacity_delta,
+          "" as agency_type,    
+          "dummy" AS site_status,
+          "Non Congregate" AS site_type,
+          "" AS shift_a_poc_name,
+          "" AS shift_a_poc_number,
+          "" AS shift_b_poc_name,
+          "" AS shift_b_poc_number,
+          NULL AS open_date,
+          NULL AS close_date,
+          "" AS closure_reason,
+          0 AS estimated_census_outside,
+          0 AS est_census_outside_delta,
+          0 AS rooms_occupied,
+          0 AS rooms_occupied_delta,
+          0 AS census,
+          0 AS census_delta,
+          NULL AS report_date,
+          "" AS completed_by,
+          "" AS previous_day_status,
+          NULL AS submission_date,
+          NULL AS outdated_report,
+          "POINT (0.0 0.0)" AS geometry
+      union all
+      SELECT 
+          "" AS datahub_site_id,
+          "" AS name,
+          "" AS address,
+          0 AS county_fips,
+          "" AS county,
+          "" AS city,
+          "" AS state,
+          "" AS zipcode,
+          "" AS oes_region,
+          "" AS backup_generator,
+          "" AS ada_accessible_site,
+          "" as datasource,    
+          "" AS dr_name,
+          "" AS disaster_type,
+          "" AS disaster_start_date,
+          0 AS overall_capacity,
+          0 AS overall_capacity_delta,
+          "" as agency_type,
+          "dummy" AS site_status,
+          "Congregate" AS site_type,
+          "" AS shift_a_poc_name,
+          "" AS shift_a_poc_number,
+          "" AS shift_b_poc_name,
+          "" AS shift_b_poc_number,
+          NULL AS open_date,
+          NULL AS close_date,
+          "" AS closure_reason,
+          0 AS estimated_census_outside,
+          0 AS est_census_outside_delta,
+          0 AS rooms_occupied,
+          0 AS rooms_occupied_delta,
+          0 AS census,
+          0 AS census_delta,
+          NULL AS report_date,
+          "" AS completed_by,
+          "" AS previous_day_status,
+          NULL AS submission_date,
+          NULL AS outdated_report,
+          "POINT (0.0 0.0)" AS geometry;
 destination_datasources:
   - type: databricks    
     table: {{ workflows['shelter_report'].catalog }}.green.shelter_sites_{{ env }}
@@ -191,14 +150,12 @@ destination_datasources:
       type: string
     - column: ada_accessible_site
       type: string
-    - column: datasource
-      type: string
     - column: dr_name
       type: string
     - column: disaster_type
       type: string
     - column: disaster_start_date
-      type: string
+      type: timestamp_ntz
     - column: overall_capacity
       type: double
     - column: overall_capacity_delta
@@ -218,9 +175,9 @@ destination_datasources:
     - column: shift_b_poc_number
       type: string
     - column: open_date
-      type: date
+      type: timestamp_ntz
     - column: close_date
-      type: date
+      type: timestamp_ntz
     - column: closure_reason
       type: string
     - column: estimated_census_outside
@@ -242,7 +199,7 @@ destination_datasources:
     - column: previous_day_status
       type: string
     - column: submission_date
-      type: date
+      type: timestamp_ntz
     - column: outdated_report
       type: string
     - column: geometry

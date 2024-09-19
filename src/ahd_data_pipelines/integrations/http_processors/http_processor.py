@@ -10,7 +10,7 @@ class HTTPProcessor(ABC):
         pass
 
     def get_http_response(self, url):
-        response = requests.get(url)
+        response = requests.get(url, verify=False)
         if response.status_code == 200:
             # If the request was successful (status code 200),
             # the JSON data can be retrieved from the response's 'json' method

@@ -1,0 +1,28 @@
+source_datasources:
+  - type: databricks
+    table: shelter.green.facilities_historical_impact_{{ env }}
+destination_datasources:
+
+  - type: agol
+    dataset_id: {{ workflows['facilities_historical_impact'].green.destination.dataset_id }}
+    is_table: true
+    table_index: {{ workflows['facilities_historical_impact'].green.destination.table_index }}
+    url: https://chhsagency.maps.arcgis.com/home/
+    data_types:
+    - column: effective_date
+      type: date
+    - column: ade_source
+      type: string
+    - column: ade_source_facility_type
+      type: string
+    - column: operational_with_impacts_int
+      type: int
+    - column: nonoperational_long_term_int
+      type: int
+    - column: nonoperational_short_term_int
+      type: int
+    - column: partially_evacuated_int
+      type: int
+    - column: fully_evacuated_int
+      type: int
+  

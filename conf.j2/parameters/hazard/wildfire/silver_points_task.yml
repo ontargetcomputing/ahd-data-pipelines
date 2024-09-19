@@ -23,6 +23,7 @@ source_datasources:
 destination_datasources:
   - type: databricks
     table: ahd_wildfires.silver.california_fires_points_{{ env }}
+    overwrite: true
     truncate_on_empty: true
     drop_duplicates: []
     drop_columns:

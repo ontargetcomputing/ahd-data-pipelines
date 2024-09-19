@@ -1,5 +1,5 @@
 env: ci
-notification_email: Richard.Bach3@chhs.ca.gov
+notification_email: Jeff.Ranta@CHHS.CA.GOV
 workflows:
   ops:
     template: conf/workflows/ops/heartbeat.yml
@@ -107,6 +107,14 @@ workflows:
         source:
           dataset_id: d957997ccee7408287a963600a77f61f
           layer: 1
+      caloes_wildfires:
+        source:
+          dataset_id: 8fd6f547e90540d3bf54d486a3234796
+          layer: 0
+      caloes_wildfires_children:
+        source:
+          dataset_id: 9d87bec526e5496c9c6ab9ee12d4877b
+          layer: 0
     green:
       points:
         destination:

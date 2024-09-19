@@ -9,6 +9,7 @@ destination_datasources:
     dataset_id: {{ workflows['shelter_report'].green.shelter_sites_historical.destination.dataset_id }}
     layer: {{ workflows['shelter_report'].green.shelter_sites_historical.destination.layer }}
     url: https://chhsagency.maps.arcgis.com/home/
+    method: append
     object_id: OBJECTID
     geometry:
       type: POINT
