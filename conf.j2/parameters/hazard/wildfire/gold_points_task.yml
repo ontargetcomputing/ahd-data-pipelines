@@ -1,27 +1,68 @@
 source_datasources:
   - type: databricks
     query: >
-        select
-              perims.ComplexName,
-              perims.ComplexID,
-              points.PercentContained,
-              points.county,
-              perims.GISAcres,
-              points.IRWINID,
-              perims.Label,
-              points.oes_region,
-              points.PooCounty,
-              points.IncidentName,
-              points.IncidentTypeCategory,
-              points.FireDiscoveryDateTime,
-              points.CalculatedAcres,
-              points.DailyAcres,
-              points.geometry
-        from ahd_wildfires.silver.california_fires_points_{{ env }} as points
-          join ahd_wildfires.gold.california_fires_perims_{{ env }} as perims on points.IRWINID = perims.IRWINID;
+        WITH caloes_data AS (
+          SELECT *
+          FROM ahd_wildfires.silver.caloes_wildfires_{{ env }}
+          LIMIT 1
+        ),
+        main_query AS (
+              select
+                perims.ComplexName,
+                perims.ComplexID,
+                points.PercentContained,
+                points.county,
+                perims.GISAcres,
+                points.IRWINID,
+                perims.Label,
+                points.oes_region,
+                points.PooCounty,
+                points.IncidentName,
+                points.IncidentTypeCategory,
+                points.FireDiscoveryDateTime,
+                points.CalculatedAcres,
+                points.DailyAcres,
+                points.geometry,
+                'IRWIN' as Source
+              from ahd_wildfires.silver.california_fires_points_{{ env }} as points
+              join ahd_wildfires.gold.california_fires_perims_{{ env }} as perims on points.IRWINID = perims.IRWINID
+              where
+              ( `points`.`CalculatedAcres` >= 5.0 or `perims`.`DailyAcres` >= 5.0 or `perims`.`GISAcres` >= 5.0) and
+              ( points.IncidentTypeCategory != 'RX' and perims.IncidentTypeCategory != 'RX') and
+              ( points.PercentContained is null or points.PercentContained != 100.0 )
+        )
+        SELECT * FROM (
+          SELECT 
+              NULL as `ComplexName`,
+              NULL as `ComplexID`,
+              PercentContained,
+              County as `county`,
+              NULL as `GISAcres`,
+              IrwinID as `IRWINID`,
+              NULL as `Label`,
+              NULL as `oes_region`,
+              NULL as `PooCounty`,
+              IncidentName,
+              IncidentTypeCategory,
+              FireDiscoveryDateTime,
+              IncidentSize as `CalculatedAcres`,
+              NULL as `DailyAcres`,
+              'MULTIPOLYGON (((-122.3456789099999987 47.6543210989999967, -122.3457890120000056 47.6544321010000033, -122.3458901230000012 47.6545432120000009, -122.3459012340000078 47.6546543230000075, -122.3460123450000044 47.6547654340000051, -122.3461234560000010 47.6548765450000027, -122.3462345670000086 47.6549876560000003, -122.3463456780000052 47.6550987670000069, -122.3464567890000018 47.6552098780000045, -122.3465678900000094 47.6553209890000021, -122.3456789099999987 47.6543210989999967)))' as `geometry`,
+              'CALOES' as Source
+          FROM ahd_wildfires.silver.caloes_wildfires_{{ env }}
+          WHERE EXISTS (SELECT 1 FROM caloes_data)
+
+          UNION ALL
+
+          SELECT *
+          FROM main_query
+          WHERE NOT EXISTS (SELECT 1 FROM caloes_data)
+        ) AS combined_result
+
 destination_datasources:
   - type: databricks
     table: ahd_wildfires.gold.california_fires_points_{{ env }}
+    overwrite: true
     truncate_on_empty: true
     epoch_to_timestamp:
       - FireDiscoveryDateTime
@@ -55,5 +96,7 @@ destination_datasources:
       - column: DailyAcres
         type: double
       - column: geometry
+        type: string
+      - column: Source
         type: string
 

@@ -1,0 +1,104 @@
+source_datasources:
+  - type: databricks
+    # # test query to test blank data, uncomment the query and comment the table to use
+    # query: >
+    #   SELECT
+    #     ChildIrwinID, ParentIrwinID, RelationshipType, IrwinID, CreatedOnDateTime, IncidentName,
+    #     InitialLatitude, InitialLongitude, County, POOProtectingAgency, FireIdentifier, IncidentSize,
+    #     DataSource, ContainmentDateTime, ControlDateTime, DiscoveryAcres, Fatalities, FinalAcres,
+    #     FireCause, FireCauseGeneral, FireDiscoveryDateTime, FireMgmtComplexity, FireOutDateTime,
+    #     GACC, ICS209ReportForTimePeriodFrom, ICS209ReportForTimePeriodTo, IncidentManagementOrganization,
+    #     IncidentTypeCategory, IncidentTypeKind, Injuries, IsValid, ModifiedOnDateTime,
+    #     OtherStructuresDestroyed, PercentContained, POOState, PredominantFuelModel, PrimaryFuelModel,
+    #     ResidencesDestroyed, TotalIncidentPersonnel, PredominantFuelGroup, OBJECTID
+    #   FROM ahd_wildfires.bronze.caloes_wildfires_children_{{ env }}
+    #   LIMIT 0
+    table: ahd_wildfires.bronze.caloes_wildfires_children_{{ env }}
+
+destination_datasources:
+  - type: databricks
+    table: ahd_wildfires.silver.caloes_wildfires_children_{{ env }}
+    overwrite: true
+    data_types:
+    - column: ChildIrwinID
+      type: string
+    - column: ParentIrwinID
+      type: string
+    - column: RelationshipType
+      type: string
+    - column: IrwinID
+      type: string
+    - column: CreatedOnDateTime
+      type: string
+    - column: IncidentName
+      type: string
+    - column: InitialLatitude
+      type: string
+    - column: InitialLongitude
+      type: string
+    - column: County
+      type: string
+    - column: POOProtectingAgency
+      type: string
+    - column: FireIdentifier
+      type: string
+    - column: IncidentSize
+      type: string
+    - column: DataSource
+      type: string
+    - column: ContainmentDateTime
+      type: string
+    - column: ControlDateTime
+      type: string
+    - column: DiscoveryAcres
+      type: string
+    - column: Fatalities
+      type: string
+    - column: FinalAcres
+      type: string
+    - column: FireCause
+      type: string
+    - column: FireCauseGeneral
+      type: string
+    - column: FireDiscoveryDateTime
+      type: string
+    - column: FireMgmtComplexity
+      type: string
+    - column: FireOutDateTime
+      type: string
+    - column: GACC
+      type: string
+    - column: ICS209ReportForTimePeriodFrom
+      type: string
+    - column: ICS209ReportForTimePeriodTo
+      type: string
+    - column: IncidentManagementOrganization
+      type: string
+    - column: IncidentTypeCategory
+      type: string
+    - column: IncidentTypeKind
+      type: string
+    - column: Injuries
+      type: string
+    - column: IsValid
+      type: string
+    - column: ModifiedOnDateTime
+      type: string
+    - column: OtherStructuresDestroyed
+      type: string
+    - column: PercentContained
+      type: string
+    - column: POOState
+      type: string
+    - column: PredominantFuelModel
+      type: string
+    - column: PrimaryFuelModel
+      type: string
+    - column: ResidencesDestroyed
+      type: string
+    - column: TotalIncidentPersonell
+      type: string
+    - column: PredominantFuelGroup
+      type: string
+    - column: OBJECTID
+      type: string
