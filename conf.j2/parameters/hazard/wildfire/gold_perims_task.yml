@@ -1,4 +1,3 @@
-
 source_datasources:
   - type: databricks
     query: >
@@ -40,10 +39,17 @@ source_datasources:
             perims.geometry,
             points.geometry as geometry_x,
             points.oes_region,
-            'IRWIN' as Source
+            'IRWIN' as Source,
+            NULL as POOProtectingAgency,
+            NULL as Fatalities,
+            NULL as IncidentManagementOrganization,
+            NULL as Injuries,
+            NULL as OtherStructuresDestroyed,
+            NULL as ResidencesDestroyed,
+            NULL as TotalIncidentPersonnel
           FROM ahd_wildfires.silver.california_fires_points_{{ env }} points
           LEFT JOIN (
-            SELECT 
+            SELECT
               COUNT(1) as thecount,
               IncidentName,
               FeatureCategory,
@@ -69,7 +75,7 @@ source_datasources:
               geometry,
               ade_date_submitted
             FROM ahd_wildfires.silver.california_fires_perims_{{ env }}
-            GROUP BY 
+            GROUP BY
               IncidentName,
               FeatureCategory,
               MapMethod,
@@ -94,13 +100,13 @@ source_datasources:
               geometry,
               ade_date_submitted
           ) AS perims ON points.IRWINID = perims.IRWINID
-            where 
+            where
             ( `points`.`CalculatedAcres` >= 5.0 or `points`.`DailyAcres` >= 5.0 or `perims`.`GISAcres` >= 5.0) and
             ( points.IncidentTypeCategory != 'RX' and perims.IncidentTypeCategory != 'RX') and
             ( points.PercentContained is null or points.PercentContained != 100.0 )
         )
         SELECT * FROM (
-          SELECT 
+          SELECT
             IncidentSize as `CalculatedAcres`,
             NULL as `Comments`,
             NULL as `ComplexName`,
@@ -129,15 +135,20 @@ source_datasources:
             NULL as `UnitID`,
             ade_date_submitted,
             County as `county`,
-            'MULTIPOLYGON (((-122.3456789099999987 47.6543210989999967, -122.3457890120000056 47.6544321010000033, -122.3458901230000012 47.6545432120000009, -122.3459012340000078 47.6546543230000075, -122.3460123450000044 47.6547654340000051, -122.3461234560000010 47.6548765450000027, -122.3462345670000086 47.6549876560000003, -122.3463456780000052 47.6550987670000069, -122.3464567890000018 47.6552098780000045, -122.3465678900000094 47.6553209890000021, -122.3456789099999987 47.6543210989999967)))' as `geometry`,
-            'MULTIPOLYGON (((-122.3456789099999987 47.6543210989999967, -122.3457890120000056 47.6544321010000033, -122.3458901230000012 47.6545432120000009, -122.3459012340000078 47.6546543230000075, -122.3460123450000044 47.6547654340000051, -122.3461234560000010 47.6548765450000027, -122.3462345670000086 47.6549876560000003, -122.3463456780000052 47.6550987670000069, -122.3464567890000018 47.6552098780000045, -122.3465678900000094 47.6553209890000021, -122.3456789099999987 47.6543210989999967)))' as `geometry_x`,
+            geometry as `geometry`,
+            geometry as `geometry_x`,
             NULL as `oes_region`,
-            'OES' as Source
+            'OES' as Source,
+            POOProtectingAgency,
+            Fatalities,
+            IncidentManagementOrganization,
+            Injuries,
+            OtherStructuresDestroyed,
+            ResidencesDestroyed,
+            TotalIncidentPersonnel
           FROM ahd_wildfires.silver.caloes_wildfires_{{ env }}
           WHERE EXISTS (SELECT 1 FROM caloes_data)
-
           UNION ALL
-
           SELECT *
           FROM main_query
           WHERE NOT EXISTS (SELECT 1 FROM caloes_data)
@@ -214,4 +225,16 @@ destination_datasources:
     - column: oes_region
       type: string
     - column: source
+      type: string
+    - column: Fatalities
+      type: string
+    - column: IncidentManagementOrganization
+      type: string
+    - column: Injuries
+      type: string
+    - column: OtherStructuresDestroyed
+      type: string
+    - column: ResidencesDestroyed
+      type: string
+    - column: TotalIncidentPersonnel
       type: string
