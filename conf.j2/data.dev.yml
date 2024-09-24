@@ -191,3 +191,15 @@ workflows:
       destination:
         dataset_id: 020eb4efa482467a9fffe647af1709a2
         layer: 0
+
+  facilities_cdss_opstatus:
+    template: conf/workflows/facilities/cdss_opstatus.yml
+    bronze: 
+      source:
+        dataset_id: b9fc5281355a41828fce11dbaa0ff1dd
+        layer: 0
+    green_agol:
+      destination:
+        dataset_id: 21a259e6e0244bb09ac0cc5748534b12
+        layer: 0
+        
