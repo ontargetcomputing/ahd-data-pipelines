@@ -64,3 +64,4 @@ resources:
             parameters: [ "--conf-file", "${var.param_files_dir}/facilities/cdss_opstatus/green_agol_task.yml", "--stage", "${bundle.target}"]
           libraries:
             - whl: ../../../dist/*.whl
+        
