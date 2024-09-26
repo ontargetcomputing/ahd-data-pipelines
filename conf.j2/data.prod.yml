@@ -186,6 +186,10 @@ workflows:
       source:
         dataset_id: b9fc5281355a41828fce11dbaa0ff1dd
         layer: 0
+    bronze_conftypes: 
+      source:
+        dataset_id: 213f2f8b61e24bd484aa89880a6c8435
+        table_index: 0
     green_agol:
       destination:
         dataset_id: 7a4320b93f8847c59cc2398fc9bb6d10

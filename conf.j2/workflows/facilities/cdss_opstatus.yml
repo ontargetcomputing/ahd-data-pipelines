@@ -12,6 +12,15 @@ resources:
         timezone_id: "America/Los_Angeles"
 
       tasks:
+        - task_key: "bronze_conf_types"
+          existing_cluster_id: ${var.ahd_cluster_id}
+          python_wheel_task:
+            package_name: ${bundle.name}
+            entry_point: medallion_task
+            parameters: [ "--conf-file", "${var.param_files_dir}/facilities/cdss_opstatus/bronze_conftypes_task.yml", "--stage", "${bundle.target}"]
+          libraries:
+            - whl: ../../../dist/*.whl
+
         - task_key: "bronze"
           existing_cluster_id: ${var.ahd_cluster_id}
           python_wheel_task:
