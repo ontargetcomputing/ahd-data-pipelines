@@ -26,7 +26,7 @@ source_datasources:
             ELSE 
                 -- Keep original longitude
                 l.X
-        END AS longitude,
+        END AS X,
         CASE 
             WHEN c.ConfidentialFacilityType IS NOT NULL THEN 
                 -- Jitter the latitude (Y-coordinate)
@@ -34,7 +34,7 @@ source_datasources:
             ELSE 
                 -- Keep original latitude
                 l.Y
-        END AS latitude,
+        END AS Y,
         l.FacilityType,
         l.Capacity,
         l.Census,
