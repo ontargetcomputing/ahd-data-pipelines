@@ -1,0 +1,16 @@
+bronze: true
+source_datasources:
+  - type: agol
+    is_table: true
+    dataset_id: {{ workflows['facilities_cdss_opstatus'].bronze_conftypes.source.dataset_id }}
+    table_index: {{ workflows['facilities_cdss_opstatus'].bronze_conftypes.source.table_index }}
+    url: https://chhsagency.maps.arcgis.com/home/
+
+destination_datasources:
+  - type: databricks
+    table: cdss_general.bronze.opstatus_conftypes_{{ env }}
+    data_types:
+    - column: OBJECTID
+      type: bigint
+    - column: ConfidentialFacilityType
+      type: string
