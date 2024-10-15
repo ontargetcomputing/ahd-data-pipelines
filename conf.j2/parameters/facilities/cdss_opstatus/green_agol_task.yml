@@ -1,0 +1,14 @@
+source_datasources:
+  - type: databricks
+    table: cdss_general.green.opstatus_{{ env }}
+
+destination_datasources:
+  - type: agol
+    dataset_id: {{ workflows['facilities_cdss_opstatus'].green_agol.destination.dataset_id }}
+    layer: {{ workflows['facilities_cdss_opstatus'].green_agol.destination.layer }}
+    url: https://chhsagency.maps.arcgis.com/home/
+    object_id: OBJECTID
+    geometry:
+      column: geometry
+      type: DYNAMIC
+  

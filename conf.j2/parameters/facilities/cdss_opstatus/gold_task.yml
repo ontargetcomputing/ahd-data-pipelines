@@ -1,0 +1,69 @@
+source_datasources:
+  - type: databricks
+    table: cdss_general.silver.opstatus_{{ env }}
+
+destination_datasources:
+  - type: databricks
+    table: cdss_general.gold.opstatus_{{ env }}
+    data_types:
+    - column: OBJECTID
+      type: bigint
+    - column: Facility_Name
+      type: string
+    - column: Facility_Number
+      type: string
+    - column: Regional_Office
+      type: string
+    - column: Disaster_Name
+      type: string
+    - column: Event_Type
+      type: string
+    - column: Program
+      type: string
+    - column: County
+      type: string
+    - column: Operational_Status
+      type: string
+    - column: Evacuation_Status
+      type: string
+    - column: Num_Clients_Evacuated
+      type: int
+    - column: Num_Clients_Not_Returning
+      type: int
+    - column: Num_Clients_Returned
+      type: int
+    - column: Num_Clients_Left_to_Repop
+      type: int
+    - column: Structural_Condition
+      type: string
+    - column: Archive
+      type: string
+    - column: Waiver_Granted
+      type: string
+    - column: X
+      type: double
+    - column: Y
+      type: double
+    - column: FacilityType
+      type: string
+    - column: Capacity
+      type: int
+    - column: Census
+      type: int
+    - column: SharePointID
+      type: string
+    - column: GlobalID
+      type: string
+    - column: CreationDate
+      type: timestamp
+    - column: Creator
+      type: string
+    - column: EditDate
+      type: timestamp
+    - column: Editor
+      type: string
+    - column: geometry
+      type: string
+    - column: ade_date_submitted
+      type: date
+      
