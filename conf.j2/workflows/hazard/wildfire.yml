@@ -2,6 +2,8 @@ resources:
   jobs:
     hazard_wildfire:
       name: Wildfire
+      run_as:
+        service_principal_name: ${var.run_as_user}
 
       email_notifications:
         on_failure:
