@@ -143,9 +143,13 @@ workflows:
 
   facilities_historical_impact:
     template: conf/workflows/facilities/historical_impact.yml
+    bronze:
+      source_cdph:
+        dataset_id: 7ec85eeeba0c4f95a4f46d97109b379d
+        table_index: 0
     green:
       destination:
-        dataset_id: e53ab1b9a0eb42749ab17f6e29edc62e
+        dataset_id: f792829fbe2542dfba255737bedbbfc8
         table_index: 0
 
   census_language:

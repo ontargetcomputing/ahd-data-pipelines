@@ -1,7 +1,7 @@
 source_datasources:
   - type: databricks
     query: >
-      SELECT 
+      SELECT DISTINCT
             effective_date,
             ade_source,
             ade_source_facility_type, 
@@ -11,10 +11,13 @@ source_datasources:
             partially_evacuated_int,
             fully_evacuated_int
         FROM shelter.silver.facilities_historical_impact_{{ env }}
-        WHERE effective_date = current_date();
+        WHERE effective_date = current_date()
+        and effective_date not in
+        (select distinct effective_date from shelter.gold.facilities_historical_impact_{{ env }});
     
 destination_datasources:
   - type: databricks
+    method: append
     table: shelter.gold.facilities_historical_impact_{{ env }}
     data_types:
     - column: effective_date
