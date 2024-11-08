@@ -53,7 +53,8 @@ targets:
       run_as_user: 00058435-a027-4192-9603-8a739e2bfe4f
     workspace:
       host: https://dbc-a6893d54-2596.cloud.databricks.com
-      root_path: /Users/${workspace.current_user.userName}/.bundle/${bundle.name}/${bundle.target}
+      # root_path: /Users/${workspace.current_user.userName}/.bundle/${bundle.name}/${bundle.target}
+      root_path: /Shared/DevBundles/${workspace.current_user.userName}/${bundle.name}/${bundle.target}
 
   ci:
     # We use 'mode: development' to indicate this is a personal development copy:
