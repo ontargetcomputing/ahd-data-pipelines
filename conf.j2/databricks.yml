@@ -72,7 +72,7 @@ targets:
     mode: production
     variables:
       ahd_cluster_id: 0122-214140-932cnpz8
-      notification_email: agencydatahub@chhs.ca.gov
+      notification_email: AHD_Data@chhs.ca.gov
     workspace:
       host: https://calhhs-ahd-live.cloud.databricks.com/
       # We always use /Users/Jeff.Ranta@CHHS.CA.GOV for all resources to make sure we only have a single copy.
