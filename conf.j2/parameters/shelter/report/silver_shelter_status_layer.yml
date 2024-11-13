@@ -31,7 +31,6 @@ source_datasources:
           s_open_date,
           s_close_date,
           parent_guid,
-          GlobalID{{ workflows['shelter_report'].element_suffix|default("", true) }},
           s_disaster_other,
           s_closure_reason,
           s_closure_other,
