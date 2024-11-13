@@ -1,14 +1,14 @@
 resources:
   jobs:
     facility_historical_impact:
-      name: facility_historical_impact
+      name: Facility Historical Impact
 
       email_notifications:
         on_failure:
           - ${var.notification_email}
 
       schedule:
-        quartz_cron_expression: "17 0 9 ? * Sat"
+        quartz_cron_expression: "18 10 6 * * ?"
         timezone_id: "America/Los_Angeles"
 
       tasks:
@@ -17,7 +17,7 @@ resources:
           python_wheel_task:
             package_name: ${bundle.name}
             entry_point: medallion_task
-            parameters: [ "--conf-file", "${var.param_files_dir}/facilities/historical_impact/bronze_task.yml", "--stage", "${bundle.target}"]
+            parameters: [ "--conf-file", "${var.param_files_dir}/facilities/historical_impact/bronze_cdph_task.yml", "--stage", "${bundle.target}"]
           libraries:
             - whl: ../../../dist/*.whl
 
