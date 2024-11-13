@@ -1,0 +1,97 @@
+bronze: true
+source_datasources:
+  - type: agol
+    dataset_id: {{ workflows['facilities_historical_impact'].bronze.source_cdph.dataset_id }}
+    is_table: true
+    table_index: {{ workflows['facilities_historical_impact'].bronze.source_cdph.table_index }}
+    url: https://chhsagency.maps.arcgis.com/home/
+
+destination_datasources:
+  - type: databricks
+    table: shelter.bronze.cdph_facilities_historical_impact_{{ env }}
+    data_types:
+    - column: datahub_facility_id
+      type: string
+    - column: CreationDate
+      type: string
+    - column: Creator
+      type: string
+    - column: EditDate
+      type: string
+    - column: Editor
+      type: string
+    - column: chcq_monitored
+      type: string
+    - column: op_status
+      type: string
+    - column: evac_status
+      type: string
+    - column: patients_evac
+      type: string
+    - column: facility_contacted
+      type: string
+    - column: general_comments
+      type: string
+    - column: needs_verification
+      type: string
+    - column: urgent_needs_48
+      type: string
+    - column: urgent_needs_cmmnts
+      type: string
+    - column: contact_date
+      type: string
+    - column: census
+      type: string
+    - column: avail_beds
+      type: string
+    - column: patient_impacts
+      type: string
+    - column: unusual_occurence
+      type: string
+    - column: outage_date
+      type: string
+    - column: restored_date
+      type: string
+    - column: incident_name
+      type: string
+    - column: incident_type
+      type: string
+    - column: incident_description
+      type: string
+    - column: hazard_name
+      type: string
+    - column: incident_status
+      type: string
+    - column: hcai_status
+      type: string
+    - column: event_em_contact_name
+      type: string
+    - column: event_em_contact_phone
+      type: string
+    - column: event_em_email
+      type: string
+    - column: emergency_email_primary
+      type: string
+    - column: emergency_email_secondary
+      type: string
+    - column: emergency_phone_primary
+      type: string
+    - column: emergency_phone_secondary
+      type: string
+    - column: emergency_phone_primary_extensi
+      type: string
+    - column: emergency_first_name
+      type: string
+    - column: emergency_last_name
+      type: string
+    - column: emc_facid
+      type: string
+    - column: hcai_assessed
+      type: string
+    - column: hcai_comments
+      type: string
+    - column: operational_status_comments
+      type: string
+    - column: evacuation_status_comments
+      type: string
+

@@ -60,11 +60,11 @@ workflows:
   shelter_report:
     template: conf/workflows/shelter/report.yml
     catalog: shelter
-    element_suffix: _1636068339150
+    #element_suffix: _1636068339150
     bronze:
       shelter_status_layer: 
         source:
-          dataset_id: f822666536ad4d768ec79a944cfd1a6e 
+          dataset_id: 9a81956b7f284b058248ffafbe6c94ae 
           layer: 0
 
       shelter_sites_historical:
@@ -92,10 +92,14 @@ workflows:
 
   facilities_historical_impact:
     template: conf/workflows/facilities/historical_impact.yml
+    bronze:
+      source_cdph:
+        dataset_id: cbacd0a5166546a6b5eb0ae6a484cbc3
+        layer: 0
     green:
       destination:
-        dataset_id: 2c3c1f443f4b44188da576ca67a21f66
-        layer: 0
+        dataset_id: 57c9894edece4d45bb972c2f5387713b
+        table_index: 0
 
   hazard_wildfire:
     template: conf/workflows/hazard/wildfire.yml
@@ -179,3 +183,19 @@ workflows:
       destination:
         dataset_id: a9fca1bb0ece4fc19b17cfe1df933e47
         layer: 0
+
+  facilities_cdss_opstatus:
+    template: conf/workflows/facilities/cdss_opstatus.yml
+    bronze: 
+      source:
+        dataset_id: b9fc5281355a41828fce11dbaa0ff1dd
+        layer: 0
+    bronze_conftypes: 
+      source:
+        dataset_id: 213f2f8b61e24bd484aa89880a6c8435
+        table_index: 0
+    green_agol:
+      destination:
+        dataset_id: 7a4320b93f8847c59cc2398fc9bb6d10
+        layer: 0
+        

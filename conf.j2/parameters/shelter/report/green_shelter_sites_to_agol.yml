@@ -2,9 +2,6 @@ source_datasources:
   - type: databricks
     table: {{ workflows['shelter_report'].catalog }}.green.shelter_sites_{{ env }}
 destination_datasources:
-  {% if env == 'prod' -%}
-  - type: noop
-  {% else -%}
   - type: agol
     dataset_id: {{ workflows['shelter_report'].green.shelter_sites_layer.destination.dataset_id }}
     layer: {{ workflows['shelter_report'].green.shelter_sites_layer.destination.layer }}
@@ -13,7 +10,6 @@ destination_datasources:
     geometry:
       type: POINT
       column: geometry
-  {% endif %}
 
 
 

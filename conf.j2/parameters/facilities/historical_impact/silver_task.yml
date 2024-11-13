@@ -2,41 +2,48 @@ source_datasources:
   - type: databricks
     query: >
       WITH all_source_facility_types AS (
-          SELECT 'CDPH-GACH' AS ade_source_facility_type
+          SELECT 'CDPH' as ade_source, 'CDPH-GACH' AS ade_source_facility_type
           UNION ALL
-          SELECT 'CDHP-Other'
+          SELECT 'CDPH', 'CDPH-Other'
           UNION ALL
-          SELECT 'CDPH-SNF'
+          SELECT 'CDPH', 'CDPH-SNF'
           UNION ALL
-          SELECT 'CDSS-ASC'
+          SELECT 'CDSS', 'CDSS-ASC'
           UNION ALL
-          SELECT 'CDSS-Child Care'
+          SELECT  'CDSS', 'CDSS-Child Care'
           UNION ALL
-          SELECT 'CDSS-Child Res'
+          SELECT 'CDSS', 'CDSS-Child Res'
           UNION ALL
-          SELECT 'DDS-All'
+          SELECT 'DDS', 'DDS-All'
           UNION ALL
-          SELECT 'DHCS-All'
+          SELECT 'DHCS', 'DHCS-All'
           UNION ALL
-          SELECT 'DSH-All'
+          SELECT 'DSH', 'DSH-All'
       ),
       aggregated_data AS (
-          SELECT 
-              effective_date,
-              ade_source,
-              ade_source_facility_type, 
-              SUM(operational_with_impacts_int) AS operational_with_impacts_int,
-              SUM(nonoperational_long_term_int) AS nonoperational_long_term_int,
-              SUM(nonoperational_short_term_int) AS nonoperational_short_term_int,
-              SUM(partially_evacuated_int) AS partially_evacuated_int,
-              SUM(fully_evacuated_int) AS fully_evacuated_int
-          FROM shelter.bronze.facilities_historical_impact_{{ env }}
-          WHERE effective_date = current_date()
-          GROUP BY effective_date, ade_source, ade_source_facility_type
+      SELECT
+        c.ade_date_submitted as effective_date,
+        'CDPH' as ade_source,
+        case when f.FACILITY_TYPE = 'GACH' then 'CDPH-GACH'
+          when f.FACILITY_TYPE = 'SNF' then 'CDPH-SNF'
+          else 'CDPH-Other'
+          end as ade_source_facility_type,
+        SUM(CASE WHEN op_status <> 'non-operational short term' and op_status <> 'non-operational Long Term' THEN 1 ELSE 0 END) AS operational_with_impacts_int,
+        SUM(CASE WHEN op_status = 'non-operational Long Term' THEN 1 ELSE 0 END) AS nonoperational_long_term_int,
+        SUM(CASE WHEN op_status = 'non-operational short term' THEN 1 ELSE 0 END) AS nonoperational_short_term_int,
+        SUM(CASE WHEN evac_status = 'partially evacuated' THEN 1 ELSE 0 END) AS partially_evacuated_int,
+        SUM(CASE WHEN evac_status = 'fully evacuated' THEN 1 ELSE 0 END) AS fully_evacuated_int
+      FROM
+          shelter.bronze.cdph_facilities_historical_impact_{{ env }} c
+          join cdph_facilities.bronze.facilities_prod f on c.datahub_facility_id = f.FACID
+      WHERE
+        c.ade_date_submitted = CURRENT_DATE()
+      GROUP BY
+        effective_date, ade_source, ade_source_facility_type
       )
       SELECT 
-          ad.effective_date,
-          ad.ade_source,
+          CURRENT_DATE() as effective_date,
+          asft.ade_source,
           asft.ade_source_facility_type, 
           COALESCE(ad.operational_with_impacts_int, 0) AS operational_with_impacts_int,
           COALESCE(ad.nonoperational_long_term_int, 0) AS nonoperational_long_term_int,
@@ -45,8 +52,9 @@ source_datasources:
           COALESCE(ad.fully_evacuated_int, 0) AS fully_evacuated_int
       FROM all_source_facility_types asft
       LEFT JOIN aggregated_data ad ON asft.ade_source_facility_type = ad.ade_source_facility_type
+      where CURRENT_DATE() not in
+      (select distinct effective_date from shelter.silver.facilities_historical_impact_{{ env }})
       ORDER BY asft.ade_source_facility_type;
-
 
 destination_datasources:
   - type: databricks
