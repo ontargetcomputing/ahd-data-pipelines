@@ -46,6 +46,16 @@ targets:
       host: https://dbc-a6893d54-2596.cloud.databricks.com
       root_path: /Users/${workspace.current_user.userName}/.bundle/${bundle.name}/${bundle.target}
 
+  staging:
+    mode: production
+    variables:
+      ahd_cluster_id: 1017-155458-vp6mytbg
+      run_as_user: 00058435-a027-4192-9603-8a739e2bfe4f
+    workspace:
+      host: https://dbc-a6893d54-2596.cloud.databricks.com
+      # root_path: /Users/${workspace.current_user.userName}/.bundle/${bundle.name}/${bundle.target}
+      root_path: /Shared/DevBundles/${workspace.current_user.userName}/${bundle.name}/${bundle.target}
+
   ci:
     # We use 'mode: development' to indicate this is a personal development copy:
     # - Deployed resources get prefixed with '[ci my_user_name]'
@@ -62,7 +72,7 @@ targets:
     mode: production
     variables:
       ahd_cluster_id: 0122-214140-932cnpz8
-      notification_email: agencydatahub@chhs.ca.gov
+      notification_email: AHD_Data@chhs.ca.gov
     workspace:
       host: https://calhhs-ahd-live.cloud.databricks.com/
       # We always use /Users/Jeff.Ranta@CHHS.CA.GOV for all resources to make sure we only have a single copy.
