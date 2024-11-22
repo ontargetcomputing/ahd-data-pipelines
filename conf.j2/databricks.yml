@@ -79,4 +79,4 @@ targets:
       root_path: /Shared/.bundle/prod/${bundle.name}
     run_as:
       # user_name: Richard.Bach3@chhs.ca.gov
-      service_principal: 00058435-a027-4192-9603-8a739e2bfe4f # [ahd_sp]
+      service_principal_name: 00058435-a027-4192-9603-8a739e2bfe4f # [ahd_sp]
