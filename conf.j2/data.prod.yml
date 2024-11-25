@@ -95,7 +95,7 @@ workflows:
     bronze:
       source_cdph:
         dataset_id: cbacd0a5166546a6b5eb0ae6a484cbc3
-        layer: 0
+        table_index: 0
     green:
       destination:
         dataset_id: 57c9894edece4d45bb972c2f5387713b

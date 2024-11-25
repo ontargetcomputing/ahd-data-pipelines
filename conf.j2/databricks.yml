@@ -71,14 +71,12 @@ targets:
   prod:
     mode: production
     variables:
-      ahd_cluster_id: 0122-214140-932cnpz8
+      # ahd_cluster_id: 0122-214140-932cnpz8 # [All Hazards Dashboard]
+      ahd_cluster_id: 1118-232114-v4y4qfs7 # [All Hazards Dashboard (SP)]
       notification_email: AHD_Data@chhs.ca.gov
     workspace:
       host: https://calhhs-ahd-live.cloud.databricks.com/
-      # We always use /Users/Jeff.Ranta@CHHS.CA.GOV for all resources to make sure we only have a single copy.
-      # If this path results in an error, please make sure you have a recent version of the CLI installed.
       root_path: /Shared/.bundle/prod/${bundle.name}
     run_as:
-      # This runs as Jeff.Ranta@CHHS.CA.GOV in production. We could also use a service principal here,
-      # see https://docs.databricks.com/dev-tools/bundles/permissions.html.
-      user_name: Richard.Bach3@chhs.ca.gov
+      # user_name: Richard.Bach3@chhs.ca.gov
+      service_principal_name: 00058435-a027-4192-9603-8a739e2bfe4f # [ahd_sp]
