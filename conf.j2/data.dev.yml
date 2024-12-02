@@ -1,11 +1,52 @@
 env: dev
 notification_email: Jeff.Ranta@CHHS.CA.GOV
 workflows:
-  ops:
-    template: conf/workflows/ops/heartbeat.yml
+
+  census_language:
+    template: conf/workflows/census/language.yml
 
   esri_greendataupdate:
     template: conf/workflows/esri/greendataupdate.yml
+
+  facilities_cdph:
+    template: conf/workflows/facilities/cdph.yml
+    bronze:
+      source:
+        dataset_id: 1a707547eebb47358112a473c1048677
+        layer: 0
+
+  facilities_cdss:
+    template: conf/workflows/facilities/cdss.yml
+    bronze: 
+      source:
+        dataset_id: 1d23a053ed204d9c8e35f0683539a375
+        layer: 0
+
+  facilities_cdss_opstatus:
+    template: conf/workflows/facilities/cdss_opstatus.yml
+    bronze: 
+      source:
+        dataset_id: b9fc5281355a41828fce11dbaa0ff1dd
+        layer: 0
+    bronze_conftypes: 
+      source:
+        dataset_id: 213f2f8b61e24bd484aa89880a6c8435
+        table_index: 0
+    green_agol:
+      destination:
+        dataset_id: 21a259e6e0244bb09ac0cc5748534b12
+        layer: 0
+
+  facilities_historical_impact:
+    template: conf/workflows/facilities/historical_impact.yml
+    bronze:
+      source_cdph:
+        dataset_id: 7ec85eeeba0c4f95a4f46d97109b379d
+        table_index: 0
+    green:
+      destination:
+        dataset_id: f792829fbe2542dfba255737bedbbfc8
+        table_index: 0
 
   hazard_earthquake:
     template: conf/workflows/hazard/earthquake.yml
@@ -24,144 +65,8 @@ workflows:
           dataset_id: b84cc28255274e40a1f1c2013ee1beef
           layer: 0
 
-  shelter_bootstrap:
-    template: conf/workflows/shelter/bootstrap.yml
-    catalog: shelter
-    bronze:
-      shelter_sites_historical: 
-        source:
-          dataset_id: 8beb2c8b68054182b3972fb076aee25c 
-          layer: 0
-
-      site_information:
-        source:
-          driver: postgresql
-          host: atlastest1-instance-1.ccagqiw5cjwr.us-west-2.rds.amazonaws.com
-          port: 30001
-          database: org_chhs_datahub
-          table_suffix: _dev
-          
-      single_shelter_datamodel_hfl:
-        source:
-          driver: postgresql
-          host: atlastest1-instance-1.ccagqiw5cjwr.us-west-2.rds.amazonaws.com
-          port: 30001
-          database: org_chhs_datahub
-          query: atlastest1-instance-1.ccagqiw5cjwr.us-west-2.rds.amazonaws.com
-          table_suffix: _dev
-
-      single_shelter_datamodel_hfl_historical:
-        source:
-          driver: postgresql
-          host: atlastest1-instance-1.ccagqiw5cjwr.us-west-2.rds.amazonaws.com
-          port: 30001
-          database: org_chhs_datahub
-          query: atlastest1-instance-1.ccagqiw5cjwr.us-west-2.rds.amazonaws.com
-          table_suffix: _dev
-    gold:
-      site_information:
-        source:
-          identity_start_with: 48
-
-  shelter_report:
-    template: conf/workflows/shelter/report.yml
-    catalog: shelter
-    element_suffix: _1711552917216
-    bronze:
-      shelter_status_layer: 
-        source:
-          dataset_id: b53d55942bdc43928cb8069d2d0b24b9 
-          layer: 0
-
-      shelter_sites_historical: 
-        source:
-          dataset_id: 8beb2c8b68054182b3972fb076aee25c 
-          layer: 0
-
-    green:
-      shelter_sites_historical:
-        destination:
-          dataset_id: 8beb2c8b68054182b3972fb076aee25c
-          layer: 0
-
-      shelter_sites_layer:
-        destination:
-          dataset_id: a01b16d709794683beb4d813b6b0304d
-          layer: 0
-
-  facilities_cdss:
-    template: conf/workflows/facilities/cdss.yml
-    bronze: 
-      source:
-        dataset_id: 1d23a053ed204d9c8e35f0683539a375
-        layer: 0
-
-  hazard_wildfire:
-    template: conf/workflows/hazard/wildfire.yml
-    bronze: 
-      points:
-        source:
-          dataset_id: d957997ccee7408287a963600a77f61f
-          layer: 0
-      perimeters:
-        source:
-          dataset_id: d957997ccee7408287a963600a77f61f
-          layer: 1
-      caloes_wildfires:
-        source:
-          dataset_id: 8fd6f547e90540d3bf54d486a3234796
-          layer: 0
-      caloes_wildfires_children:
-        source:
-          dataset_id: 9d87bec526e5496c9c6ab9ee12d4877b
-          layer: 0
-    green:
-      points:
-        destination:
-          dataset_id: 98cc4a7cc9dc41a4ab868c7e093b6671
-          layer: 0
-      perimeters:
-        destination:
-          dataset_id: 952d9e8977b54cdc993e6332ef0f061f
-          layer: 0
-
   hazard_emsa:
     template: conf/workflows/hazard/emsa.yml
-    bronze:
-      source:
-        bucket_name: chhs-datahub-emsa
-        agency: EMSA
-        aws_region: us-west-1
-        file_name: upload/EMSA_Deployments_Mock_Data.xlsx
-
-  facilities_cdph:
-    template: conf/workflows/facilities/cdph.yml
-    bronze:
-      source:
-        dataset_id: 1a707547eebb47358112a473c1048677
-        layer: 0
-
-  facilities_historical_impact:
-    template: conf/workflows/facilities/historical_impact.yml
-    bronze:
-      source_cdph:
-        dataset_id: 7ec85eeeba0c4f95a4f46d97109b379d
-        table_index: 0
-    green:
-      destination:
-        dataset_id: f792829fbe2542dfba255737bedbbfc8
-        table_index: 0
-
-  census_language:
-    template: conf/workflows/census/language.yml
-
-  hazard_weather:
-    template: conf/workflows/hazard/weather.yml
-    catalog: ahd_wildfires
-
-  hazard_emsa:
-    template: conf/workflows/hazard/emsa.yml
-
     bronze:
       source:
         bucket_name: chhs-datahub-emsa
@@ -196,18 +101,98 @@ workflows:
         dataset_id: 020eb4efa482467a9fffe647af1709a2
         layer: 0
 
-  facilities_cdss_opstatus:
-    template: conf/workflows/facilities/cdss_opstatus.yml
+  hazard_weather:
+    template: conf/workflows/hazard/weather.yml
+    catalog: ahd_wildfires
+
+  hazard_wildfire:
+    template: conf/workflows/hazard/wildfire.yml
     bronze: 
-      source:
-        dataset_id: b9fc5281355a41828fce11dbaa0ff1dd
-        layer: 0
-    bronze_conftypes: 
-      source:
-        dataset_id: 213f2f8b61e24bd484aa89880a6c8435
-        table_index: 0
-    green_agol:
-      destination:
-        dataset_id: 21a259e6e0244bb09ac0cc5748534b12
-        layer: 0
-        
+      points:
+        source:
+          dataset_id: d957997ccee7408287a963600a77f61f
+          layer: 0
+      perimeters:
+        source:
+          dataset_id: d957997ccee7408287a963600a77f61f
+          layer: 1
+      caloes_wildfires:
+        source:
+          dataset_id: 8fd6f547e90540d3bf54d486a3234796
+          layer: 0
+      caloes_wildfires_children:
+        source:
+          dataset_id: 9d87bec526e5496c9c6ab9ee12d4877b
+          layer: 0
+    green:
+      points:
+        destination:
+          dataset_id: 98cc4a7cc9dc41a4ab868c7e093b6671
+          layer: 0
+      perimeters:
+        destination:
+          dataset_id: 952d9e8977b54cdc993e6332ef0f061f
+          layer: 0
+
+  ops:
+    template: conf/workflows/ops/heartbeat.yml
+
+  shelter_bootstrap:
+    template: conf/workflows/shelter/bootstrap.yml
+    catalog: shelter
+    bronze:
+      shelter_sites_historical: 
+        source:
+          dataset_id: 8beb2c8b68054182b3972fb076aee25c 
+          layer: 0
+      site_information:
+        source:
+          driver: postgresql
+          host: atlastest1-instance-1.ccagqiw5cjwr.us-west-2.rds.amazonaws.com
+          port: 30001
+          database: org_chhs_datahub
+          table_suffix: _dev
+      single_shelter_datamodel_hfl:
+        source:
+          driver: postgresql
+          host: atlastest1-instance-1.ccagqiw5cjwr.us-west-2.rds.amazonaws.com
+          port: 30001
+          database: org_chhs_datahub
+          query: atlastest1-instance-1.ccagqiw5cjwr.us-west-2.rds.amazonaws.com
+          table_suffix: _dev
+      single_shelter_datamodel_hfl_historical:
+        source:
+          driver: postgresql
+          host: atlastest1-instance-1.ccagqiw5cjwr.us-west-2.rds.amazonaws.com
+          port: 30001
+          database: org_chhs_datahub
+          query: atlastest1-instance-1.ccagqiw5cjwr.us-west-2.rds.amazonaws.com
+          table_suffix: _dev
+    gold:
+      site_information:
+        source:
+          identity_start_with: 48
+
+  shelter_report:
+    template: conf/workflows/shelter/report.yml
+    catalog: shelter
+    element_suffix: _1711552917216
+    bronze:
+      shelter_status_layer: 
+        source:
+          dataset_id: b53d55942bdc43928cb8069d2d0b24b9 
+          layer: 0
+      shelter_sites_historical: 
+        source:
+          dataset_id: 8beb2c8b68054182b3972fb076aee25c 
+          layer: 0
+    green:
+      shelter_sites_historical:
+        destination:
+          dataset_id: 8beb2c8b68054182b3972fb076aee25c
+          layer: 0
+      shelter_sites_layer:
+        destination:
+          dataset_id: a01b16d709794683beb4d813b6b0304d
+          layer: 0
+      
