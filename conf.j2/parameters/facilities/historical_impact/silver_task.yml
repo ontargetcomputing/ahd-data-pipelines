@@ -14,13 +14,15 @@ source_datasources:
           UNION ALL
           SELECT 'CDSS', 'CDSS-Child Res'
           UNION ALL
+          SELECT 'CDSS', 'CDSS-Other'
+          UNION ALL
           SELECT 'DDS', 'DDS-All'
           UNION ALL
           SELECT 'DHCS', 'DHCS-All'
           UNION ALL
           SELECT 'DSH', 'DSH-All'
       ),
-      aggregated_data AS (
+      aggregated_CDPH_data AS (
       SELECT
         c.ade_date_submitted as effective_date,
         'CDPH' as ade_source,
@@ -40,18 +42,39 @@ source_datasources:
         c.ade_date_submitted = CURRENT_DATE()
       GROUP BY
         effective_date, ade_source, ade_source_facility_type
-      )
+      ),
+      aggregated_CDSS_data as (
+      SELECT
+        o.ade_date_submitted as effective_date,
+        'CDSS' as ade_source,
+        case when Program = 'Adult and Senior' or Program = 'Adult and Senior Care' then 'CDSS-ASC'
+          when Program = 'Child Care' then 'CDSS-Child Care'
+          when Program = 'Children\'s Residential' then 'CDSS-Child Res'
+          else 'CDSS-Other'
+          end as ade_source_facility_type,
+        SUM(CASE WHEN Operational_Status = 'Unknown' or Operational_Status = 'Operational' or Operational_Status = 'Unknown' THEN 1 ELSE 0 END) AS operational_with_impacts_int,
+        SUM(CASE WHEN Operational_Status = 'Non-Operational Perm/Long Term' THEN 1 ELSE 0 END) AS nonoperational_long_term_int,
+        SUM(CASE WHEN Operational_Status = 'Non-Operational Short Term' THEN 1 ELSE 0 END) AS nonoperational_short_term_int,
+        SUM(CASE WHEN Evacuation_Status = 'Partially Evacuated' THEN 1 ELSE 0 END) AS partially_evacuated_int,
+        SUM(CASE WHEN Evacuation_Status = 'Fully Evacuated' THEN 1 ELSE 0 END) AS fully_evacuated_int
+      FROM
+          cdss_general.bronze.opstatus_{{ env }} o
+      WHERE
+        o.ade_date_submitted = CURRENT_DATE()
+      GROUP BY
+        effective_date, ade_source, ade_source_facility_type)
       SELECT 
           CURRENT_DATE() as effective_date,
           asft.ade_source,
           asft.ade_source_facility_type, 
-          COALESCE(ad.operational_with_impacts_int, 0) AS operational_with_impacts_int,
-          COALESCE(ad.nonoperational_long_term_int, 0) AS nonoperational_long_term_int,
-          COALESCE(ad.nonoperational_short_term_int, 0) AS nonoperational_short_term_int,
-          COALESCE(ad.partially_evacuated_int, 0) AS partially_evacuated_int,
-          COALESCE(ad.fully_evacuated_int, 0) AS fully_evacuated_int
+          COALESCE(acdphd.operational_with_impacts_int, acdssd.operational_with_impacts_int, 0) AS operational_with_impacts_int,
+          COALESCE(acdphd.nonoperational_long_term_int, acdssd.nonoperational_long_term_int, 0) AS nonoperational_long_term_int,
+          COALESCE(acdphd.nonoperational_short_term_int, acdssd.nonoperational_short_term_int, 0) AS nonoperational_short_term_int,
+          COALESCE(acdphd.partially_evacuated_int, acdssd.partially_evacuated_int, 0) AS partially_evacuated_int,
+          COALESCE(acdphd.fully_evacuated_int, acdssd.fully_evacuated_int, 0) AS fully_evacuated_int
       FROM all_source_facility_types asft
-      LEFT JOIN aggregated_data ad ON asft.ade_source_facility_type = ad.ade_source_facility_type
+      LEFT JOIN aggregated_CDPH_data acdphd ON asft.ade_source_facility_type = acdphd.ade_source_facility_type
+      LEFT JOIN aggregated_CDSS_data acdssd ON asft.ade_source_facility_type = acdssd.ade_source_facility_type
       where CURRENT_DATE() not in
       (select distinct effective_date from shelter.silver.facilities_historical_impact_{{ env }})
       ORDER BY asft.ade_source_facility_type;

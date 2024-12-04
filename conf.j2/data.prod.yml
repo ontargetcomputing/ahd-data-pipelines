@@ -1,8 +1,52 @@
 env: prod
 notification_email: agencydatahub@chhs.ca.gov
 workflows:
-  ops:
-    template: conf/workflows/ops/heartbeat.yml
+
+  census_language:
+    template: conf/workflows/census/language.yml
+
+  esri_greendataupdate:
+    template: conf/workflows/esri/greendataupdate.yml
+
+  facilities_cdph:
+    template: conf/workflows/facilities/cdph.yml
+    bronze:
+      source:
+        dataset_id: 1a707547eebb47358112a473c1048677
+        layer: 0
+
+  facilities_cdss:
+    template: conf/workflows/facilities/cdss.yml
+    bronze:
+      source:
+        dataset_id: 1d23a053ed204d9c8e35f0683539a375
+        layer: 0
+
+  facilities_cdss_opstatus:
+    template: conf/workflows/facilities/cdss_opstatus.yml
+    bronze: 
+      source:
+        dataset_id: b9fc5281355a41828fce11dbaa0ff1dd
+        layer: 0
+    bronze_conftypes: 
+      source:
+        dataset_id: 213f2f8b61e24bd484aa89880a6c8435
+        table_index: 0
+    green_agol:
+      destination:
+        dataset_id: 7a4320b93f8847c59cc2398fc9bb6d10
+        layer: 0
+
+  facilities_historical_impact:
+    template: conf/workflows/facilities/historical_impact.yml
+    bronze:
+      source_cdph:
+        dataset_id: cbacd0a5166546a6b5eb0ae6a484cbc3
+        table_index: 0
+    green:
+      destination:
+        dataset_id: 57c9894edece4d45bb972c2f5387713b
+        table_index: 0
 
   hazard_earthquake:
     template: conf/workflows/hazard/earthquake.yml
@@ -21,85 +65,45 @@ workflows:
           dataset_id: 5f54af00cf3c41acae6e0d67306d3fb4
           layer: 0
 
-
-  shelter_bootstrap:
-    template: conf/workflows/shelter/bootstrap.yml
-    catalog: shelter
-    bronze:
-      shelter_sites_historical: 
-        source:
-          dataset_id: 24f1f876e51a44cfab413049da2b1314 
-          layer: 0
-
-      site_information:
-        source:
-          driver: postgresql
-          host: atlastest1-instance-1.ccagqiw5cjwr.us-west-2.rds.amazonaws.com
-          port: 30001
-          database: org_chhs_datahub
-
-      single_shelter_datamodel_hfl:
-        source:
-          driver: postgresql
-          host: atlastest1-instance-1.ccagqiw5cjwr.us-west-2.rds.amazonaws.com
-          port: 30001
-          database: org_chhs_datahub
-
-      single_shelter_datamodel_hfl_historical:
-        source:
-          driver: postgresql
-          host: atlastest1-instance-1.ccagqiw5cjwr.us-west-2.rds.amazonaws.com
-          port: 30001
-          database: org_chhs_datahub
-
-    gold:
-      site_information:
-        source:
-          identity_start_with: 301
-
-  shelter_report:
-    template: conf/workflows/shelter/report.yml
-    catalog: shelter
-    #element_suffix: _1636068339150
-    bronze:
-      shelter_status_layer: 
-        source:
-          dataset_id: 9a81956b7f284b058248ffafbe6c94ae 
-          layer: 0
-
-      shelter_sites_historical:
-        source:
-          dataset_id: 24f1f876e51a44cfab413049da2b1314 
-          layer: 0
-
-    green:
-      shelter_sites_historical:
-        destination:
-          dataset_id: 24f1f876e51a44cfab413049da2b1314 
-          layer: 0
-
-      shelter_sites_layer:
-        destination:
-          dataset_id: 2160847d94cc4a16b562461865f3eedd
-          layer: 0
-
-  facilities_cdss:
-    template: conf/workflows/facilities/cdss.yml
+  hazard_emsa:
+    template: conf/workflows/hazard/emsa.yml
     bronze:
       source:
-        dataset_id: 1d23a053ed204d9c8e35f0683539a375
-        layer: 0
-
-  facilities_historical_impact:
-    template: conf/workflows/facilities/historical_impact.yml
-    bronze:
-      source_cdph:
-        dataset_id: cbacd0a5166546a6b5eb0ae6a484cbc3
+        bucket_name: chhs-datahub-emsa
+        agency: EMSA
+        aws_region: us-west-1
+        file_name: upload/Shared with HHS ESRI.xlsx
+        unamed_iteration: 13
+      agol_historical:
+        dataset_id: c9fdd8e28baa408cb80daa9588fb2d49
         table_index: 0
     green:
+      available:
+        destination:
+          dataset_id: 0cb0e757a6734a6d82bd940c6df89daf
+          table_index: 1
+      deployed:
+        destination:
+          dataset_id : 0cb0e757a6734a6d82bd940c6df89daf
+          table_index: 0
+          historical:
+            dataset_id : c9fdd8e28baa408cb80daa9588fb2d49
+            table_index: 0
+
+  hazard_hotspots:
+    template: conf/workflows/hazard/hotspots.yml
+    bronze: 
+      source:
+        dataset_id: dece90af1a0242dcbf0ca36d30276aa3
+        layer: 0
+    green_agol:
       destination:
-        dataset_id: 57c9894edece4d45bb972c2f5387713b
-        table_index: 0
+        dataset_id: a9fca1bb0ece4fc19b17cfe1df933e47
+        layer: 0
+
+  hazard_weather:
+    template: conf/workflows/hazard/weather.yml
+    catalog: ahd_weather
 
   hazard_wildfire:
     template: conf/workflows/hazard/wildfire.yml
@@ -130,72 +134,60 @@ workflows:
           dataset_id: b3f88f6f781044dabdc02e84d0bc073e
           layer: 0
 
-  hazard_emsa:
-    template: conf/workflows/hazard/emsa.yml
+  ops:
+    template: conf/workflows/ops/heartbeat.yml
 
+  shelter_bootstrap:
+    template: conf/workflows/shelter/bootstrap.yml
+    catalog: shelter
     bronze:
-      source:
-        bucket_name: chhs-datahub-emsa
-        agency: EMSA
-        aws_region: us-west-1
-        file_name: upload/Shared with HHS ESRI.xlsx
-        unamed_iteration: 13
-      agol_historical:
-        dataset_id: c9fdd8e28baa408cb80daa9588fb2d49
-        table_index: 0
+      shelter_sites_historical: 
+        source:
+          dataset_id: 24f1f876e51a44cfab413049da2b1314 
+          layer: 0
+      site_information:
+        source:
+          driver: postgresql
+          host: atlastest1-instance-1.ccagqiw5cjwr.us-west-2.rds.amazonaws.com
+          port: 30001
+          database: org_chhs_datahub
+      single_shelter_datamodel_hfl:
+        source:
+          driver: postgresql
+          host: atlastest1-instance-1.ccagqiw5cjwr.us-west-2.rds.amazonaws.com
+          port: 30001
+          database: org_chhs_datahub
+      single_shelter_datamodel_hfl_historical:
+        source:
+          driver: postgresql
+          host: atlastest1-instance-1.ccagqiw5cjwr.us-west-2.rds.amazonaws.com
+          port: 30001
+          database: org_chhs_datahub
+    gold:
+      site_information:
+        source:
+          identity_start_with: 301
+
+  shelter_report:
+    template: conf/workflows/shelter/report.yml
+    catalog: shelter
+    #element_suffix: _1636068339150
+    bronze:
+      shelter_status_layer: 
+        source:
+          dataset_id: 9a81956b7f284b058248ffafbe6c94ae 
+          layer: 0
+      shelter_sites_historical:
+        source:
+          dataset_id: 24f1f876e51a44cfab413049da2b1314 
+          layer: 0
     green:
-      available:
+      shelter_sites_historical:
         destination:
-          dataset_id: 0cb0e757a6734a6d82bd940c6df89daf
-          table_index: 1
-      deployed:
+          dataset_id: 24f1f876e51a44cfab413049da2b1314 
+          layer: 0
+      shelter_sites_layer:
         destination:
-          dataset_id : 0cb0e757a6734a6d82bd940c6df89daf
-          table_index: 0
-          historical:
-            dataset_id : c9fdd8e28baa408cb80daa9588fb2d49
-            table_index: 0
-
-  facilities_cdph:
-    template: conf/workflows/facilities/cdph.yml
-    bronze:
-      source:
-        dataset_id: 1a707547eebb47358112a473c1048677
-        layer: 0
-
-  census_language:
-    template: conf/workflows/census/language.yml
-
-  hazard_weather:
-    template: conf/workflows/hazard/weather.yml
-    catalog: ahd_weather
-
-  esri_greendataupdate:
-    template: conf/workflows/esri/greendataupdate.yml
-
-  hazard_hotspots:
-    template: conf/workflows/hazard/hotspots.yml
-    bronze: 
-      source:
-        dataset_id: dece90af1a0242dcbf0ca36d30276aa3
-        layer: 0
-    green_agol:
-      destination:
-        dataset_id: a9fca1bb0ece4fc19b17cfe1df933e47
-        layer: 0
-
-  facilities_cdss_opstatus:
-    template: conf/workflows/facilities/cdss_opstatus.yml
-    bronze: 
-      source:
-        dataset_id: b9fc5281355a41828fce11dbaa0ff1dd
-        layer: 0
-    bronze_conftypes: 
-      source:
-        dataset_id: 213f2f8b61e24bd484aa89880a6c8435
-        table_index: 0
-    green_agol:
-      destination:
-        dataset_id: 7a4320b93f8847c59cc2398fc9bb6d10
-        layer: 0
-        
+          dataset_id: 2160847d94cc4a16b562461865f3eedd
+          layer: 0
+       
