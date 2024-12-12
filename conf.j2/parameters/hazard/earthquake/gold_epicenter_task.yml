@@ -22,7 +22,7 @@ source_datasources:
     table: datahub_common.gold.ca_county_oes_shape
 destination_datasources:
   - type: databricks
-    table: ahd_earthquake.gold.epicenter_{{ env }}
+    table: ahd_earthquake.gold.california_epicenters_{{ env }}
     method: overwrite
     convert_zpoint: geometry
     data_types:

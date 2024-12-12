@@ -8,7 +8,7 @@ source_datasources:
               s.id, 
               s.mag, 
               s.place, 
-              s.time, 
+              s.eventTime, 
               s.updated,
               s.tz,
               s.url,
@@ -32,11 +32,10 @@ source_datasources:
               s.magType,
               s.type,
               s.title
-          from ahd_earthquake.gold.shakemap_{{ env }} as s
-              inner join (select id, max(grid_value) as grid_value  from ahd_earthquake.gold.shakemap_{{ env }} group by id) as maxgridvalue on s.id = maxgridvalue.id and s.grid_value = maxgridvalue.grid_value
-          where s.id in ( select id from ahd_earthquake.green.epicenter_{{ env }} ))
+          from ahd_earthquake.gold.california_shakemaps_{{ env }} as s
+          where s.id in ( select id from ahd_earthquake.green.ahd_epicenters_{{ env }} ))
 
 destination_datasources:
   - type: databricks
-    table: ahd_earthquake.green.shakemap_{{ env }}
+    table: ahd_earthquake.green.ahd_shakemaps_{{ env }}
 
