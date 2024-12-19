@@ -1,61 +1,54 @@
 source_datasources:
   - type: databricks
     query: >
-        WITH epicenters as (
-          select e.*, egold.caloes_region, egold.county from ahd_earthquake.silver.epicenter_{{ env }} e
-          join ahd_earthquake.gold.california_shakemaps_{{ env }} s on s.id = e.id
-          left join ahd_earthquake.gold.california_epicenters_{{ env }} egold on egold.id = e.id
+      WITH filtered_data AS (
+          SELECT 
+              *,
+              CASE 
+                  WHEN mag >= 3.5 AND mag <= 5.5 THEN 'low_range'
+                  WHEN mag >= 5.6 THEN 'high_range'
+              END AS mag_category
+          FROM ahd_earthquake.gold.california_shakemaps_{{ env }}
+          WHERE mag >= 3.5 
+      )
+      , low_range_data AS (
+          SELECT *
+          FROM filtered_data
+          WHERE mag_category = 'low_range'
+          QUALIFY ROW_NUMBER() OVER (PARTITION BY id ORDER BY grid_value DESC) = 1
+      )
+      , high_range_data AS (
+          SELECT *
+          FROM filtered_data
+          WHERE mag_category = 'high_range' AND grid_value > 5.0
+      )
+      , shakemaps AS (
+      SELECT * FROM low_range_data
+      UNION ALL
+      SELECT * FROM high_range_data
+      )
+      , days_within as (
+          SELECT "1" as days_within, * FROM ahd_earthquake.silver.epicenter_{{ env }} WHERE time >= date_sub(current_date(), 1 + {{ workflows['hazard_earthquake'].green.days_offset }} ) AND mag >= 3.5
           UNION
-          select e.* from ahd_earthquake.gold.california_epicenters_{{ env }} e
-          left join ahd_earthquake.gold.california_shakemaps_{{ env }} s on s.id = e.id
-          where s.id is null
-        )
-        select days_within, 
-              sub.id, 
-              mag, 
-              place, 
-              time, 
-              updated, 
-              tz, 
-              url, 
-              detail, 
-              felt, 
-              cdi, 
-              mmi, 
-              alert, 
-              status, 
-              tsunami, 
-              sig, 
-              net, 
-              code, 
-              ids, 
-              sources, 
-              types, 
-              nst, 
-              dmin, 
-              rms 
-              gap, 
-              magType, 
-              type, 
-              title, 
-              geometry, 
-              ade_date_submitted
-        from (select min(days_within) as days_within, id from 
-                    (SELECT "1" as days_within, * FROM epicenters WHERE time >= date_sub(current_date(), 1 + {{ workflows['hazard_earthquake'].green.days_offset }} ) AND mag >= 3.5
-                    UNION
-                    SELECT "3" as days_within, * FROM epicenters WHERE time >= date_sub(current_date(), 3 + {{ workflows['hazard_earthquake'].green.days_offset }} ) AND ( mag >= 5.6 or mmi >= 4.0 )
-                    UNION
-                    SELECT "5" as days_within, * FROM epicenters WHERE time >= date_sub(current_date(), 5 + {{ workflows['hazard_earthquake'].green.days_offset }} ) AND ( mmi >= 5.0 )
-                    UNION
-                    SELECT "7" as days_within, * FROM epicenters WHERE time >= date_sub(current_date(), 7 + {{ workflows['hazard_earthquake'].green.days_offset }} ) AND ( mag >= 7.1 or mmi >= 6.0 )
-                    UNION
-                    SELECT "10" as days_within, * FROM epicenters WHERE time >= date_sub(current_date(), 10 + {{ workflows['hazard_earthquake'].green.days_offset }} ) AND ( mmi >= 8.0 )
-                    UNION
-                    SELECT "14" as days_within, * FROM epicenters WHERE time >= date_sub(current_date(), 14 + {{ workflows['hazard_earthquake'].green.days_offset }} ) AND ( mmi >= 9.0 )
-                    UNION
-                    SELECT "30" as days_within, * FROM epicenters WHERE time >= date_sub(current_date(), 30 + {{ workflows['hazard_earthquake'].green.days_offset }} ) AND ( mmi >= 10.0 )
-                    ) as sub group by id ) as sub
-        join epicenters epicenter on sub.id = epicenter.id;
+          SELECT "3" as days_within, * FROM ahd_earthquake.silver.epicenter_{{ env }} WHERE time >= date_sub(current_date(), 3 + {{ workflows['hazard_earthquake'].green.days_offset }} ) AND ( mag >= 5.6 or mmi >= 4.0 )
+          UNION
+          SELECT "5" as days_within, * FROM ahd_earthquake.silver.epicenter_{{ env }} WHERE time >= date_sub(current_date(), 5 + {{ workflows['hazard_earthquake'].green.days_offset }} ) AND ( mmi >= 5.0 )
+          UNION
+          SELECT "7" as days_within, * FROM ahd_earthquake.silver.epicenter_{{ env }} WHERE time >= date_sub(current_date(), 7 + {{ workflows['hazard_earthquake'].green.days_offset }} ) AND ( mag >= 7.1 or mmi >= 6.0 )
+          UNION
+          SELECT "10" as days_within, * FROM ahd_earthquake.silver.epicenter_{{ env }} WHERE time >= date_sub(current_date(), 10 + {{ workflows['hazard_earthquake'].green.days_offset }} ) AND ( mmi >= 8.0 )
+          UNION
+          SELECT "14" as days_within, * FROM ahd_earthquake.silver.epicenter_{{ env }} WHERE time >= date_sub(current_date(), 14 + {{ workflows['hazard_earthquake'].green.days_offset }} ) AND ( mmi >= 9.0 )
+          UNION
+          SELECT "30" as days_within, * FROM ahd_earthquake.silver.epicenter_{{ env }} WHERE time >= date_sub(current_date(), 30 + {{ workflows['hazard_earthquake'].green.days_offset }} ) AND ( mmi >= 10.0 )      
+      )
+      , min_days_within as (
+          select min(days_within) as days_within, id from days_within group by id
+      )
+      SELECT e.* from ahd_earthquake.silver.epicenter_{{ env }} e
+      join min_days_within days on e.id = days.id
+      where exists ( select 1 from ahd_earthquake.green.ahd_shakemaps_{{ env }} s where s.id = e.id );
+
 destination_datasources:
   - type: databricks
     table: ahd_earthquake.green.ahd_epicenters_{{ env }}

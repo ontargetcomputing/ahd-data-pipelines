@@ -72,7 +72,7 @@ resources:
             parameters: [ "--conf-file", "${var.param_files_dir}/hazard/earthquake/gold_shakemap_task.yml", "--stage", "${bundle.target}" ]
         - task_key: "green_epicenter"
           depends_on: 
-            - task_key:  gold_california_epicenters
+            - task_key:  green_shakemap
           existing_cluster_id: ${var.ahd_cluster_id}
           python_wheel_task:
             package_name: ${bundle.name}
@@ -81,7 +81,6 @@ resources:
         - task_key: "green_shakemap"
           depends_on: 
             - task_key:  gold_california_shakemaps
-            - task_key:  green_epicenter
           existing_cluster_id: ${var.ahd_cluster_id}
           python_wheel_task:
             package_name: ${bundle.name}
