@@ -73,6 +73,7 @@ resources:
         - task_key: "green_epicenter"
           depends_on: 
             - task_key:  green_shakemap
+            - task_key:  silver_epicenter
           existing_cluster_id: ${var.ahd_cluster_id}
           python_wheel_task:
             package_name: ${bundle.name}
