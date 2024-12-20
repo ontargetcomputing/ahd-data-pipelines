@@ -8,7 +8,7 @@ source_datasources:
                   WHEN mag >= 3.5 AND mag <= 5.5 THEN 'low_range'
                   WHEN mag >= 5.6 THEN 'high_range'
               END AS mag_category
-          FROM ahd_earthquake.gold.california_shakemaps_{{ env }}
+          FROM ahd_earthquake.gold.california_shakemaps_2_{{ env }}
           WHERE mag >= 3.5 
       )
       , low_range_data AS (

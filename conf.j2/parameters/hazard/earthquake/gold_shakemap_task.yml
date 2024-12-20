@@ -57,7 +57,7 @@ source_datasources:
   #   table: datahub_common.gold.ca_county_oes_shape
 destination_datasources:
   - type: databricks
-    table: ahd_earthquake.gold.california_shakemaps_{{ env }}
+    table: ahd_earthquake.gold.california_shakemaps_2_{{ env }}
     method: overwrite
     data_types:
     - column: mag
@@ -80,6 +80,8 @@ destination_datasources:
       type: double
     - column: mmi
       type: double
+    - column: eventType
+      type: string
     - column: alert
       type: string
     - column: status

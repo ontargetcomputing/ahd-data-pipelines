@@ -8,7 +8,7 @@ source_datasources:
                   WHEN mag >= 3.5 AND mag <= 5.5 THEN 'low_range'
                   WHEN mag >= 5.6 THEN 'high_range'
               END AS mag_category
-          FROM ahd_earthquake.gold.california_shakemaps_{{ env }}
+          FROM ahd_earthquake.gold.california_shakemaps_2_{{ env }}
           WHERE mag >= 3.5 
       )
       , low_range_data AS (
@@ -28,19 +28,19 @@ source_datasources:
       SELECT * FROM high_range_data
       )
       , days_within as (
-          SELECT "1" as days_within, * FROM ahd_earthquake.gold.california_shakemaps_{{ env }} WHERE eventTime >= date_sub(current_date(), 1 + {{ workflows['hazard_earthquake'].green.days_offset }} ) AND mag >= 3.5
+          SELECT "1" as days_within, * FROM ahd_earthquake.gold.california_shakemaps_2_{{ env }} WHERE eventTime >= date_sub(current_date(), 1 + {{ workflows['hazard_earthquake'].green.days_offset }} ) AND mag >= 3.5
           UNION
-          SELECT "3" as days_within, * FROM ahd_earthquake.gold.california_shakemaps_{{ env }} WHERE eventTime >= date_sub(current_date(), 3 + {{ workflows['hazard_earthquake'].green.days_offset }} ) AND ( mag >= 5.6 or grid_value >= 4.0 )
+          SELECT "3" as days_within, * FROM ahd_earthquake.gold.california_shakemaps_2_{{ env }} WHERE eventTime >= date_sub(current_date(), 3 + {{ workflows['hazard_earthquake'].green.days_offset }} ) AND ( mag >= 5.6 or grid_value >= 4.0 )
           UNION
-          SELECT "5" as days_within, * FROM ahd_earthquake.gold.california_shakemaps_{{ env }} WHERE eventTime >= date_sub(current_date(), 5 + {{ workflows['hazard_earthquake'].green.days_offset }} ) AND ( grid_value >= 5.0 )
+          SELECT "5" as days_within, * FROM ahd_earthquake.gold.california_shakemaps_2_{{ env }} WHERE eventTime >= date_sub(current_date(), 5 + {{ workflows['hazard_earthquake'].green.days_offset }} ) AND ( grid_value >= 5.0 )
           UNION
-          SELECT "7" as days_within, * FROM ahd_earthquake.gold.california_shakemaps_{{ env }} WHERE eventTime >= date_sub(current_date(), 7 + {{ workflows['hazard_earthquake'].green.days_offset }} ) AND ( mag >= 7.1 or grid_value >= 6.0 )
+          SELECT "7" as days_within, * FROM ahd_earthquake.gold.california_shakemaps_2_{{ env }} WHERE eventTime >= date_sub(current_date(), 7 + {{ workflows['hazard_earthquake'].green.days_offset }} ) AND ( mag >= 7.1 or grid_value >= 6.0 )
           UNION
-          SELECT "10" as days_within, * FROM ahd_earthquake.gold.california_shakemaps_{{ env }} WHERE eventTime >= date_sub(current_date(), 10 + {{ workflows['hazard_earthquake'].green.days_offset }} ) AND ( grid_value >= 8.0 )
+          SELECT "10" as days_within, * FROM ahd_earthquake.gold.california_shakemaps_2_{{ env }} WHERE eventTime >= date_sub(current_date(), 10 + {{ workflows['hazard_earthquake'].green.days_offset }} ) AND ( grid_value >= 8.0 )
           UNION
-          SELECT "14" as days_within, * FROM ahd_earthquake.gold.california_shakemaps_{{ env }} WHERE eventTime >= date_sub(current_date(), 14 + {{ workflows['hazard_earthquake'].green.days_offset }} ) AND ( grid_value >= 9.0 )
+          SELECT "14" as days_within, * FROM ahd_earthquake.gold.california_shakemaps_2_{{ env }} WHERE eventTime >= date_sub(current_date(), 14 + {{ workflows['hazard_earthquake'].green.days_offset }} ) AND ( grid_value >= 9.0 )
           UNION
-          SELECT "30" as days_within, * FROM ahd_earthquake.gold.california_shakemaps_{{ env }} WHERE eventTime >= date_sub(current_date(), 30 + {{ workflows['hazard_earthquake'].green.days_offset }} ) AND ( grid_value >= 10.0 )      
+          SELECT "30" as days_within, * FROM ahd_earthquake.gold.california_shakemaps_2_{{ env }} WHERE eventTime >= date_sub(current_date(), 30 + {{ workflows['hazard_earthquake'].green.days_offset }} ) AND ( grid_value >= 10.0 )      
       )
       , min_days_within as (
           select min(days_within) as days_within, id from days_within group by id
