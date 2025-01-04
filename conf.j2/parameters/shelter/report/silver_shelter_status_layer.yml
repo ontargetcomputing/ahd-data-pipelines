@@ -8,7 +8,7 @@ source_datasources:
               ELSE CAST(i_zipcode AS STRING)
           END as zipcode,
           GlobalID,
-          i_name,
+          trim(i_name) as i_name,
           i_address,
           REPLACE(i_county, ' County', '') as i_county,
           i_oes_region,

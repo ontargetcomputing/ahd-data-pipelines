@@ -1,0 +1,14 @@
+resources:
+  jobs:
+    shelter_backdate_historical_agol:
+      name: Shelter Backdate Historical AGOL
+      
+      tasks:
+        - task_key: "backdate_historical_agol"
+          existing_cluster_id: ${var.ahd_cluster_id}
+          python_wheel_task:
+            package_name: ${bundle.name}
+            entry_point: medallion_task
+            parameters: [ "--conf-file", "${var.param_files_dir}/shelter/backdate/backdate_historical_agol.yml", "--stage", "${bundle.target}"]
+          libraries:
+            - whl: ../../../dist/*.whl
