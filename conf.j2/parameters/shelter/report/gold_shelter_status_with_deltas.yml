@@ -92,11 +92,11 @@ source_datasources:
             CONCAT('POINT (', jl.i_coord_x, ' ', jl.i_coord_y, ')') as geometry
         from shelter.silver.cassi_join_layer_{{ env }} as jl
           join shelter.gold.site_information_{{ env }} as si on lower(si.name) = lower(jl.i_name)
-          left join shelter.gold.cassi_join_layer_with_deltas_{{ env }} as ssdm on ssdm.name = jl.i_name and ssdm.dr_name = jl.s_dr_name
+          left join shelter.gold.cassi_join_layer_and_deltas_{{ env }} as ssdm on ssdm.name = jl.i_name and ssdm.dr_name = jl.s_dr_name
           left join datahub_common.gold.ca_fips cafips on cafips.county = jl.i_county;
 destination_datasources:
   - type: databricks
-    table: {{ workflows['shelter_report'].catalog }}.gold.cassi_join_layer_with_deltas_{{ env }}
+    table: {{ workflows['shelter_report'].catalog }}.gold.cassi_join_layer_and_deltas_{{ env }}
     method: overwrite
     data_types:
     - column: datahub_site_id

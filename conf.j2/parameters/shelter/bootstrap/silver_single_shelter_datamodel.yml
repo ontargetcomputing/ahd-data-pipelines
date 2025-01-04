@@ -45,11 +45,11 @@ source_datasources:
             CAST(submission_date as timestamp_ntz) as submission_date,
             outdated_report,
             geometry
-        from {{ workflows['shelter_bootstrap'].catalog }}.bronze.cassi_join_layer_with_deltas_{{ env }};
+        from {{ workflows['shelter_bootstrap'].catalog }}.bronze.cassi_join_layer_and_deltas_{{ env }};
 
 destination_datasources:
   - type: databricks
-    table: {{ workflows['shelter_bootstrap'].catalog }}.silver.cassi_join_layer_with_deltas_{{ env }}
+    table: {{ workflows['shelter_bootstrap'].catalog }}.silver.cassi_join_layer_and_deltas_{{ env }}
     data_types:
     - column: datahub_site_id
       type: int
@@ -82,9 +82,9 @@ destination_datasources:
     - column: disaster_start_date
       type: timestamp_ntz
     - column: overall_capacity
-      type: double
+      type: int
     - column: overall_capacity_delta
-      type: double
+      type: int
     - column: agency_type
       type: string
     - column: site_status
