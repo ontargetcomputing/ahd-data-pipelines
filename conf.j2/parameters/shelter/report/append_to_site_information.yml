@@ -1,46 +1,46 @@
 source_datasources:
   - type: databricks
     query: >
-      WITH ranked_jl AS (
-        SELECT
-          zipcode,
-          i_name,
-          i_address,
-          i_city,
-          i_state,
-          i_county,
-          i_ada_accessible_site,
-          i_backup_generator,
-          ade_date_submitted,
-          RANK() OVER (PARTITION BY i_name  ORDER BY i_submission_date DESC)
-            AS date_rank
-        FROM {{ workflows['shelter_report'].catalog }}.silver.cassi_join_layer_{{ env }})
-      select jl.i_name as name,
-              jl.i_address as address,
-                CASE
-                    WHEN ca_fips.county is null THEN "" 
-                    ELSE ca_fips.county
-                END as county,
-                CASE
-                    WHEN ca_fips.fips_long is null THEN "" 
-                    ELSE ca_fips.fips_long
-                END as county_fips,
-              jl.i_city as city,
-              jl.i_state as state,
-              jl.zipcode as zipcode,
-                CASE
-                    WHEN oes_shape.caloes_region is null THEN "" 
-                    ELSE oes_shape.caloes_region
-                END as oes_region,
-              jl.i_backup_generator as backup_generator,
-              jl.i_ada_accessible_site as ada_accessible_site,
-              jl.ade_date_submitted
-        from ranked_jl jl 
-          left join datahub_common.gold.ca_county_oes_shape oes_shape on oes_shape.county = REPLACE(jl.i_county, ' County', '') 
-          left join datahub_common.gold.ca_fips ca_fips on ca_fips.county_long = jl.i_county
-          left join {{ workflows['shelter_report'].catalog }}.gold.site_information_{{ env }} si on lower(si.name) = lower(jl.i_name)
-          where si.name is null and jl.date_rank = 1;
-
+        WITH ranked_jl AS (
+            SELECT
+                zipcode,
+                trim(lower(i_name)) as i_name_cooked,
+                trim(i_name) as i_name,
+                i_address,
+                i_city,
+                i_state,
+                i_county,
+                i_ada_accessible_site,
+                i_backup_generator,
+                ade_date_submitted,
+                RANK() OVER (PARTITION BY trim(lower(i_name))  ORDER BY i_submission_date DESC)
+                AS date_rank
+            FROM {{ workflows['shelter_report'].catalog }}.silver.cassi_join_layer_{{ env }})
+            select jl.i_name as name,
+                    jl.i_address as address,
+                    CASE
+                        WHEN ca_fips.county is null THEN "" 
+                        ELSE ca_fips.county
+                    END as county,
+                    CASE
+                        WHEN ca_fips.fips_long is null THEN "" 
+                        ELSE ca_fips.fips_long
+                    END as county_fips,
+                    jl.i_city as city,
+                    jl.i_state as state,
+                    jl.zipcode as zipcode,
+                    CASE
+                        WHEN oes_shape.caloes_region is null THEN "" 
+                        ELSE oes_shape.caloes_region
+                    END as oes_region,
+                    jl.i_backup_generator as backup_generator,
+                    jl.i_ada_accessible_site as ada_accessible_site,
+                    jl.ade_date_submitted
+            from ranked_jl jl 
+                left join datahub_common.gold.ca_county_oes_shape oes_shape on oes_shape.county = REPLACE(jl.i_county, ' County', '') 
+                left join datahub_common.gold.ca_fips ca_fips on ca_fips.county = REPLACE(jl.i_county, ' County', '')
+                left join {{ workflows['shelter_report'].catalog }}.gold.site_information_{{ env }} si on lower(si.name) = lower(jl.i_name)
+                where si.name is null and jl.date_rank = 1
 
 destination_datasources:
   - type: databricks
