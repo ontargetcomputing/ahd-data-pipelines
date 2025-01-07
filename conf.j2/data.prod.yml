@@ -200,3 +200,12 @@ workflows:
         destination:
           dataset_id: 24f1f876e51a44cfab413049da2b1314 
           layer: 0
+
+  shelter_status:
+    template: conf/workflows/shelter/status.yml
+    catalog: shelter
+    bronze:
+      shelter_status_layer: 
+        source:
+          dataset_id: 9a81956b7f284b058248ffafbe6c94ae 
+          layer: 0
