@@ -1,0 +1,124 @@
+source_datasources:
+  - type: databricks
+    query: >
+      SELECT
+      l.OBJECTID,
+      l.Facility_Name,
+      l.Facility_Number,
+      l.Regional_Office,
+      l.Disaster_Name,
+      l.Event_Type,
+      l.Program,
+      l.County,
+      l.Operational_Status,
+      l.Evacuation_Status,
+      l.Num_Clients_Evacuated,
+      l.Num_Clients_Not_Returning,
+      l.Num_Clients_Returned,
+      l.Num_Clients_Left_to_Repop,
+      l.Structural_Condition,
+      l.Archive,
+      l.Waiver_Granted,
+      CASE
+        WHEN c.ConfidentialFacilityType IS NOT NULL THEN
+        -- Jitter the longitude (X-coordinate)
+        l.X + (500 / (111320 * COS(RADIANS(l.Y)))) * (RANDOM() * 2 - 1)
+        ELSE
+        -- Keep original longitude
+        l.X
+      END AS X,
+      CASE
+        WHEN c.ConfidentialFacilityType IS NOT NULL THEN
+        -- Jitter the latitude (Y-coordinate)
+        l.Y + (500 / 111320) * (RANDOM() * 2 - 1)
+        ELSE
+        -- Keep original latitude
+        l.Y
+      END AS Y,
+      l.FacilityType,
+      l.Capacity,
+      l.Census,
+      l.SharePointID,
+      l.GlobalID,
+      l.CreationDate,
+      l.Creator,
+      l.EditDate,
+      l.Editor,
+      'POINT (' ||
+      CASE
+        WHEN c.ConfidentialFacilityType IS NOT NULL THEN
+        (l.X + (500 / (111320 * COS(RADIANS(l.Y)))) * (RANDOM() * 2 - 1)) || ' ' ||
+        (l.Y + (500 / 111320) * (RANDOM() * 2 - 1))
+        ELSE
+        l.X || ' ' || l.Y
+      END || ')' AS geometry,
+      l.ade_date_submitted
+      FROM
+      cdss_general.bronze.opstatus_{{ env }} l
+      LEFT JOIN cdss_general.bronze.opstatus_conftypes_{{ env }} c ON l.FacilityType = c.ConfidentialFacilityType;
+
+destination_datasources:
+  - type: databricks
+    table: cdph_facilities.silver.opstatus_{{ env }}
+    data_types:
+    - column: OBJECTID
+      type: bigint
+    - column: Facility_Name
+      type: string
+    - column: Facility_Number
+      type: string
+    - column: Regional_Office
+      type: string
+    - column: Disaster_Name
+      type: string
+    - column: Event_Type
+      type: string
+    - column: Program
+      type: string
+    - column: County
+      type: string
+    - column: Operational_Status
+      type: string
+    - column: Evacuation_Status
+      type: string
+    - column: Num_Clients_Evacuated
+      type: int
+    - column: Num_Clients_Not_Returning
+      type: int
+    - column: Num_Clients_Returned
+      type: int
+    - column: Num_Clients_Left_to_Repop
+      type: int
+    - column: Structural_Condition
+      type: string
+    - column: Archive
+      type: string
+    - column: Waiver_Granted
+      type: string
+    - column: X
+      type: double
+    - column: Y
+      type: double
+    - column: FacilityType
+      type: string
+    - column: Capacity
+      type: int
+    - column: Census
+      type: int
+    - column: SharePointID
+      type: string
+    - column: GlobalID
+      type: string
+    - column: CreationDate
+      type: timestamp
+    - column: Creator
+      type: string
+    - column: EditDate
+      type: timestamp
+    - column: Editor
+      type: string
+    - column: geometry
+      type: string
+    - column: ade_date_submitted
+      type: date
+      

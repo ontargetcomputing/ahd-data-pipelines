@@ -32,11 +32,14 @@ workflows:
       source:
         dataset_id: 213f2f8b61e24bd484aa89880a6c8435
         table_index: 0
-    green_agol:
-      destination:
-        dataset_id: 21a259e6e0244bb09ac0cc5748534b12
-        layer: 0
 
+  facilities_cdph_opstatus:
+    template: conf/workflows/facilities/cdph_opstatus.yml
+    bronze: 
+      source:
+        dataset_id: 8c8047c6535a458facef10fbcbb572d2
+        layer: 0
+        
   facilities_historical_impact:
     template: conf/workflows/facilities/historical_impact.yml
     bronze:

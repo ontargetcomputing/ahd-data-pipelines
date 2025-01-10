@@ -1,15 +1,10 @@
 source_datasources:
   - type: databricks
-    query: >
-      {% if env == 'dev' -%}
-        select * from cdss_general.gold.opstatus_{{ env }};
-      {%- elif env == 'prod' -%}
-        select * from cdss_general.gold.opstatus_{{ env }}
-        where Disaster_Name not like 'TEST%';
-      {%- endif %}
+    table: cdss_general.silver.opstatus_{{ env }}
+
 destination_datasources:
   - type: databricks
-    table: cdss_general.green.opstatus_{{ env }}
+    table: cdph_facilities.gold.opstatus_{{ env }}
     data_types:
     - column: OBJECTID
       type: bigint
