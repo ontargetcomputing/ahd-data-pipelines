@@ -1,0 +1,145 @@
+source_datasources:
+  - type: databricks
+    table: cdph_facilities.bronze.surveyplan_{{ env }}
+destination_datasources:
+  - type: databricks
+    table: cdph_facilities.silver.surveyplan_{{ env }}
+    data_types:
+    - column: objectid
+      type: string
+    - column: globalid
+      type: string
+    - column: guid
+      type: string
+    - column: contactdate
+      type: date
+    - column: Hazard_Name
+      type: string
+    - column: FACNAME
+      type: string
+    - column: FACID
+      type: string
+    - column: FACILITY_TYPE_DESCRIPTION
+      type: string
+    - column: BED_COUNT
+      type: string
+    - column: FAC_ADDRESS1
+      type: string
+    - column: FAC_CITY
+      type: string
+    - column: DISTRICT_NAME
+      type: string
+    - column: COUNTY_NAME
+      type: string
+    - column: FAC_ZIP5
+      type: string
+    - column: CONTACT_PHONE_NUMBER
+      type: string
+    - column: chcq_monitored
+      type: string
+    - column: Preplanning
+      type: string
+    - column: Incident_Type
+      type: string
+    - column: Contacted
+      type: string
+    - column: losepower
+      type: string
+    - column: power
+      type: string
+    - column: fueltype
+      type: string
+    - column: fuel
+      type: integer
+    - column: Opstatus
+      type: string
+    - column: Op_Comments
+      type: string
+    - column: impacthistory
+      type: string
+    - column: evac_plan
+      type: string
+    - column: mou
+      type: string
+    - column: prior
+      type: integer
+    - column: Evstatus
+      type: string
+    - column: Ev_Comments
+      type: string
+    - column: Ev_Time
+      type: date
+    - column: evachistory
+      type: string
+    - column: Census
+      type: integer
+    - column: Pat_evac
+      type: integer
+    - column: Pat_repat
+      type: integer
+    - column: Pat_returned
+      type: integer
+    - column: Pat_not_returned
+      type: integer
+    - column: lethal
+      type: integer
+    - column: injuries
+      type: integer
+    - column: evac_area
+      type: string
+    - column: evac_resources
+      type: string
+    - column: evac_food
+      type: string
+    - column: evac_generator
+      type: string
+    - column: evac_accommodations
+      type: string
+    - column: evac_staffing
+      type: string
+    - column: Additional_comments
+      type: string
+    - column: Event_EM_Contact_Name
+      type: string
+    - column: Event_EM_Contact_Phone
+      type: string
+    - column: Event_EM_Email
+      type: string
+    - column: HCAI_Assessed
+      type: string
+    - column: HCAI_Status
+      type: string
+    - column: HCAI_Comments
+      type: string
+    - column: structural
+      type: string
+    - column: HVAC
+      type: string
+    - column: Water
+      type: string
+    - column: Sewer
+      type: string
+    - column: Telephone
+      type: string
+    - column: Needs
+      type: string
+    - column: Aware
+      type: string
+    - column: Evacuationplan
+      type: string
+    - column: Emergencyplan
+      type: string
+    - column: Licensing
+      type: string
+    - column: MHOAC
+      type: string
+    - column: CreationDate
+      type: date
+    - column: Creator
+      type: string
+    - column: EditDate
+      type: date
+    - column: Editor
+      type: string
+    - column: clinic_closed
+      type: integer

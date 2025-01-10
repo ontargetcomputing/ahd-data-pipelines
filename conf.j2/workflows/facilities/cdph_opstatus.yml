@@ -12,36 +12,68 @@ resources:
       #   timezone_id: "America/Los_Angeles"
 
       tasks:
-        - task_key: "bronze"
+        - task_key: "bronze_evacstatus"
           existing_cluster_id: ${var.ahd_cluster_id}
           python_wheel_task:
             package_name: ${bundle.name}
             entry_point: medallion_task
-            parameters: [ "--conf-file", "${var.param_files_dir}/facilities/cdph_opstatus/bronze_task.yml", "--stage", "${bundle.target}"]
+            parameters: [ "--conf-file", "${var.param_files_dir}/facilities/cdph_opstatus/bronze_evacstatus_task.yml", "--stage", "${bundle.target}"]
           libraries:
             - whl: ../../../dist/*.whl
 
-        - task_key: "silver"
+        - task_key: "silver_evacstatus"
           depends_on: 
-            - task_key:  bronze
+            - task_key:  bronze_evacstatus
           existing_cluster_id: ${var.ahd_cluster_id}
           python_wheel_task:
             package_name: ${bundle.name}
             entry_point: medallion_task
-            parameters: [ "--conf-file", "${var.param_files_dir}/facilities/cdph_opstatus/silver_task.yml", "--stage", "${bundle.target}"]
+            parameters: [ "--conf-file", "${var.param_files_dir}/facilities/cdph_opstatus/silver_evacstatus_task.yml", "--stage", "${bundle.target}"]
           libraries:
             - whl: ../../../dist/*.whl
 
-        - task_key: "gold"
+        - task_key: "gold_evacstatus"
           depends_on: 
-            - task_key:  silver
+            - task_key:  silver_evacstatus
           existing_cluster_id: ${var.ahd_cluster_id}
           python_wheel_task:
             package_name: ${bundle.name}
             entry_point: medallion_task
-            parameters: [ "--conf-file", "${var.param_files_dir}/facilities/cdph_opstatus/gold_task.yml", "--stage", "${bundle.target}"]
+            parameters: [ "--conf-file", "${var.param_files_dir}/facilities/cdph_opstatus/gold_evacstatus_task.yml", "--stage", "${bundle.target}"]
           libraries:
             - whl: ../../../dist/*.whl
+
+        - task_key: "bronze_planningsurvey"
+          existing_cluster_id: ${var.ahd_cluster_id}
+          python_wheel_task:
+            package_name: ${bundle.name}
+            entry_point: medallion_task
+            parameters: [ "--conf-file", "${var.param_files_dir}/facilities/cdph_opstatus/bronze_planningsurvey_task.yml", "--stage", "${bundle.target}"]
+          libraries:
+            - whl: ../../../dist/*.whl
+
+        - task_key: "silver_planningsurvey"
+          depends_on: 
+            - task_key:  bronze_planningsurvey
+          existing_cluster_id: ${var.ahd_cluster_id}
+          python_wheel_task:
+            package_name: ${bundle.name}
+            entry_point: medallion_task
+            parameters: [ "--conf-file", "${var.param_files_dir}/facilities/cdph_opstatus/silver_planningsurvey_task.yml", "--stage", "${bundle.target}"]
+          libraries:
+            - whl: ../../../dist/*.whl
+
+        - task_key: "gold_planningsurvey"
+          depends_on: 
+            - task_key:  silver_planningsurvey
+          existing_cluster_id: ${var.ahd_cluster_id}
+          python_wheel_task:
+            package_name: ${bundle.name}
+            entry_point: medallion_task
+            parameters: [ "--conf-file", "${var.param_files_dir}/facilities/cdph_opstatus/gold_planningsurvey_task.yml", "--stage", "${bundle.target}"]
+          libraries:
+            - whl: ../../../dist/*.whl
+
 
         # - task_key: "green"
         #   depends_on: 
