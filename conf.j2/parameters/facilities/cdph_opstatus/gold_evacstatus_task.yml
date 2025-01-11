@@ -1,0 +1,37 @@
+source_datasources:
+  - type: databricks
+    table: cdph_facilities.silver.evacstatus_{{ env }}
+
+destination_datasources:
+  - type: databricks
+    table: cdph_facilities.gold.evacstatus_{{ env }}
+    data_types:
+    - column: objectid
+      type: string
+    - column: globalid
+      type: string
+    - column: Facnameevac
+      type: string
+    - column: relocationname
+      type: string
+    - column: numberrelocated
+      type: integer
+    - column: relocationcomments
+      type: string
+    - column: daterelocated
+      type: timestamp
+    - column: advanced_monitored
+      type: string
+    - column: evac_monitored
+      type: string
+    - column: parentglobalid
+      type: string
+    - column: CreationDate
+      type: timestamp
+    - column: Creator
+      type: string
+    - column: EditDate
+      type: timestamp
+    - column: Editor
+      type: string
+      

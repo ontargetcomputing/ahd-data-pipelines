@@ -1,0 +1,40 @@
+bronze: true
+source_datasources:
+  - type: agol
+    is_table: true
+    dataset_id: {{ workflows['facilities_cdph_opstatus'].bronze.evacstatus.source.dataset_id }}
+    table_index: {{ workflows['facilities_cdph_opstatus'].bronze.evacstatus.source.table_index }}
+    url: https://chhsagency.maps.arcgis.com/home/
+    
+destination_datasources:
+  - type: databricks
+    table: cdph_facilities.bronze.evacstatus_{{ env }}
+    data_types:
+    - column: objectid
+      type: string
+    - column: globalid
+      type: string
+    - column: Facnameevac
+      type: string
+    - column: relocationname
+      type: string
+    - column: numberrelocated
+      type: integer
+    - column: relocationcomments
+      type: string
+    - column: daterelocated
+      type: bigint
+    - column: advanced_monitored
+      type: string
+    - column: evac_monitored
+      type: string
+    - column: parentglobalid
+      type: string
+    - column: CreationDate
+      type: bigint
+    - column: Creator
+      type: string
+    - column: EditDate
+      type: bigint
+    - column: Editor
+      type: string

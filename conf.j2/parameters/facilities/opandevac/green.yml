@@ -1,0 +1,37 @@
+source_datasources:
+  - type: databricks
+    query: >
+        SELECT
+            planningsurvey.FACID AS datahub_facility_id,
+            planningsurvey.objectid AS ObjectId,
+            planningsurvey.GlobalID AS GlobalID,
+            planningsurvey.CreationDate AS CreationDate,
+            planningsurvey.Creator AS Creator,
+            planningsurvey.EditDate AS EditDate,
+            planningsurvey.Editor AS Editor,
+            planningsurvey.chcq_monitored AS chcq_monitored,
+            planningsurvey.Opstatus AS op_status,
+            planningsurvey.Evstatus AS evac_status,
+            planningsurvey.Pat_evac AS patients_evac,
+            planningsurvey.Contacted AS facility_contacted,
+            planningsurvey.Additional_comments AS general_comments,
+            planningsurvey.Incident_Type AS incident_type,
+            planningsurvey.Hazard_Name AS hazard_name,
+            planningsurvey.HCAI_Status AS hcai_status,
+            planningsurvey.Event_EM_Contact_Name AS event_em_contact_name,
+            planningsurvey.Event_EM_Contact_Phone AS event_em_contact_phone,
+            planningsurvey.Event_EM_Email AS event_em_email,
+            planningsurvey.CONTACT_PHONE_NUMBER AS emergency_phone_primary,
+            planningsurvey.HCAI_Assessed AS hcai_assessed,
+            planningsurvey.HCAI_Comments AS hcai_comments,
+            planningsurvey.Op_Comments AS operational_status_comments,
+            planningsurvey.Ev_Comments AS evacuation_status_comments
+        FROM cdph_facilities.gold.surveyplan_prod planningsurvey;
+      
+destination_datasources:
+  - type: agol
+    dataset_id: {{ workflows['facilities_opandevac'].green.destination.dataset_id }}
+    is_table: true
+    table_index: {{ workflows['facilities_opandevac'].green.destination.table_index }}
+    url: https://chhsagency.maps.arcgis.com/home/
+    object_id: ObjectID
