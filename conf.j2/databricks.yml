@@ -73,8 +73,8 @@ targets:
     variables:
       # ahd_cluster_id: 0122-214140-932cnpz8 # [All Hazards Dashboard]
       ahd_cluster_id: 1118-232114-v4y4qfs7 # [All Hazards Dashboard (SP)]
-      #notification_email: AHD_Data@chhs.ca.gov
-      notification_email: Richard.Bach3@chhs.ca.gov
+      notification_email: AHD_Data@chhs.ca.gov
+      # notification_email: Richard.Bach3@chhs.ca.gov
     workspace:
       host: https://calhhs-ahd-live.cloud.databricks.com/
       root_path: /Shared/.bundle/prod/${bundle.name}
