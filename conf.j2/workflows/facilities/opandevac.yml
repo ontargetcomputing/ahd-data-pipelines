@@ -1,15 +1,15 @@
 resources:
   jobs:
-    cdph_opstatus:
+    facility_impact:
       name: Facitlity Impact
 
       email_notifications:
         on_failure:
           - ${var.notification_email}
 
-      # schedule:
-      #   quartz_cron_expression: "0 4/5 * * * ?"
-      #   timezone_id: "America/Los_Angeles"
+      schedule:
+        quartz_cron_expression: "6 3/3 * * * ?"
+        timezone_id: "America/Los_Angeles"
 
       tasks:
         - task_key: "green_agol"
@@ -17,6 +17,6 @@ resources:
           python_wheel_task:
             package_name: ${bundle.name}
             entry_point: medallion_task
-            parameters: [ "--conf-file", "${var.param_files_dir}/facilities/opandevac/green_task.yml", "--stage", "${bundle.target}"]
+            parameters: [ "--conf-file", "${var.param_files_dir}/facilities/opandevac/green.yml", "--stage", "${bundle.target}"]
           libraries:
             - whl: ../../../dist/*.whl

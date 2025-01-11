@@ -24,10 +24,11 @@ class AgolDatasource(Datasource):
     def read_from_table(self):
         datasetId = self.params["dataset_id"]
         table_index = self.params["table_index"]
+        query = self.params.get("query", "1=1")
         print(f'loadTable { { "source": datasetId, "table": table_index}}')
         dataLayer = self.gis.content.get(datasetId)
         table = Table(dataLayer.tables[table_index].url)
-        records = table.query()
+        records = table.query(where=query)
         data = [record.attributes for record in records.features]
 
         # Convert the data to a Pandas DataFrame
@@ -36,6 +37,7 @@ class AgolDatasource(Datasource):
 
     def read_from_feature_layer(self):
         datasetId = self.params["dataset_id"]
+        query = self.params.get("query", "1=1")
         dataLayer = self.gis.content.get(datasetId)
         original_crs = self.params.get("original_crs", 3857)
         new_crs = self.params.get("new_crs", 4326)
@@ -44,7 +46,7 @@ class AgolDatasource(Datasource):
         print(f'loadFeatureLayer { { "source": datasetId, "layer": layer}}')
 
         featureLayer = FeatureLayer(dataLayer.layers[layer].url)
-        featureSet = featureLayer.query()
+        featureSet = featureLayer.query(where=query)
         gdf = featureSet.sdf
         if len(gdf) > 0:
             gjsonString = featureSet.to_geojson

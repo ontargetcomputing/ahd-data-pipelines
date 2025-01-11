@@ -3,18 +3,18 @@ source_datasources:
     query: >
         SELECT
             planningsurvey.FACID AS datahub_facility_id,
-            evacstatus.objectid AS ObjectId,
-            evacstatus.GlobalID AS GlobalID,
+            planningsurvey.objectid AS ObjectId,
+            planningsurvey.GlobalID AS GlobalID,
             planningsurvey.CreationDate AS CreationDate,
-            evacstatus.Creator AS Creator,
-            evacstatus.EditDate AS EditDate,
-            evacstatus.Editor AS Editor,
+            planningsurvey.Creator AS Creator,
+            planningsurvey.EditDate AS EditDate,
+            planningsurvey.Editor AS Editor,
             planningsurvey.chcq_monitored AS chcq_monitored,
             planningsurvey.Opstatus AS op_status,
             planningsurvey.Evstatus AS evac_status,
-            evacstatus.numberrelocated AS patients_evac,
+            planningsurvey.Pat_evac AS patients_evac,
             planningsurvey.Contacted AS facility_contacted,
-            evacstatus.relocationcomments AS general_comments,
+            planningsurvey.Additional_comments AS general_comments,
             planningsurvey.Incident_Type AS incident_type,
             planningsurvey.Hazard_Name AS hazard_name,
             planningsurvey.HCAI_Status AS hcai_status,
@@ -26,13 +26,12 @@ source_datasources:
             planningsurvey.HCAI_Comments AS hcai_comments,
             planningsurvey.Op_Comments AS operational_status_comments,
             planningsurvey.Ev_Comments AS evacuation_status_comments
-        FROM cdph_facilities.gold.surveyplan_{{ env }} planningsurvey 
-        JOIN cdph_facilities.gold.evacstatus_{{ env }} evacstatus on planningsurvey.globalid = evacstatus.parentglobalid
+        FROM cdph_facilities.gold.surveyplan_prod planningsurvey;
       
 destination_datasources:
   - type: agol
     dataset_id: {{ workflows['facilities_opandevac'].green.destination.dataset_id }}
-    table_index: {{ workflows['facilities_opandevac'].green.destination.table_index }}
     is_table: true
+    table_index: {{ workflows['facilities_opandevac'].green.destination.table_index }}
     url: https://chhsagency.maps.arcgis.com/home/
     object_id: ObjectID

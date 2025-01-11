@@ -19,7 +19,7 @@ destination_datasources:
     - column: relocationcomments
       type: string
     - column: daterelocated
-      type: date
+      type: timestamp
     - column: advanced_monitored
       type: string
     - column: evac_monitored
@@ -27,10 +27,11 @@ destination_datasources:
     - column: parentglobalid
       type: string
     - column: CreationDate
-      type: date
+      type: timestamp
     - column: Creator
       type: string
     - column: EditDate
-      type: date
+      type: timestamp
     - column: Editor
       type: string
+      

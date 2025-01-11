@@ -1,11 +1,27 @@
 source_datasources:
   - type: databricks
-    table: cdph_facilities.bronze.evacstatus_{{ env }}
+    query: >
+        SELECT 
+          objectid,
+          globalid,
+          Facnameevac,
+          relocationname,
+          numberrelocated,
+          relocationcomments,
+          from_unixtime(daterelocated / 1000) AS daterelocated,
+          advanced_monitored,
+          evac_monitored,
+          parentglobalid,
+          from_unixtime(CreationDate / 1000) AS CreationDate,
+          Creator,
+          from_unixtime(EditDate / 1000) AS EditDate,
+          Editor,
+          ade_date_submitted
+        FROM cdph_facilities.bronze.evacstatus_prod;
 
 destination_datasources:
   - type: databricks
     table: cdph_facilities.silver.evacstatus_{{ env }}
-    data_types:
     data_types:
     - column: objectid
       type: string
@@ -20,7 +36,7 @@ destination_datasources:
     - column: relocationcomments
       type: string
     - column: daterelocated
-      type: date
+      type: timestamp
     - column: advanced_monitored
       type: string
     - column: evac_monitored
@@ -28,11 +44,11 @@ destination_datasources:
     - column: parentglobalid
       type: string
     - column: CreationDate
-      type: date
+      type: timestamp
     - column: Creator
       type: string
     - column: EditDate
-      type: date
+      type: timestamp
     - column: Editor
       type: string
       

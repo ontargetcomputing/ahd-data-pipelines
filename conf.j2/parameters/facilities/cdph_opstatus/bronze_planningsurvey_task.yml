@@ -3,6 +3,7 @@ source_datasources:
   - type: agol
     dataset_id: {{ workflows['facilities_cdph_opstatus'].bronze.planningsurvey.source.dataset_id }}
     layer: {{ workflows['facilities_cdph_opstatus'].bronze.planningsurvey.source.layer }}
+    query: Opstatus in ('Non-Operational Long Term', 'Non-Operational Short Term', 'Operational With Impacts') and chcq_monitored = 'Yes'
     url: https://chhsagency.maps.arcgis.com/home/
     
 destination_datasources:

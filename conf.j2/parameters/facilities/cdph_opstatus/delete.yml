@@ -1,0 +1,7 @@
+source_datasources:
+  - type: databricks
+    query: >
+      drop table cdph_facilities.bronze.evacstatus_prod
+
+destination_datasources:
+  - type: noop

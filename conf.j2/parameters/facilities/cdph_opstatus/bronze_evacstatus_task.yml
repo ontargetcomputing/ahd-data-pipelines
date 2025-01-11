@@ -23,7 +23,7 @@ destination_datasources:
     - column: relocationcomments
       type: string
     - column: daterelocated
-      type: timestamp
+      type: bigint
     - column: advanced_monitored
       type: string
     - column: evac_monitored
@@ -31,10 +31,10 @@ destination_datasources:
     - column: parentglobalid
       type: string
     - column: CreationDate
-      type: timestamp
+      type: bigint
     - column: Creator
       type: string
     - column: EditDate
-      type: timestamp
+      type: bigint
     - column: Editor
       type: string
