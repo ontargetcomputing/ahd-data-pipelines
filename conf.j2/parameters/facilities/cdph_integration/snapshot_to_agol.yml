@@ -1,0 +1,40 @@
+source_datasources:
+  - type: databricks
+    query: > 
+      SELECT 
+        ade_source,
+        ade_facility_id,
+        facility_number,
+        facility_org,
+        name,
+        facility_type,
+        facility_type_abbrv,
+        licensed_capacity,
+        address,
+        city,
+        state,
+        county,
+        county_fips,
+        oes_region,
+        trauma_center_level,
+        program_type,
+        program_type_abbrv,
+        license_status,
+        license_no,
+        licensing_org,
+        certification_status,
+        supporting_org,
+        parent_org,
+        facility_org_type,
+        urgency, 
+        geometry from cdph_facilities.bronze.temp_facility_table;
+
+destination_datasources:
+  - type: agol
+    dataset_id: {{ workflows['facilities_cdph_integration'].green.destination.dataset_id }}
+    layer: {{ workflows['facilities_cdph_integration'].green.destination.layer }}
+    url: https://chhsagency.maps.arcgis.com/home/
+    method: append
+    geometry: 
+      column: geometry
+      type: POINT

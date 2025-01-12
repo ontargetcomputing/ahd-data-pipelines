@@ -52,6 +52,18 @@ workflows:
         dataset_id: 97d87adc44b541f2a9b59901008e81e0
         table_index: 0
 
+  facilities_cdph_integration:
+    template: conf/workflows/facilities/cdph_integration.yml
+    bronze: 
+      source:
+        dataset_id: a678db8f91834f5c8e4fb216011b65d1
+        layer: 0
+    green:
+      destination:
+        dataset_id: a678db8f91834f5c8e4fb216011b65d1
+        layer: 0
+      
+
   facilities_historical_impact:
     template: conf/workflows/facilities/historical_impact.yml
     bronze:
@@ -216,16 +228,5 @@ workflows:
           dataset_id: 24f1f876e51a44cfab413049da2b1314 
           layer: 0
 
-  # facilities_cdph_impacted:
-  #   template: workflows/facilities/impacted_cdph.j2.yml
-  #   bronze: 
-  #     source:
-  #       dataset_id: df64c38688f9420690105553629c5247
-  #       layer: 0
-  #   green: 
-  #     destination:
-  #       # DEV
-  #       #dataset_id: 7ec85eeeba0c4f95a4f46d97109b379d
-  #       # PROD
-  #       dataset_id: 
-  #       table_index: 0
+
+ 

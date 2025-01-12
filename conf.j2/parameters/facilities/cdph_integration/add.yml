@@ -1,0 +1,52 @@
+source_datasources:
+  - type: databricks
+    query: >
+
+          SELECT 
+              'CDPH' as ade_source,
+              non_integrated.FACID as ade_facility_id,
+              non_integrated.FACID as facility_number,
+              non_integrated.LICENSEE_BUSINESS_NAME as facility_org,
+              non_integrated.FACNAME as name,
+              non_integrated.FACILITY_TYPE_DESCRIPTION as facility_type,
+              non_integrated.FACILITY_TYPE as facility_type_abbrv,
+              non_integrated.BED_COUNT as licensed_capacity,
+              non_integrated.FAC_ADDRESS1 as address,
+              non_integrated.FAC_CITY as city,
+              non_integrated.FAC_ST as state,
+              non_integrated.COUNTY_NAME as county,
+              fips.fips as county_fips,
+              oes.caloes_region as oes_region,
+              non_integrated.YCOORD as latitude,
+              non_integrated.XCOORD as longitude,
+              non_integrated.LICENSE_STATUS as license_status,
+              non_integrated.FACILITY_LICENSE as license_no,
+              non_integrated.LICENSING_ORG as licensing_org,
+              non_integrated.CERTIFICATION_STATUS as certification_status,
+              non_integrated.OBJECTID as ObjectId,
+              non_integrated.FACILITY_TYPE as facility_type_abbrv_alf,
+              CURRENT_DATE() as CreationDate,
+              'ade-pipeline' as Creator,
+              CURRENT_DATE() as EditDate,
+              'ade-pipeline' as Editor,
+              non_integrated.FAC_ZIP5 as zip_code,
+              non_integrated.CONTACT_PHONE_NUMBER as contact_phone,
+              non_integrated.geometry as geometry,
+              non_integrated.ade_date_submitted as ade_date_submitted
+          FROM cdph_facilities.gold.facilities_prod AS non_integrated
+          LEFT JOIN cdph_facilities.bronze.integrated_facilities_in_agol_prod AS integrated ON non_integrated.FACID = integrated.ade_facility_id
+          LEFT JOIN datahub_common.gold.ca_zip_county_fips fips on fips.zip_code = non_integrated.FAC_ZIP5
+          LEFT JOIN datahub_common.gold.ca_county_oes_shape oes on lower(oes.county) = lower(non_integrated.COUNTY_NAME)
+          WHERE integrated.ade_facility_id is null;
+
+destination_datasources:
+  # - type: noop
+  - type: agol
+    dataset_id: {{ workflows['facilities_cdph_integration'].green.destination.dataset_id }}
+    layer: {{ workflows['facilities_cdph_integration'].green.destination.layer }}
+    url: https://chhsagency.maps.arcgis.com/home/
+    method: append
+    geometry: 
+      column: geometry
+      type: POINT
+

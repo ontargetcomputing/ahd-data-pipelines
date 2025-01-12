@@ -35,6 +35,38 @@ class AgolDatasource(Datasource):
         df = pd.DataFrame(data)
         return PandasHelper.pandas_to_pysparksql(pd_df=df, spark=self.spark)
 
+    def delete_from_table(self):
+        print('NOT IMPLEMENTED')
+
+    def delete_from_feature_layer(self, dataFrame: DataFrame):
+        datasetId = self.params["dataset_id"]
+        layer = self.params["layer"]
+        print(f'Delete from { { "source": datasetId, "layer": layer}}')
+
+        dataLayer = self.gis.content.get(datasetId)
+        featureLayer = FeatureLayer(dataLayer.layers[layer].url)
+
+        record_ids_to_delete = dataFrame.select('ObjectId').rdd.flatMap(lambda x: x).collect()
+
+        # Perform deletion in batches (to avoid API limits if the list is large)
+        batch_size = 2000  # Adjust batch size as needed
+        for i in range(0, len(record_ids_to_delete), batch_size):
+            batch_ids = record_ids_to_delete[i:i + batch_size]
+            delete_ids = ",".join(map(str, batch_ids))  # Convert to comma-separated string
+
+            # Delete the batch
+            result = featureLayer.edit_features(deletes=delete_ids)
+
+            # Check results for this batch
+            if "deleteResults" in result:
+                for delete_result in result["deleteResults"]:
+                    if delete_result.get("success"):
+                        print(f"Record {delete_result['objectId']} successfully deleted.")
+                    else:
+                        print(f"Failed to delete record {delete_result['objectId']}: {delete_result.get('error')}")
+            else:
+                print("No records deleted in this batch. Check if the Object IDs are correct.")
+
     def read_from_feature_layer(self):
         datasetId = self.params["dataset_id"]
         query = self.params.get("query", "1=1")
@@ -101,6 +133,16 @@ class AgolDatasource(Datasource):
             return self.read_from_table()
         else:
             return self.read_from_feature_layer()
+
+    def delete(self) -> DataFrame:
+        if self.params is None:
+            raise TypeError("params:NoneType not allowed, params:dict exptected")
+
+        is_table = self.params.get("is_table", False)
+        if is_table:
+            return self.delete_from_table()
+        else:
+            return self.delete_from_feature_layer()
 
     def write_to_feature_layer(self, dataFrame: DataFrame):
         datasetId = self.params["dataset_id"]
@@ -197,10 +239,22 @@ class AgolDatasource(Datasource):
 
     def write(self, dataFrame: DataFrame):
         is_table = self.params.get("is_table", False)
+        method = "overwrite"
+        if "method" in self.params.keys():
+            method = self.params["method"]
+        print(f"The Method is {method}")
+        
         if is_table:
-            return self.write_to_table(dataFrame)
+            if method == 'delete':
+              return self.delete_from_table(dataFrame)
+            else:
+              return self.write_to_table(dataFrame)
         else:
-            return self.write_to_feature_layer(dataFrame)
+            if method == 'delete':
+              return self.delete_from_feature_layer(dataFrame)
+            else:
+              return self.write_to_feature_layer(dataFrame)
+            
 
     def truncate_feature_layer(self):
         datasetId = self.params["dataset_id"]

@@ -1,14 +1,14 @@
 resources:
   jobs:
     cdss_facilities:
-      name: cdss_facilities
+      name: CDSS Facilities
 
       email_notifications:
         on_failure:
           - ${var.notification_email}
 
       schedule:
-        quartz_cron_expression: "33 0 0 ? * Mon"
+        quartz_cron_expression: "17 0 9 * * ?"
         timezone_id: "America/Los_Angeles"
 
       tasks:
