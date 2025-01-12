@@ -1,0 +1,94 @@
+bronze: true
+source_datasources:
+  # - type: databricks
+  #   query: drop table cdph_facilities.bronze.integrated_facilities_in_agol_prod;
+  - type: agol
+    dataset_id: {{ workflows['facilities_cdph_integration'].bronze.source.dataset_id }}
+    layer: {{ workflows['facilities_cdph_integration'].bronze.source.layer }}
+    query: ade_source = 'CDPH'
+    url: https://chhsagency.maps.arcgis.com/home/
+    
+destination_datasources:
+  # - type: noop
+  - type: databricks
+    table: cdph_facilities.bronze.integrated_facilities_in_agol_{{ env }}
+    overwrite: true
+    data_types:
+    - column: ade_source
+      type: string
+    - column: ade_facility_id
+      type: string
+    - column: facility_number
+      type: string
+    - column: facility_org
+      type: string
+    - column: name
+      type: string
+    - column: facility_type
+      type: string
+    - column: facility_type_abbrv
+      type: string
+    - column: licensed_capacity
+      type: double
+    - column: address
+      type: string
+    - column: city
+      type: string
+    - column: state
+      type: string
+    - column: county
+      type: string
+    - column: county_fips
+      type: integer
+    - column: oes_region
+      type: string
+    - column: latitude
+      type: double
+    - column: longitude
+      type: double
+    - column: trauma_center_level
+      type: string
+    - column: program_type
+      type: string
+    - column: program_type_abbrv
+      type: string
+    - column: license_status
+      type: string
+    - column: license_no
+      type: string
+    - column: licensing_org
+      type: string
+    - column: certification_status
+      type: string
+    - column: supporting_org
+      type: string
+    - column: parent_org
+      type: string
+    - column: facility_org_type
+      type: string
+    - column: urgency
+      type: string
+    - column: setting
+      type: string
+    - column: generator_capacity
+      type: string
+    - column: ade_date_uploaded
+      type: date
+    - column: ObjectId
+      type: string
+    - column: facility_type_abbrv_alf
+      type: string
+    - column: CreationDate
+      type: date
+    - column: Creator
+      type: string
+    - column: EditDate
+      type: date
+    - column: Editor
+      type: string
+    - column: GlobalID
+      type: string
+    - column: zip_code
+      type: string
+    - column: contact_phone
+      type: string

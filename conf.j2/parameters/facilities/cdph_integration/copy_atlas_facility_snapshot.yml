@@ -1,0 +1,14 @@
+bronze: true
+source_datasources:
+  - type: jdbc
+    driver: postgresql
+    host: atlastest1-instance-1.ccagqiw5cjwr.us-west-2.rds.amazonaws.com
+    port: 30001
+    database: org_chhs_datahub
+    query: >
+      select * from chhs_facilities_snapshot cfs;
+destination_datasources:
+  - type: databricks
+    table: cdph_facilities.bronze.facility_snapshot_with_placeholder_2_prod
+ 
+

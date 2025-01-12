@@ -1,0 +1,19 @@
+source_datasources:
+  - type: databricks
+    query: >
+        SELECT 
+            integrated.*
+        FROM cdph_facilities.bronze.integrated_facilities_in_agol_prod as integrated
+        LEFT JOIN cdph_facilities.gold.facilities_prod AS non_integrated on non_integrated.FACID = integrated.ade_facility_id
+        WHERE non_integrated.FACID is null
+
+destination_datasources:
+  # - type: noop
+  - type: agol
+    dataset_id: {{ workflows['facilities_cdph_integration'].green.destination.dataset_id }}
+    layer: {{ workflows['facilities_cdph_integration'].green.destination.layer }}
+    url: https://chhsagency.maps.arcgis.com/home/
+    method: delete
+    geometry: 
+      column: geometry
+      type: POINT    
