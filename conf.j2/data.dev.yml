@@ -205,7 +205,7 @@ workflows:
           dataset_id: a01b16d709794683beb4d813b6b0304d
           layer: 0
 
-  cassi:
+  shelter_cassi:
     template: conf/workflows/shelter/cassi.yml
     bronze:
       source:
