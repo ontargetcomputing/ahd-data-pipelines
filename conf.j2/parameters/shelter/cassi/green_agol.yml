@@ -1,0 +1,12 @@
+source_datasources:
+  - type: databricks
+    table: shelter.green.cassi_join_layer_snapshot_{{ env }}
+destination_datasources:
+  - type: agol
+    dataset_id: {{ workflows['shelter_cassi'].green.destination.dataset_id }}
+    layer: {{ workflows['shelter_cassi'].green.destination.layer }}
+    url: https://chhsagency.maps.arcgis.com/home/
+    object_id: OBJECTID
+    geometry:
+      type: POINT
+      column: geometry

@@ -36,9 +36,15 @@ workflows:
   facilities_cdph_opstatus:
     template: conf/workflows/facilities/cdph_opstatus.yml
     bronze: 
-      source:
-        dataset_id: 8c8047c6535a458facef10fbcbb572d2
-        layer: 0
+      evacstatus:
+        source:
+          dataset_id: 8c8047c6535a458facef10fbcbb572d2
+          table_index: 0
+      planningsurvey:
+        source:
+          dataset_id: 8c8047c6535a458facef10fbcbb572d2
+          layer: 0
+
         
   facilities_historical_impact:
     template: conf/workflows/facilities/historical_impact.yml
@@ -198,4 +204,20 @@ workflows:
         destination:
           dataset_id: a01b16d709794683beb4d813b6b0304d
           layer: 0
-      
+
+  shelter_cassi:
+    template: conf/workflows/shelter/cassi.yml
+    bronze:
+      source:
+        # dev
+        dataset_id: b53d55942bdc43928cb8069d2d0b24b9
+        # prod
+        #dataset_id: 9a81956b7f284b058248ffafbe6c94ae
+        layer: 0
+    green:
+      destination:
+        # dev
+        dataset_id: b06164db57e44158bfe06d401d5d5dd7 
+        # prod
+        #dataset_id: f9d06ed2b0774df083112d5da4381fe7 
+        layer: 0
