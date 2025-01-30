@@ -1,12 +1,13 @@
 source_datasources:
   - type: databricks
     query: >
-      select zipcode,
+        select
+          oes_shape.caloes_region as i_oes_region,
+          zipcode as i_zipcode,
           GlobalID,
           i_name,
           i_address,
           i_county,
-          i_oes_region,
           i_ada_accessible_site,
           i_backup_generator,
           i_city,
@@ -35,10 +36,11 @@ source_datasources:
           s_overall_status,
           s_site_name,
           s_disaster_start_date,
-          geometry,
+          jl.geometry,
           ObjectId,
           ade_date_submitted
-      from shelter.gold.cassi_join_layer_{{ env }};
+        from shelter.gold.cassi_join_layer_{{ env }} jl
+          left join datahub_common.gold.ca_county_oes_shape oes_shape on oes_shape.county = REPLACE(jl.i_county, ' County', '') 
 destination_datasources:
   - type: databricks
     table: shelter.green.cassi_join_layer_snapshot_{{ env }}

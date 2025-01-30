@@ -7,7 +7,7 @@ resources:
           - ${var.notification_email}
 
       schedule:
-        quartz_cron_expression: "38 * * * * ?"
+        quartz_cron_expression: "38 2/3 * * * ?"
         timezone_id: "America/Los_Angeles"
       
       tasks:
