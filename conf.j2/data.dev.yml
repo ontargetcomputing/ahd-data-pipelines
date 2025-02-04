@@ -205,6 +205,16 @@ workflows:
           dataset_id: a01b16d709794683beb4d813b6b0304d
           layer: 0
 
+  shelter_backdate:
+    template: conf/workflows/shelter/backdate_historical_agol.yml
+    catalog: shelter
+    #element_suffix: _1636068339150
+    green:
+      shelter_sites_historical:
+        destination:
+          dataset_id: 8beb2c8b68054182b3972fb076aee25c 
+          layer: 0
+
   shelter_cassi:
     template: conf/workflows/shelter/cassi.yml
     bronze:
