@@ -23,42 +23,45 @@ class DatabricksDatasource(Datasource):
             try:
                 dataframe = self.spark.read.table(table_name)
             except AnalysisException as ae:
-                if os.environ.get("LOCAL") == "true":
-                    if ae.message.startswith("[TABLE_OR_VIEW_NOT_FOUND]"):
-                        dataframe = PandasHelper.empty_spark_sql_dataframe(self.spark)
-                    else:
-                        raise
-                else:
-                    if ae.desc.startswith("[TABLE_OR_VIEW_NOT_FOUND]"):
-                        dataframe = PandasHelper.empty_spark_sql_dataframe(self.spark)
-                    else:
-                        raise
+                error_msg = f"Failed to read table {table_name}: {str(ae)}"
+                print(error_msg)
+                raise RuntimeError(error_msg) from ae
+            
         elif query is not None:
             print(f'Performing "{query}"')
             try:
                 dataframe = self.spark.sql(query)
             except AnalysisException as ae:
-                if os.environ.get("LOCAL") == "true":
-                    if ae.message.startswith("[TABLE_OR_VIEW_NOT_FOUND]"):
-                        dataframe = PandasHelper.empty_spark_sql_dataframe(self.spark)
-                    else:
-                        raise
-                else:
-                    if ae.desc.startswith("[TABLE_OR_VIEW_NOT_FOUND]"):
-                        dataframe = PandasHelper.empty_spark_sql_dataframe(self.spark)
-                    else:
-                        raise
+                error_msg = f"Failed to execute query: {str(ae)}"
+                print(error_msg)
+                raise RuntimeError(error_msg) from ae
+            
         else:
             raise ValueError("Please provide either 'table' or 'query' to datasource")
 
         if len(dataframe.schema) <= 0:
-            print("********   Table has 0 columns or does not exist   ************")
-            dataframe = PandasHelper.empty_spark_sql_dataframe(self.spark)
+            error_msg = f"Table/Query returned a schema with 0 columns"
+            print(error_msg)
+            raise RuntimeError(error_msg)
+
+        # No rows is okay - just log it
+        if dataframe.count() == 0:
+            print("Query returned 0 rows")
 
         return dataframe
 
     def write(self, dataFrame: DataFrame):
         table_name = self.params["table"]
+
+        # Check schema first
+        if len(dataFrame.schema) <= 0:
+            raise ValueError("Cannot write dataframe with 0 columns")
+
+        # Zero rows is okay - just log and return early
+        row_count = dataFrame.count()
+        if row_count == 0:
+            print("No data to write - dataframe has 0 rows")
+            return
 
         if dataFrame.count() > 0:
             DATA_TYPES = "data_types"
