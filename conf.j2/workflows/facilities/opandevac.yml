@@ -1,7 +1,7 @@
 resources:
   jobs:
     facility_impact:
-      name: Facitlity Impact
+      name: Facility Impact
 
       email_notifications:
         on_failure:
