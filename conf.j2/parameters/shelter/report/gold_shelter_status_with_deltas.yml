@@ -1,11 +1,26 @@
 source_datasources:
   - type: databricks
     query: >
-      select 
-            si.datahub_site_id,
+        WITH ranked_jl AS (
+            SELECT *,
+                trim(i_name) as t_i_name,
+                RANK() OVER (PARTITION BY trim(lower(i_name)) ORDER BY s_submission_date DESC) AS date_rank
+            FROM shelter.silver.cassi_join_layer_{{ env }} 
+            WHERE s_submission_date < DATE_TRUNC('day', CURRENT_DATE()) + INTERVAL '7 hours'
+        ),
+        ranked_ssdm as (
+            SELECT *,
+                RANK() OVER (PARTITION BY TRIM(LOWER(name)) ORDER BY submission_date DESC) AS date_rank
+            FROM shelter.gold.cassi_join_layer_and_deltas_{{ env }} 
+            WHERE submission_date < DATE_TRUNC('day', CURRENT_DATE()) + INTERVAL '7 hours'
+        ),
+        jl as ( select * from ranked_jl where date_rank = 1),
+        ssdm as ( select * from ranked_ssdm where date_rank = 1)
+        select 
+            cast(si.datahub_site_id as int),
             jl.i_name as name,
             jl.i_address as address,
-            cafips.fips_long as county_fips,
+            CAST(cafips.fips_long AS STRING) AS county_fips,
             jl.i_county as county,
             jl.i_city as city,
             jl.i_state as state,
@@ -18,11 +33,11 @@ source_datasources:
                 WHEN jl.s_disaster_type = "Other" THEN jl.s_disaster_other
                 ELSE jl.s_disaster_type
             END as disaster_type,
-            jl.s_disaster_start_date as disaster_start_date,
+            jl.s_disaster_start_date AS disaster_start_date,
             jl.s_overall_capacity as overall_capacity,
             CASE
-                WHEN ssdm.overall_capacity is null THEN jl.s_overall_capacity
-                WHEN ssdm.overall_capacity <= 0 THEN jl.s_overall_capacity  
+                WHEN ssdm.overall_capacity is null THEN jl.s_overall_capacity 
+                WHEN ssdm.overall_capacity <= 0 THEN jl.s_overall_capacity
                 WHEN jl.s_overall_capacity is null THEN 0 
                 ELSE jl.s_overall_capacity - ssdm.overall_capacity
             END as overall_capacity_delta,
@@ -36,23 +51,23 @@ source_datasources:
             jl.s_poc_number_a as shift_a_poc_number,
             jl.s_poc_name_b as shift_b_poc_name,
             jl.s_poc_number_b as shift_b_poc_number,
-            jl.s_open_date as open_date,
-            jl.s_close_date as close_date,
+            jl.s_open_date  AS open_date,
+            jl.s_close_date AS close_date,
             CASE
                 WHEN jl.s_closure_reason = "Other" THEN jl.s_closure_other
                 ELSE jl.s_closure_reason
             END as closure_reason,
-            jl.s_estimated_census_outside as estimated_census_outside,
+            jl.s_estimated_census_outside  as estimated_census_outside,
             CASE
-                WHEN ssdm.estimated_census_outside is null THEN jl.s_estimated_census_outside
-                WHEN ssdm.estimated_census_outside <= 0 THEN jl.s_estimated_census_outside  
+                WHEN ssdm.estimated_census_outside is null THEN jl.s_estimated_census_outside 
+                WHEN ssdm.estimated_census_outside <= 0 THEN jl.s_estimated_census_outside 
                 WHEN jl.s_estimated_census_outside is null THEN 0
                 ELSE jl.s_estimated_census_outside - ssdm.estimated_census_outside
             END as est_census_outside_delta,
             jl.s_rooms_occupied as rooms_occupied,
             CASE
                 WHEN ssdm.rooms_occupied is null THEN jl.s_rooms_occupied
-                WHEN ssdm.rooms_occupied <= 0 THEN jl.s_rooms_occupied  
+                WHEN ssdm.rooms_occupied <= 0 THEN jl.s_rooms_occupied
                 WHEN jl.s_rooms_occupied is null THEN 0
                 ELSE jl.s_rooms_occupied - ssdm.rooms_occupied
             END as rooms_occupied_delta,
@@ -60,40 +75,40 @@ source_datasources:
                 WHEN jl.s_site_type = "Non Congregate" THEN jl.s_census
                 WHEN jl.s_site_type = "Congregate" THEN jl.s_midnight_count
                 ELSE
-                  NULL
+                NULL
             END as census,   
             CASE
                 WHEN jl.s_site_type = "Non Congregate" THEN
-                  CASE
+                CASE
                     WHEN ssdm.census is null THEN jl.s_census
-                    WHEN ssdm.census <= 0 THEN jl.s_census  
+                    WHEN ssdm.census <= 0 THEN jl.s_census
                     WHEN jl.s_census is null THEN 0
                     ELSE jl.s_census - ssdm.census
-                  END
+                END
                 ELSE
-                  CASE
+                CASE
                     WHEN ssdm.census is null THEN jl.s_midnight_count
-                    WHEN ssdm.census <= 0 THEN jl.s_midnight_count  
-                    WHEN jl.s_midnight_count is null THEN 0 
+                    WHEN ssdm.census <= 0 THEN jl.s_midnight_count
+                    WHEN jl.s_midnight_count is null THEN 0
                     ELSE jl.s_midnight_count - ssdm.census
-                  END
+                END
             END as census_delta,
-            CONVERT_TIMEZONE('America/Los_Angeles', 'GMT', TO_TIMESTAMP(CONCAT(CURRENT_DATE(), ' 07:00:00'), 'yyyy-MM-dd HH:mm:ss')) as report_date,
+            cast(DATE_TRUNC('day', CURRENT_DATE()) + INTERVAL '7 hours' as timestamp_ntz) AS report_date,
             jl.s_completed_by as completed_by,
             CASE
                 WHEN ssdm.site_status is null THEN ''
                 ELSE ssdm.site_status
             END as previous_day_status,
-            jl.s_submission_date as submission_date,
+            jl.s_submission_date  AS submission_date,
             CASE
-                WHEN ssdm.submission_date = jl.s_submission_date THEN 'Yes'
+                WHEN FROM_UTC_TIMESTAMP(jl.s_submission_date , 'America/Los_Angeles') = jl.i_submission_date THEN 'Yes'
                 ELSE 'No'
             END as outdated_report, 
             CONCAT('POINT (', jl.i_coord_x, ' ', jl.i_coord_y, ')') as geometry
-        from shelter.silver.cassi_join_layer_{{ env }} as jl
-          join shelter.gold.site_information_{{ env }} as si on lower(si.name) = lower(jl.i_name)
-          left join shelter.gold.cassi_join_layer_and_deltas_{{ env }} as ssdm on ssdm.name = jl.i_name and ssdm.dr_name = jl.s_dr_name
-          left join datahub_common.gold.ca_fips cafips on cafips.county = jl.i_county;
+        from jl  
+        left JOIN shelter.gold.site_information_{{ env }} AS si ON TRIM(LOWER(si.name)) = TRIM(LOWER(jl.i_name)) and si.zipcode = jl.zipcode
+        left JOIN ssdm ON TRIM(LOWER(ssdm.name)) = TRIM(LOWER(jl.i_name)) AND TRIM(LOWER(ssdm.dr_name)) = TRIM(LOWER(jl.s_dr_name))
+        LEFT JOIN datahub_common.gold.ca_fips cafips ON cafips.county = REPLACE(jl.i_county, ' County', '');
 destination_datasources:
   - type: databricks
     table: {{ workflows['shelter_report'].catalog }}.gold.cassi_join_layer_and_deltas_{{ env }}

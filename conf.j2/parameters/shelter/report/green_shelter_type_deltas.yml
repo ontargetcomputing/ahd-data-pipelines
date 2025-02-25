@@ -2,58 +2,74 @@ source_datasources:
 
   - type: databricks
     query: >
-      select 
-              yesterday.site_type, 
-              total_yesterday, 
-              total_today,
-              total_today - total_yesterday as difference 
-      from 
-      (select 
-        site_type,
-        site_status,
-        report_date,
-        count(1) as total_yesterday
-      from {{ workflows['shelter_report'].catalog }}.gold.shelter_status_aggregate_{{ env }}
-      group by site_type, site_status, report_date
-      having site_status = 'Open' and DATE(report_date) = CURRENT_DATE() - 1 and site_type like '%Congregate'
-      UNION ALL
-      SELECT 'Congregate' AS site_type, 'Open' as site_status, null as report_date, 0 as total_yesterday 
-      WHERE NOT EXISTS (
-        SELECT 1
-        from {{ workflows['shelter_report'].catalog }}.gold.shelter_status_aggregate_{{ env }}
-        where site_status = 'Open' and DATE(report_date) = CURRENT_DATE() - 1 and site_type = 'Congregate'
-      )
-      UNION ALL
-      SELECT 'Non Congregate' AS site_type, 'Open' as site_status, null as report_date, 0 as total_yesterday 
-      WHERE NOT EXISTS (
-        SELECT 1
-        from {{ workflows['shelter_report'].catalog }}.gold.shelter_status_aggregate_{{ env }}
-        where site_status = 'Open' and DATE(report_date) = CURRENT_DATE() - 1 and site_type = 'Non Congregate'
-      )) as yesterday
-      JOIN
-      (select 
-        site_type,
-        site_status,
-        report_date,
-        count(1) as total_today
-      from {{ workflows['shelter_report'].catalog }}.gold.shelter_status_aggregate_{{ env }}
-      group by site_type, site_status, report_date
-      having site_status = 'Open' and DATE(report_date) = CURRENT_DATE() and site_type like '%Congregate'
-      UNION ALL
-      SELECT 'Congregate' AS site_type, 'Open' as site_status, null as report_date, 0 as total_today
-      WHERE NOT EXISTS (
-        SELECT 1
-        from {{ workflows['shelter_report'].catalog }}.gold.shelter_status_aggregate_{{ env }}
-        where site_status = 'Open' and DATE(report_date) = CURRENT_DATE() and site_type = 'Congregate'
-      )
-      UNION ALL
-      SELECT 'Non Congregate' AS site_type, 'Open' as site_status, null as report_date, 0 as total_today
-      WHERE NOT EXISTS (
-        SELECT 1
-        from {{ workflows['shelter_report'].catalog }}.gold.shelter_status_aggregate_{{ env }}
-        where site_status = 'Open' and DATE(report_date) = CURRENT_DATE() and site_type = 'Non Congregate'
-      )) as today on today.site_type = yesterday.site_type
-
+        SELECT 
+            yesterday.site_type, 
+            CAST(total_yesterday as int), 
+            CAST(total_today as int),
+            CAST((total_today - total_yesterday) as int) AS difference 
+        FROM 
+        (
+            SELECT 
+                site_type,
+                site_status,
+                report_date,
+                COUNT(1) AS total_yesterday
+            FROM shelter.gold.shelter_status_aggregate_{{ env }}
+            GROUP BY site_type, site_status, report_date
+            HAVING site_status = 'Open' 
+                AND DATE(report_date) = DATE(DATE_TRUNC('day', CURRENT_DATE()) + INTERVAL '7 hours') - 1 
+                AND site_type LIKE '%Congregate'
+            UNION ALL
+            SELECT 'Congregate' AS site_type, 'Open' AS site_status, NULL AS report_date, 0 AS total_yesterday 
+            WHERE NOT EXISTS (
+                SELECT 1
+                FROM shelter.gold.shelter_status_aggregate_{{ env }}
+                WHERE site_status = 'Open' 
+                    AND DATE(report_date) = DATE(DATE_TRUNC('day', CURRENT_DATE()) + INTERVAL '7 hours') - 1 
+                    AND site_type = 'Congregate'
+            )
+            UNION ALL
+            SELECT 'Non Congregate' AS site_type, 'Open' AS site_status, NULL AS report_date, 0 AS total_yesterday 
+            WHERE NOT EXISTS (
+                SELECT 1
+                FROM shelter.gold.shelter_status_aggregate_{{ env }}
+                WHERE site_status = 'Open' 
+                    AND DATE(report_date) = DATE(DATE_TRUNC('day', CURRENT_DATE()) + INTERVAL '7 hours') - 1 
+                    AND site_type = 'Non Congregate'
+            )
+        ) AS yesterday
+        JOIN
+        (
+            SELECT 
+                site_type,
+                site_status,
+                report_date,
+                COUNT(1) AS total_today
+            FROM shelter.gold.shelter_status_aggregate_{{ env }}
+            GROUP BY site_type, site_status, report_date
+            HAVING site_status = 'Open' 
+                AND DATE(report_date) = DATE(DATE_TRUNC('day', CURRENT_DATE()) + INTERVAL '7 hours') 
+                AND site_type LIKE '%Congregate'
+            UNION ALL
+            SELECT 'Congregate' AS site_type, 'Open' AS site_status, NULL AS report_date, 0 AS total_today
+            WHERE NOT EXISTS (
+                SELECT 1
+                FROM shelter.gold.shelter_status_aggregate_{{ env }}
+                WHERE site_status = 'Open' 
+                    AND DATE(report_date) = DATE(DATE_TRUNC('day', CURRENT_DATE()) + INTERVAL '7 hours') 
+                    AND site_type = 'Congregate'
+            )
+            UNION ALL
+            SELECT 'Non Congregate' AS site_type, 'Open' AS site_status, NULL AS report_date, 0 AS total_today
+            WHERE NOT EXISTS (
+                SELECT 1
+                FROM shelter.gold.shelter_status_aggregate_{{ env }}
+                WHERE site_status = 'Open' 
+                    AND DATE(report_date) = DATE(DATE_TRUNC('day', CURRENT_DATE()) + INTERVAL '7 hours') 
+                    AND site_type = 'Non Congregate'
+            )
+        ) AS today 
+        ON today.site_type = yesterday.site_type;
 destination_datasources:
   - type: databricks
     table: {{ workflows['shelter_report'].catalog }}.green.shelter_type_deltas_{{ env }}
