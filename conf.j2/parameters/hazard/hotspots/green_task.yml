@@ -1,6 +1,14 @@
 source_datasources:
   - type: databricks
-    table: ahd_wildfires.gold.hotspots_within_perims_{{ env }}
+    query: >
+      WITH perims_check AS (
+      SELECT COUNT(*) AS perims_count
+      FROM ahd_wildfires.gold.california_fires_perims_{{ env }}
+      )
+
+      SELECT h.*
+      FROM ahd_wildfires.gold.hotspots_within_perims_{{ env }} h
+      WHERE (SELECT perims_count FROM perims_check) > 0
 
 destination_datasources:
   - type: databricks
