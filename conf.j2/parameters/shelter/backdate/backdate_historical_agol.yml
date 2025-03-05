@@ -43,7 +43,7 @@ source_datasources:
             submission_date,
             geometry,
             outdated_report
-          from shelter.green.shelter_sites_historical_additions_prod_for_backdate;
+          from shelter.green.shelter_sites_historical_additions_{{ env }}_for_backdate;
 
 destination_datasources:
   - type: agol

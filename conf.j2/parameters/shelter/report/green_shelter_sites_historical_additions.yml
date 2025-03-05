@@ -2,9 +2,9 @@ source_datasources:
   - type: databricks
     query: >
       select 
-      (select difference as ncs_delta from {{ workflows['shelter_report'].catalog }}.green.shelter_type_deltas_{{ env }} where site_type like 'Non%') as ncs_delta,
-      (select difference as cs_delta from {{ workflows['shelter_report'].catalog }}.green.shelter_type_deltas_{{ env }} where site_type like 'Con%') as cs_delta,
-      * from {{ workflows['shelter_report'].catalog }}.green.shelters_open_or_recently_closed_{{ env }};
+      (select difference as ncs_delta from shelter.green.shelter_type_deltas_{{ env }} where site_type like 'Non%') as ncs_delta,
+      (select difference as cs_delta from shelter.green.shelter_type_deltas_{{ env }} where site_type like 'Con%') as cs_delta,
+      * from shelter.green.shelters_open_or_recently_closed_{{ env }};
 destination_datasources:
   - type: databricks
     table: {{ workflows['shelter_report'].catalog }}.green.shelter_sites_historical_additions_{{ env }}
