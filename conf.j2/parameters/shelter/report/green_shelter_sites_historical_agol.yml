@@ -1,6 +1,49 @@
 source_datasources:
   - type: databricks
-    table: {{ workflows['shelter_report'].catalog }}.green.shelter_sites_historical_additions_{{ env }}
+    table: shelter.green.shelter_sites_historical_additions_{{ env }}
+    query: >
+        select ncs_delta,
+          cs_delta,
+          datahub_site_id,
+          name,
+          address,
+          county_fips,
+          county,
+          city,
+          state,
+          zipcode,
+          oes_region,
+          backup_generator,
+          ada_accessible_site,
+          datasource,
+          dr_name,
+          disaster_type,
+          disaster_start_date, 
+          overall_capacity, 
+          overall_capacity_delta, 
+          agency_type,
+          site_status,
+          site_type,
+          shift_a_poc_name,
+          shift_a_poc_number,
+          shift_b_poc_name,
+          shift_b_poc_number,
+          open_date,
+          close_date,
+          closure_reason,
+          estimated_census_outside, 
+          est_census_outside_delta,
+          rooms_occupied,
+          rooms_occupied_delta,
+          census,
+          census_delta,
+          completed_by,
+          previous_day_status,
+          to_utc_timestamp(report_date, 'America/Los_Angeles') AS report_date,
+          submission_date,
+          geometry,
+          outdated_report
+      from shelter.green.shelter_sites_historical_additions_{{ env }};
 destination_datasources:
   - type: agol
     dataset_id: {{ workflows['shelter_report'].green.shelter_sites_historical.destination.dataset_id }}
