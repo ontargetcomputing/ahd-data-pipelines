@@ -1,6 +1,5 @@
 source_datasources:
   - type: databricks
-    table: shelter.green.shelter_sites_historical_additions_{{ env }}
     query: >
         select ncs_delta,
           cs_delta,
@@ -43,7 +42,7 @@ source_datasources:
           submission_date,
           geometry,
           outdated_report
-      from shelter.green.shelter_sites_historical_additions_{{ env }};
+        from shelter.green.shelter_sites_historical_additions_{{ env }};
 destination_datasources:
   - type: agol
     dataset_id: {{ workflows['shelter_report'].green.shelter_sites_historical.destination.dataset_id }}
