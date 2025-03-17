@@ -7,9 +7,9 @@ resources:
         on_failure:
           - ${var.notification_email}
 
-      # schedule:
-      #   quartz_cron_expression: "0 4/5 * * * ?"
-      #   timezone_id: "America/Los_Angeles"
+      schedule:
+        quartz_cron_expression: "0 4/5 * * * ?"
+        timezone_id: "America/Los_Angeles"
 
       tasks:
         - task_key: "bronze_conf_types"
