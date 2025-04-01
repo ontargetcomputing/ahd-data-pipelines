@@ -1,4 +1,3 @@
-bronze: true
 source_datasources:
   - type: agol
     dataset_id: 9e2f2b544c954fda9cd13b7f3e6eebce
@@ -7,6 +6,9 @@ source_datasources:
 destination_datasources:
   - type: databricks
     table: ahd_earthquake.bronze.earthquake_shakemap_geometries_{{ env }}
+    epoch_to_timestamp:
+      - eventTime
+      - updated
     data_types:
     - column: OBJECTID
       type: long

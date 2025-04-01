@@ -1,4 +1,3 @@
-bronze: true
 source_datasources:
   - type: agol
     dataset_id: {{ workflows['shelter_cassi'].bronze.source.dataset_id }}
@@ -8,6 +7,12 @@ source_datasources:
 destination_datasources:
   - type: databricks
     table: shelter.bronze.cassi_join_layer_{{ env }}
+    epoch_to_timestamp:
+      - i_submission_date
+      - s_open_date
+      - s_close_date
+      - s_submission_date
+      - s_disaster_start_date
     data_types:
     - column: GlobalID
       type: string

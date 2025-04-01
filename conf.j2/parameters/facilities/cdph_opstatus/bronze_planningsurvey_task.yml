@@ -1,4 +1,4 @@
-bronze: true
+
 source_datasources:
   - type: agol
     dataset_id: {{ workflows['facilities_cdph_opstatus'].bronze.planningsurvey.source.dataset_id }}
@@ -9,6 +9,11 @@ source_datasources:
 destination_datasources:
   - type: databricks
     table: cdph_facilities.bronze.surveyplan_{{ env }}
+    epoch_to_timestamp:
+      - contactdate
+      - Ev_Time
+      - CreationDate
+      - EditDate
     data_types:
     - column: objectid
       type: string
@@ -83,6 +88,8 @@ destination_datasources:
     - column: Pat_repat
       type: integer
     - column: Pat_returned
+      type: integer
+    - column: Pat_expected_to_return
       type: integer
     - column: Pat_not_returned
       type: integer
