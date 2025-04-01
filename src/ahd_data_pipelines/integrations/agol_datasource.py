@@ -88,8 +88,13 @@ class AgolDatasource(Datasource):
 
         if valid_features:
           # Create a new FeatureSet from the valid features
-          valid_featureSet = FeatureSet(valid_features)
-          valid_gdf = valid_featureSet.sdf
+          if invalid_features:
+            valid_featureSet = FeatureSet(valid_features)
+            valid_gdf = valid_featureSet.sdf
+          else:
+             valid_gdf = featureSet.sdf 
+
+
 
           if valid_gdf is not None and len(valid_gdf) > 0:
               gjsonString = valid_featureSet.to_geojson
