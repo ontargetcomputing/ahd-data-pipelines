@@ -84,10 +84,7 @@ class AgolDatasource(Datasource):
 
         # Create a new FeatureSet from the valid features
         valid_featureSet = FeatureSet(valid_features)
-        invalid_featureSet = FeatureSet(invalid_features)
-
         valid_gdf = valid_featureSet.sdf
-        invalid_gdf = invalid_featureSet.sdf
 
         data = []
 
@@ -114,11 +111,21 @@ class AgolDatasource(Datasource):
                 props["geometry"] = shp
                 data.append(props)
 
-        if invalid_gdf is not None and len(invalid_gdf) > 0:
-            for f in invalid_features:
-                props = f.attributes
-                props["geometry"] = None  
-                data.append(props)    
+
+        if invalid_features:
+            invalid_featureSet = FeatureSet(invalid_features)
+            invalid_gdf = invalid_featureSet.sdf
+
+            if invalid_gdf is not None and not invalid_gdf.empty:
+                # Process the invalid_gdf
+                invalid_featureSet = FeatureSet(invalid_features)
+                invalid_gdf = invalid_featureSet.sdf
+
+                if invalid_gdf is not None and len(invalid_gdf) > 0:
+                    for f in invalid_features:
+                        props = f.attributes
+                        props["geometry"] = None  
+                        data.append(props)    
 
         if len(data) > 0:
             gdf = pd.DataFrame(data)
