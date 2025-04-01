@@ -107,7 +107,7 @@ source_datasources:
         )
         SELECT * FROM (
           SELECT
-            IncidentSize as `CalculatedAcres`,
+            points.IncidentSize as `CalculatedAcres`,
             NULL as `Comments`,
             NULL as `ComplexName`,
             NULL as `ComplexID`,
@@ -116,37 +116,38 @@ source_datasources:
             NULL as `CurrentDateAge`,
             NULL as `DailyAcres`,
             NULL as `DateCurrent`,
-            FireDiscoveryDateTime as `FireDiscoveryDateTime`,
+            points.FireDiscoveryDateTime as `FireDiscoveryDateTime`,
             NULL as `FeatureCategory`,
-            GACC,
+            points.GACC,
             NULL as `GISAcres`,
             NULL as `GeometryID`,
             NULL as `GlobalID`,
             NULL as `IMTName`,
-            IrwinID as `IRWINID`,
-            IncidentName,
-            IncidentTypeCategory,
+            points.IrwinID as `IRWINID`,
+            points.IncidentName,
+            points.IncidentTypeCategory,
             NULL as `Label`,
             NULL as `LocalIncidentID`,
             NULL as `MapMethod`,
-            PercentContained,
+            points.PercentContained,
             NULL as `PolygonDateTime`,
             NULL as `PooCounty`,
             NULL as `UnitID`,
-            ade_date_submitted,
-            County as `county`,
-            geometry as `geometry`,
-            geometry as `geometry_x`,
+            points.ade_date_submitted,
+            points.County as `county`,
+            perims.geometry as `geometry`,
+            points.geometry as `geometry_x`,
             NULL as `oes_region`,
             'OES' as Source,
-            POOProtectingAgency,
-            Fatalities,
-            IncidentManagementOrganization,
-            Injuries,
-            OtherStructuresDestroyed,
-            ResidencesDestroyed,
-            TotalIncidentPersonnel
-          FROM ahd_wildfires.silver.caloes_wildfires_{{ env }}
+            points.POOProtectingAgency,
+            points.Fatalities,
+            points.IncidentManagementOrganization,
+            points.Injuries,
+            points.OtherStructuresDestroyed,
+            points.ResidencesDestroyed,
+            points.TotalIncidentPersonnel
+          FROM ahd_wildfires.silver.caloes_wildfires_{{ env }} points
+          left join ahd_wildfires.silver.california_fires_perims_{{ env }} perims on lower(perims.IRWINID) = lower(points.IrwinID)
           WHERE EXISTS (SELECT 1 FROM caloes_data)
           UNION ALL
           SELECT *

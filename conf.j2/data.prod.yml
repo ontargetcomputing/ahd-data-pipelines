@@ -32,6 +32,10 @@ workflows:
       source:
         dataset_id: 213f2f8b61e24bd484aa89880a6c8435
         table_index: 0
+    green:
+      destination:
+        dataset_id: 97d87adc44b541f2a9b59901008e81e0
+        table_index: 0
 
   facilities_cdph_opstatus:
     template: conf/workflows/facilities/cdph_opstatus.yml

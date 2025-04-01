@@ -7,7 +7,7 @@ source_datasources:
     
 destination_datasources:
   - type: databricks
-    table: cdss_general.bronze.opstatus_{{ env }}
+    table: cdss_general.bronze.opstatus_current_{{ env }}
     data_types:
     - column: OBJECTID
       type: bigint
@@ -58,10 +58,10 @@ destination_datasources:
     - column: GlobalID
       type: string
     - column: CreationDate
-      type: timestamp
+      type: bigint
     - column: Creator
       type: string
     - column: EditDate
-      type: timestamp
+      type: bigint
     - column: Editor
       type: string

@@ -1,0 +1,57 @@
+source_datasources:
+  - type: databricks
+    query: >
+      select 
+          datahub_facility_id,
+          OBJECTID,
+          GlobalID,
+          CreationDate,
+          Creator,
+          EditDate,
+          Editor,
+          chcq_monitored,
+          op_status,
+          evac_status,
+          patients_evac,
+          facility_contacted,
+          general_comments,
+          needs_verification,
+          urgent_needs_48,
+          urgent_needs_cmmnts,
+          contact_date,
+          census,
+          avail_beds,
+          patient_impacts,
+          unusual_occurence,
+          outage_date,
+          restored_date,
+          incident_name,
+          incident_type,
+          incident_description,
+          hazard_name,
+          incident_status,
+          hcai_status,
+          event_em_contact_name,
+          event_em_contact_phone, 
+          event_em_email,
+          emergency_email_primary,
+          emergency_email_secondary,
+          emergency_phone_primary,
+          emergency_phone_secondary,
+          emergency_phone_primary_extensi,
+          emergency_first_name,
+          emergency_last_name,
+          emc_facid,
+          hcai_assessed,
+          hcai_comments,
+          operational_status_comments,
+          evacuation_status_comments
+      from cdss_general.green.opstatus_agol_{{ env }};  
+
+destination_datasources:
+  - type: agol
+    dataset_id: {{ workflows['facilities_cdss_opstatus'].green.destination.dataset_id }}
+    table_index: {{ workflows['facilities_cdss_opstatus'].green.destination.table_index }}
+    url: https://chhsagency.maps.arcgis.com/home/    
+    method: overwrite
+    is_table: true

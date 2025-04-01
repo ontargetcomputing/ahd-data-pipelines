@@ -40,9 +40,9 @@ source_datasources:
       l.Census,
       l.SharePointID,
       l.GlobalID,
-      l.CreationDate,
+      from_unixtime(l.CreationDate / 1000) AS CreationDate,
       l.Creator,
-      l.EditDate,
+      from_unixtime(l.EditDate / 1000) AS EditDate,
       l.Editor,
       'POINT (' ||
       CASE
@@ -54,7 +54,7 @@ source_datasources:
       END || ')' AS geometry,
       l.ade_date_submitted
       FROM
-      cdss_general.bronze.opstatus_{{ env }} l
+      cdss_general.bronze.opstatus_current_{{ env }} l
       LEFT JOIN cdss_general.bronze.opstatus_conftypes_{{ env }} c ON l.FacilityType = c.ConfidentialFacilityType;
 
 destination_datasources:
