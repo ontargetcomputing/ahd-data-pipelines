@@ -91,7 +91,7 @@ class AgolDatasource(Datasource):
 
         data = []
 
-        if len(valid_gdf) > 0:
+        if valid_gdf is not None and len(valid_gdf) > 0:
             gjsonString = valid_featureSet.to_geojson
             gjsonDict = json.loads(gjsonString)
             features = gjsonDict["features"]
@@ -114,7 +114,7 @@ class AgolDatasource(Datasource):
                 props["geometry"] = shp
                 data.append(props)
 
-        if len(invalid_gdf) > 0:
+        if invalid_gdf is not None and len(invalid_gdf) > 0:
             for f in invalid_features:
                 props = f.attributes
                 props["geometry"] = None  
