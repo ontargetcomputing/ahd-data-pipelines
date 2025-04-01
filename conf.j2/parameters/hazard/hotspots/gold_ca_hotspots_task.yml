@@ -9,7 +9,27 @@ spatial_joins:
       - NAME
 source_datasources:
   - type: databricks
-    table: ahd_wildfires.silver.hotspots_{{ env }}
+    query: >
+      SELECT 
+          OBJECTID,
+          latitude,
+          longitude,
+          bright_ti4,
+          scan,
+          track,
+          from_unixtime(unix_timestamp(acq_date) / 1000) AS acq_date,
+          from_unixtime(unix_timestamp(acq_time) / 1000) AS acq_time,
+          satellite,
+          confidence,
+          version,
+          bright_ti5,
+          frp,
+          daynight,
+          from_unixtime(unix_timestamp(esritimeutc) / 1000) AS esritimeutc,
+          hours_old,
+          geometry,
+          ade_date_submitted
+      FROM ahd_wildfires.silver.hotspots_{{ env }};
   - type: databricks
     table: datahub_common.gold.california_shape
     

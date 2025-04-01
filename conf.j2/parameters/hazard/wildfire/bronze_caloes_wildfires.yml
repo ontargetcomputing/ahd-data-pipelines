@@ -93,4 +93,6 @@ destination_datasources:
       type: string
     - column: OBJECTID
       type: string
+    - column: TotalIncidentPersonnel
+      type: int
 {% endif %}
