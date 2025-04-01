@@ -82,34 +82,37 @@ class AgolDatasource(Datasource):
         valid_features = [f for f in featureSet.features if f.geometry is not None]
         invalid_features = [f for f in featureSet.features if f.geometry is None]
 
-        # Create a new FeatureSet from the valid features
-        valid_featureSet = FeatureSet(valid_features)
-        valid_gdf = valid_featureSet.sdf
 
         data = []
 
-        if valid_gdf is not None and len(valid_gdf) > 0:
-            gjsonString = valid_featureSet.to_geojson
-            gjsonDict = json.loads(gjsonString)
-            features = gjsonDict["features"]
-            
-            for feature in features:
-                geometry = feature["geometry"]
-                if feature["geometry"]["type"] == "MultiPolygon":
-                    coords = geometry["coordinates"]
-                    polygons = []
-                    for poly in coords:
-                        points = []
-                        for point in poly:
-                            points.append((point[0], point[1]))
-                        polygons.append(Polygon(points))
-                    shp = MultiPolygon(polygons)
-                else:
-                    shp = shape(geometry)
 
-                props = feature["properties"]
-                props["geometry"] = shp
-                data.append(props)
+        if valid_features:
+          # Create a new FeatureSet from the valid features
+          valid_featureSet = FeatureSet(valid_features)
+          valid_gdf = valid_featureSet.sdf
+
+          if valid_gdf is not None and len(valid_gdf) > 0:
+              gjsonString = valid_featureSet.to_geojson
+              gjsonDict = json.loads(gjsonString)
+              features = gjsonDict["features"]
+              
+              for feature in features:
+                  geometry = feature["geometry"]
+                  if feature["geometry"]["type"] == "MultiPolygon":
+                      coords = geometry["coordinates"]
+                      polygons = []
+                      for poly in coords:
+                          points = []
+                          for point in poly:
+                              points.append((point[0], point[1]))
+                          polygons.append(Polygon(points))
+                      shp = MultiPolygon(polygons)
+                  else:
+                      shp = shape(geometry)
+
+                  props = feature["properties"]
+                  props["geometry"] = shp
+                  data.append(props)
 
 
         if invalid_features:
