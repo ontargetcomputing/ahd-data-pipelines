@@ -3,7 +3,7 @@ from ahd_data_pipelines.pandas.pandas_helper import PandasHelper
 from pyspark.sql import DataFrame
 from pyspark.sql import SparkSession
 from arcgis import GIS
-from arcgis.features import FeatureLayer
+from arcgis.features import FeatureLayer, FeatureSet
 from arcgis.features import Table
 import json
 import geopandas as gpd
@@ -78,13 +78,24 @@ class AgolDatasource(Datasource):
         print(f'loadFeatureLayer { { "source": datasetId, "layer": layer}}')
 
         featureLayer = FeatureLayer(dataLayer.layers[layer].url)
-        featureSet = featureLayer.query(where=query)
-        gdf = featureSet.sdf
-        if len(gdf) > 0:
-            gjsonString = featureSet.to_geojson
+        featureSet = featureLayer.query(where=query, return_ids_only=False)
+        valid_features = [f for f in featureSet.features if f.geometry is not None]
+        invalid_features = [f for f in featureSet.features if f.geometry is None]
+
+        # Create a new FeatureSet from the valid features
+        valid_featureSet = FeatureSet(valid_features)
+        invalid_featureSet = FeatureSet(invalid_features)
+
+        valid_gdf = valid_featureSet.sdf
+        invalid_gdf = invalid_featureSet.sdf
+
+        data = []
+
+        if len(valid_gdf) > 0:
+            gjsonString = valid_featureSet.to_geojson
             gjsonDict = json.loads(gjsonString)
             features = gjsonDict["features"]
-            data = []
+            
             for feature in features:
                 geometry = feature["geometry"]
                 if feature["geometry"]["type"] == "MultiPolygon":
@@ -103,7 +114,14 @@ class AgolDatasource(Datasource):
                 props["geometry"] = shp
                 data.append(props)
 
-            df = pd.DataFrame(data)
+        if len(invalid_gdf) > 0:
+            for f in invalid_features:
+                props = f.attributes
+                props["geometry"] = None  
+                data.append(props)    
+
+        if len(data) > 0:
+            gdf = pd.DataFrame(data)
             # columns_to_drop = ['SHAPE', 'Shape__Area', 'Shape__Length']
 
             # # Check if each column exists before dropping it
@@ -111,7 +129,7 @@ class AgolDatasource(Datasource):
             #     if column in df.columns:
             #         df.drop(columns=column, inplace=True)
 
-            transformed = gpd.GeoDataFrame(df, geometry="geometry")
+            transformed = gpd.GeoDataFrame(gdf, geometry="geometry")
 
             geom = transformed["geometry"]
 

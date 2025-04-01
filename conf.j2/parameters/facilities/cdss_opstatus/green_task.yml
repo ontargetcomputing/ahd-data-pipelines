@@ -1,0 +1,142 @@
+source_datasources:
+  - type: databricks
+    query: >
+      select 
+          Facility_Number as datahub_facility_id,
+          OBJECTID,
+          GlobalID,
+          CreationDate,
+          Creator,
+          EditDate,
+          Editor,
+          null as chcq_monitored,
+          Operational_Status as op_status,
+          Evacuation_Status as evac_status,
+          Num_Clients_Evacuated as patients_evac,
+          null as facility_contacted,
+          null as general_comments,
+          null as	needs_verification,
+          null as urgent_needs_48,
+          null as urgent_needs_cmmnts,
+          null as contact_date,
+          census,
+          null as avail_beds,
+          null as patient_impacts,
+          null as unusual_occurence,
+          null as outage_date,
+          null as restored_date,
+          Disaster_Name as incident_name,
+          null as incident_type,
+          null as incident_description,
+          null as hazard_name,
+          null as incident_status,
+          null as hcai_status,
+          null as event_em_contact_name,
+          null as event_em_contact_phone, 
+          null as event_em_email,
+          null as emergency_email_primary,
+          null as emergency_email_secondary,
+          null as emergency_phone_primary,
+          null as emergency_phone_secondary,
+          null as emergency_phone_primary_extensi,
+          null as emergency_first_name,
+          null as emergency_last_name,
+          null as emc_facid,
+          null as hcai_assessed,
+          null as hcai_comments,
+          null as operational_status_comments,
+          null as evacuation_status_comments
+      from cdss_general.gold.opstatus_{{ env }};  
+
+destination_datasources:
+  - type: databricks
+    table: cdss_general.green.opstatus_agol_{{ env }}
+    data_types:
+      - column: datahub_facility_id
+        type: string
+      - column: ObjectId
+        type: string
+      - column: GlobalID
+        type: string
+      - column: CreationDate
+        type: timestamp
+      - column: Creator
+        type: string
+      - column: EditDate
+        type: timestamp
+      - column: Editor
+        type: string
+      - column: chcq_monitored
+        type: string
+      - column: op_status
+        type: string
+      - column: evac_status
+        type: string
+      - column: patients_evac
+        type:  int
+      - column: facility_contacted
+        type: string
+      - column: general_comments
+        type: string
+      - column: needs_verification
+        type: string
+      - column: urgent_needs_48
+        type: string
+      - column: urgent_needs_cmmnts
+        type: string
+      - column: contact_date
+        type: timestamp
+      - column: census
+        type:  int
+      - column: avail_beds
+        type:  int
+      - column: patient_impacts
+        type: string
+      - column: unusual_occurence
+        type: string
+      - column: outage_date
+        type: timestamp
+      - column: restored_date
+        type: timestamp
+      - column: incident_name
+        type: string
+      - column: incident_type
+        type: string
+      - column: incident_description
+        type: string
+      - column: hazard_name
+        type: string
+      - column: incident_status
+        type: string
+      - column: hcai_status
+        type: string
+      - column: event_em_contact_name
+        type: string
+      - column: event_em_contact_phone
+        type: string
+      - column: event_em_email
+        type: string
+      - column: emergency_email_primary
+        type: string
+      - column: emergency_email_secondary
+        type: string
+      - column: emergency_phone_primary
+        type: string
+      - column: emergency_phone_secondary
+        type: string
+      - column: emergency_phone_primary_extensi
+        type: string
+      - column: emergency_first_name
+        type: string
+      - column: emergency_last_name
+        type: string
+      - column: emc_facid
+        type: string
+      - column: hcai_assessed
+        type: string
+      - column: hcai_comments
+        type: string
+      - column: operational_status_comments
+        type: string
+      - column: evacuation_status_comments
+        type: string
